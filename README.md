@@ -1,92 +1,78 @@
-# Welcome to React Router!
+# Stellar Registry UI
 
-A modern, production-ready template for building full-stack React applications
-using React Router.
+A public registry for browsing deployed Stellar smart contracts, built with
+React Router v7 and deployed to Cloudflare Workers.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
-
-## Features
-
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+## Development
 
 ```bash
 npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+The dev server runs at `http://localhost:5173` using the Cloudflare Workers
+runtime locally (via miniflare), so behaviour matches production.
 
-## Building for Production
+## Commands
 
-Create a production build:
+| Command              | Description                                       |
+| -------------------- | ------------------------------------------------- |
+| `npm run dev`        | Start local dev server                            |
+| `npm run build`      | Production build                                  |
+| `npm run deploy`     | Build and deploy to Cloudflare Workers            |
+| `npm run typecheck`  | Type-check (generates CF + RR types first)        |
+| `npm run lint`       | Run ESLint                                        |
+| `npm run format`     | Run Prettier                                      |
+| `npm run cf-typegen` | Regenerate Cloudflare types from `wrangler.jsonc` |
 
-```bash
-npm run build
-```
+## Stack
+
+- **React Router v7** (SSR framework mode)
+- **Cloudflare Workers** — edge-deployed, no cold starts
+- **CSS Modules** — no Tailwind; design tokens in `app/app.css`
+- **shadcn/css** — copy-paste components (badge, button, card, input)
 
 ## Deployment
 
-### Docker Deployment
+Merges to `main` automatically deploy via GitHub Actions to a Cloudflare Workers
+subdomain by default. A custom domain can be added under **Workers & Pages →
+registry-ui → Settings → Domains & Routes**.
 
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports
-Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is
-production-ready.
-
-Make sure to deploy the output of `npm run build`
+## Project structure
 
 ```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+app/
+  routes/
+    _index.tsx                # / — browse contracts
+    contracts.$wasm_hash.tsx  # /contracts/:wasm_hash — contract detail
+  components/                 # Shared UI components
+  lib/
+    api.ts                    # API client
+    types.ts                  # TypeScript types
+  entry.server.tsx            # SSR entry point
+  root.tsx                    # Root layout
+  app.css                     # Global styles and design tokens
+workers/
+  app.ts                      # Cloudflare Worker entry
+wrangler.jsonc                # Cloudflare config
 ```
 
-## Styling
+## Backend
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already
-configured for a simple default starting experience. You can use whatever CSS
-framework you prefer.
+Data is fetched from a single AWS Lambda endpoint. See `app/lib/api.ts` for the
+base URL and `app/lib/types.ts` for the `Contract` type.
 
 ---
 
-Built with ❤️ using React Router.
+<div align="center">
+  <p>Brought to you by your friends at</p>
+  <a
+    alt="The Aha Co"
+    href="https://theaha.co"
+  >
+    <img
+      width="300px"
+      src="logo.svg"
+    />
+  </a>
+</div>
