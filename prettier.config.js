@@ -1,1 +1,1 @@
-export { default } from "@theahaco/ts-config/prettier";
+export { default } from "@theahaco/ts-config/prettier"

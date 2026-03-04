@@ -1,70 +1,71 @@
 .header {
-  border-bottom: 1px solid var(--color-border);
+	background: var(--color-primary);
 }
 
 .headerInner {
-  max-width: 56rem;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  height: 3.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+	max-width: 56rem;
+	margin: 0 auto;
+	padding: 0 1.5rem;
+	height: 3.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .headerLogo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: var(--color-foreground);
-  letter-spacing: -0.01em;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 0.9375rem;
+	color: var(--color-secondary-foreground);
+	letter-spacing: -0.01em;
 }
 
 .headerLogo:hover {
-  color: var(--color-foreground);
+	color: var(--color-foreground);
 }
 
 .headerLogoMark {
-  color: var(--color-link);
-  font-size: 1.1rem;
-  line-height: 1;
+	font-size: 1.1rem;
+	line-height: 1;
 }
 
 .themeToggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-muted-foreground);
-  cursor: pointer;
-  transition:
-    background-color var(--default-transition-duration) var(--default-transition-timing-function),
-    color var(--default-transition-duration) var(--default-transition-timing-function);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-sm);
+	background: transparent;
+	color: var(--color-muted-foreground);
+	cursor: pointer;
+	transition:
+		background-color var(--default-transition-duration)
+			var(--default-transition-timing-function),
+		color var(--default-transition-duration)
+			var(--default-transition-timing-function);
 }
 
 .themeToggle:hover {
-  background-color: var(--color-accent);
-  color: var(--color-foreground);
+	background-color: var(--color-accent);
+	color: var(--color-foreground);
 }
 
 /* ── Error boundary ──────────────────────────────────── */
 
 .errorMain {
-  max-width: 56rem;
-  margin: 0 auto;
-  padding: 4rem 1.5rem 1.5rem;
+	max-width: 56rem;
+	margin: 0 auto;
+	padding: 4rem 1.5rem 1.5rem;
 }
 
 .errorStack {
-  width: 100%;
-  padding: 1rem;
-  overflow-x: auto;
+	width: 100%;
+	padding: 1rem;
+	overflow-x: auto;
 }
