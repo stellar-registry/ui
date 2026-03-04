@@ -1,0 +1,100 @@
+.header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headerInner {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.headerTitle {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.main {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.intro {
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.subheading {
+  color: var(--color-muted-foreground);
+}
+
+.searchWrapper {
+  margin-bottom: 1.5rem;
+  max-width: 28rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.emptyState {
+  color: var(--color-muted-foreground);
+}
+
+.cardLink {
+  display: block;
+}
+
+.card {
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.card:hover {
+  background-color: var(--color-accent);
+}
+
+.cardHeader {
+  padding-bottom: 0.5rem;
+}
+
+.cardName {
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cardAuthor {
+  font-size: 0.875rem;
+  color: var(--color-muted-foreground);
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
