@@ -72,7 +72,7 @@ base URL and `app/lib/types.ts` for the `Contract` type.
   >
     <img
       width="300px"
-      src="logo.svg"
+      src="https://github.com/theahaco/ts-config/raw/main/logo.svg"
     />
   </a>
 </div>
