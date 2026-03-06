@@ -49,6 +49,32 @@ export default function Index() {
 						<span className={styles.featureLink}>Browse contracts →</span>
 					</Link>
 				</div>
+
+				<section className={styles.about}>
+					<h2 className={styles.aboutHeading}>What is the Stellar Registry?</h2>
+					<p className={styles.aboutBody}>
+						The Stellar Registry is a naming and discovery system for smart
+						contracts on the Stellar network. Rather than tracking raw contract
+						addresses, it lets developers publish and find{" "}
+						<strong>contracts by name</strong>, making it easier to build on top
+						of existing on-chain logic and standardizing how contracts are
+						deployed and referenced.
+					</p>
+					<p className={styles.aboutBody}>
+						The registry separates two distinct concepts: <strong>WASMs</strong>
+						, the compiled WebAssembly modules that define contract logic and
+						are identified by their content hash, and <strong>Contracts</strong>
+						, which are live deployed instances of those modules.
+					</p>
+					<a
+						href="https://scaffoldstellar.org/docs/registry"
+						target="_blank"
+						rel="noopener noreferrer"
+						className={styles.aboutLink}
+					>
+						Read the full documentation →
+					</a>
+				</section>
 			</main>
 		</>
 	)
