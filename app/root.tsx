@@ -49,12 +49,17 @@ function Header({
 					</NavLink>
 					<NavLink
 						to="/contracts"
-						end
 						className={({ isActive }) =>
 							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
 						}
 					>
 						Contracts
+					</NavLink>
+					<NavLink
+						className={styles.navLink}
+						to="https://scaffoldstellar.org/docs/registry"
+					>
+						Guide
 					</NavLink>
 				</nav>
 				<button
@@ -66,6 +71,34 @@ function Header({
 				</button>
 			</div>
 		</header>
+	)
+}
+
+function ScaffoldBanner() {
+	return (
+		<section className={styles.scaffoldBanner}>
+			<div className={styles.scaffoldBannerInner}>
+				<div className={styles.scaffoldBannerText}>
+					<p className={styles.scaffoldBannerEyebrow}>Developer Toolkit</p>
+					<h2 className={styles.scaffoldBannerTitle}>
+						Start building on Stellar with Scaffold Stellar
+					</h2>
+					<p className={styles.scaffoldBannerDesc}>
+						The fastest way to write, deploy, and test Stellar smart contracts
+						with a modern frontend, built-in tooling, and reusable contract
+						templates.
+					</p>
+				</div>
+				<a
+					href="https://scaffoldstellar.org/"
+					target="_blank"
+					rel="noopener noreferrer"
+					className={styles.scaffoldBannerCta}
+				>
+					Get started →
+				</a>
+			</div>
+		</section>
 	)
 }
 
@@ -265,6 +298,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<head>
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+				<link rel="icon" type="image/png" href="/favicon.png" />
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 				<Meta />
 				<Links />
@@ -299,6 +334,7 @@ export default function App() {
 			<div className={styles.content}>
 				<Outlet />
 			</div>
+			<ScaffoldBanner />
 			<Footer />
 		</QueryClientProvider>
 	)

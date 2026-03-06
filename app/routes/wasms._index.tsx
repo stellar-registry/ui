@@ -12,7 +12,7 @@ import { type Wasm } from "~/lib/types"
 
 export function meta({}: Route.MetaArgs) {
 	return [
-		{ title: "WASMs — Stellar Contract Registry" },
+		{ title: "WASMs — Stellar Registry" },
 		{
 			name: "description",
 			content: "Browse published WASM modules on Stellar",

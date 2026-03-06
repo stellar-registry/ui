@@ -22,7 +22,7 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
 	if (!loaderData) return [{ title: "Contract Not Found" }]
 	return [
 		{
-			title: `${loaderData.contract.contract_name} — Stellar Contract Registry`,
+			title: `${loaderData.contract.contract_name} — Stellar Registry`,
 		},
 	]
 }

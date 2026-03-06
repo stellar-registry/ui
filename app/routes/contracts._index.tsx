@@ -12,7 +12,7 @@ import { type Contract } from "~/lib/types"
 
 export function meta({}: Route.MetaArgs) {
 	return [
-		{ title: "Contracts — Stellar Contract Registry" },
+		{ title: "Contracts — Stellar Registry" },
 		{ name: "description", content: "Browse deployed Stellar smart contracts" },
 	]
 }

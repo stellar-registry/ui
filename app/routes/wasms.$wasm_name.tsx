@@ -20,7 +20,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
 	if (!loaderData) return [{ title: "WASM Not Found" }]
-	return [{ title: `${loaderData.wasm.wasm_name} — Stellar Contract Registry` }]
+	return [{ title: `${loaderData.wasm.wasm_name} — Stellar Registry` }]
 }
 
 export default function WasmDetail({ loaderData }: Route.ComponentProps) {
