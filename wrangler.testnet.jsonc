@@ -1,7 +1,9 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "registry-ui-testnet",
-	"main": "./workers/app.ts",
+	"main": "./build/server/index.js",
+	"no_bundle": true,
+	"assets": { "directory": "./build/client" },
 	"compatibility_date": "2025-04-04",
 	"compatibility_flags": ["nodejs_compat"],
 	"observability": {
