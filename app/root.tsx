@@ -26,18 +26,25 @@ const themeScript = `(function(){try{if(localStorage.getItem('theme')!=='light')
 
 function Header({
 	isDark,
+	network,
 	onToggle,
 }: {
 	isDark: boolean
+	network: string
 	onToggle: () => void
 }) {
 	return (
 		<header className={styles.header}>
 			<div className={styles.headerInner}>
-				<Link to="/" className={styles.headerLogo}>
-					<span className={styles.headerLogoMark}>✦</span>
-					Stellar Registry
-				</Link>
+				<div className={styles.headerLogoWrapper}>
+					<Link to="/" className={styles.headerLogo}>
+						<span className={styles.headerLogoMark}>✦</span>
+						Stellar Registry
+					</Link>
+					{network === "testnet" && (
+						<span className={styles.testnetStamp}>Testnet</span>
+					)}
+				</div>
 				<nav className={styles.nav}>
 					<NavLink
 						to="/wasms"
@@ -62,13 +69,15 @@ function Header({
 						Guide
 					</NavLink>
 				</nav>
-				<button
-					className={styles.themeToggle}
-					onClick={onToggle}
-					aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-				>
-					{isDark ? <Sun size={16} /> : <Moon size={16} />}
-				</button>
+				<div className={styles.headerRight}>
+					<button
+						className={styles.themeToggle}
+						onClick={onToggle}
+						aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+					>
+						{isDark ? <Sun size={16} /> : <Moon size={16} />}
+					</button>
+				</div>
 			</div>
 		</header>
 	)
@@ -338,7 +347,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<Header isDark={isDark} onToggle={toggleTheme} />
+			<Header isDark={isDark} network={network} onToggle={toggleTheme} />
 			<div className={styles.content}>
 				<Outlet />
 			</div>

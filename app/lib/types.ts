@@ -12,11 +12,19 @@ export interface Wasm {
 	wasm_hash: string
 }
 
+export interface WasmVersion {
+	author: string
+	version: string
+	wasm_name: string
+	wasm_hash: string
+}
+
 export interface WasmDetail extends Wasm {
 	id: string
 	transaction_hash: string
 	ledger_sequence: number
 	created_at: string
+	versions: WasmVersion[]
 }
 
 // ── Contracts ─────────────────────────────────────────

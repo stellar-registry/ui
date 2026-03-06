@@ -4,6 +4,17 @@ import { data, useRouteLoaderData } from "react-router"
 import { type Route } from "./+types/contracts.$contract_name"
 import styles from "./contracts.$contract_name.module.css"
 import { Badge } from "~/components/badge"
+import {
+	DetailField,
+	DetailFields,
+	FieldLink,
+	FieldValue,
+} from "~/components/detail-field"
+import {
+	SidebarAlert,
+	SidebarLink,
+	SidebarPanel,
+} from "~/components/detail-sidebar"
 import { getContract } from "~/lib/api"
 import { contractQueryOptions } from "~/lib/queries"
 import { type loader as rootLoader } from "~/root"
@@ -28,7 +39,8 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
 
 export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 	const { contract } = loaderData
-	const { stellarExpertURL } = useRouteLoaderData<typeof rootLoader>("root")
+	const { network, stellarExpertURL } =
+		useRouteLoaderData<typeof rootLoader>("root")
 
 	const { data: detail } = useQuery({
 		...contractQueryOptions(contract.contract_name),
@@ -45,91 +57,75 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 			</div>
 
 			<div className={styles.layout}>
-				<div className={styles.fields}>
-					<div className={styles.field}>
-						<p className={styles.fieldLabel}>Contract ID</p>
-						<a
+				<DetailFields>
+					<DetailField label="Contract ID">
+						<FieldLink
 							href={`${stellarExpertURL}/contract/${detail.contract_id}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={styles.fieldLink}
+							external
 						>
 							{detail.contract_id}
-						</a>
-					</div>
+						</FieldLink>
+					</DetailField>
 
-					<div className={styles.field}>
-						<p className={styles.fieldLabel}>Deployer</p>
-						<a
+					<DetailField label="Deployer">
+						<FieldLink
 							href={`${stellarExpertURL}/account/${detail.deployer}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={styles.fieldLink}
+							external
 						>
 							{detail.deployer}
-						</a>
-					</div>
+						</FieldLink>
+					</DetailField>
 
-					<div className={styles.field}>
-						<p className={styles.fieldLabel}>WASM</p>
-						<a href={`/wasms/${detail.wasm_name}`} className={styles.fieldLink}>
+					<DetailField label="WASM">
+						<FieldLink href={`/wasms/${detail.wasm_name}`}>
 							{detail.wasm_name}@v{detail.version}
-						</a>
-					</div>
+						</FieldLink>
+					</DetailField>
 
-					<div className={styles.field}>
-						<p className={styles.fieldLabel}>Deployed</p>
-						<p className={styles.fieldValue}>{createdAt}</p>
-					</div>
+					<DetailField label="Deployed">
+						<FieldValue>{createdAt}</FieldValue>
+					</DetailField>
 
-					<div className={styles.field}>
-						<p className={styles.fieldLabel}>Ledger</p>
-						<p className={styles.fieldValue}>
-							{detail.ledger_sequence.toLocaleString()}
-						</p>
-					</div>
+					<DetailField label="Ledger">
+						<FieldValue>{detail.ledger_sequence.toLocaleString()}</FieldValue>
+					</DetailField>
 
-					<div className={styles.field}>
-						<p className={styles.fieldLabel}>Transaction</p>
-						<a
+					<DetailField label="Transaction">
+						<FieldLink
 							href={`${stellarExpertURL}/tx/${detail.transaction_hash}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={styles.fieldLink}
+							external
 						>
 							{detail.transaction_hash}
-						</a>
-					</div>
-				</div>
+						</FieldLink>
+					</DetailField>
+				</DetailFields>
 
 				<aside className={styles.sidebar}>
-					<div className={styles.sidebarPanel}>
-						<a
+					{network === "testnet" && (
+						<SidebarAlert
+							href="https://rgstry.xyz"
+							linkText="Switch to Mainnet →"
+						>
+							Testnet data — this contract may not exist on mainnet.
+						</SidebarAlert>
+					)}
+					<SidebarPanel>
+						<SidebarLink
 							href={`${stellarExpertURL}/contract/${detail.contract_id}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={styles.sidebarLink}
+							external
 						>
-							<span>View on Stellar Expert</span>
-							<span className={styles.sidebarLinkArrow}>↗</span>
-						</a>
-						<a
-							href={`/wasms/${detail.wasm_name}`}
-							className={styles.sidebarLink}
-						>
-							<span>View WASM</span>
-							<span className={styles.sidebarLinkArrow}>→</span>
-						</a>
-						<a
+							View on Stellar Expert
+						</SidebarLink>
+						<SidebarLink href={`/wasms/${detail.wasm_name}`}>
+							View WASM
+						</SidebarLink>
+						<SidebarLink
 							href={`${stellarExpertURL}/account/${detail.deployer}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={styles.sidebarLink}
+							external
 						>
-							<span>View Deployer</span>
-							<span className={styles.sidebarLinkArrow}>↗</span>
-						</a>
-					</div>
+							View Deployer
+						</SidebarLink>
+					</SidebarPanel>
 				</aside>
 			</div>
 		</main>

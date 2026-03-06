@@ -1,8 +1,9 @@
-import { Form, Link } from "react-router"
+import { Form, Link, useRouteLoaderData } from "react-router"
 
 import { type Route } from "./+types/_index"
 import styles from "./_index.module.css"
 import { Input } from "~/components/input"
+import { type loader as rootLoader } from "~/root"
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -12,12 +13,19 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Index() {
+	const { network } = useRouteLoaderData<typeof rootLoader>("root")
+
 	return (
 		<>
 			<section className={styles.hero}>
 				<div className={styles.heroInner}>
 					<div className={styles.heroMark}>✦</div>
-					<h1 className={styles.heroHeading}>Stellar Registry</h1>
+					<div className={styles.heroHeadingWrapper}>
+						<h1 className={styles.heroHeading}>Stellar Registry</h1>
+						{network === "testnet" && (
+							<span className={styles.testnetStamp}>Testnet</span>
+						)}
+					</div>
 					<p className={styles.heroSub}>
 						Browse and discover deployed smart contracts on the Stellar network.
 					</p>

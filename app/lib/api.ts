@@ -32,8 +32,14 @@ export async function getWasms(): Promise<Wasm[]> {
 	return data.result
 }
 
-export async function getWasm(wasmName: string): Promise<WasmDetail> {
-	return apiFetch<WasmDetail>(`/wasms/${wasmName}`)
+export async function getWasm(
+	wasmName: string,
+	version?: string,
+): Promise<WasmDetail> {
+	const path = version
+		? `/wasms/${wasmName}/v/${version}`
+		: `/wasms/${wasmName}`
+	return apiFetch<WasmDetail>(path)
 }
 
 export async function checkHealth(): Promise<boolean> {

@@ -30,10 +30,10 @@ export const wasmsQueryOptions = () =>
 		staleTime: STALE_TIME,
 	})
 
-export const wasmQueryOptions = (wasmName: string) =>
+export const wasmQueryOptions = (wasmName: string, version?: string) =>
 	queryOptions({
-		queryKey: ["wasms", wasmName],
-		queryFn: () => getWasm(wasmName),
+		queryKey: ["wasms", wasmName, version],
+		queryFn: () => getWasm(wasmName, version),
 		staleTime: STALE_TIME,
 	})
 

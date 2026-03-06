@@ -32,7 +32,7 @@ function WasmRow({ wasm }: { wasm: Wasm }) {
 				<span className={styles.rowName}>{wasm.wasm_name}</span>
 				<Badge variant="secondary">v{wasm.version}</Badge>
 			</div>
-			<p className={styles.rowSub}>{wasm.author}</p>
+			<p className={styles.rowSub}>{wasm.wasm_hash}</p>
 		</Link>
 	)
 }
@@ -67,7 +67,7 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 			<main className={styles.main}>
 				<div className={styles.toolbar}>
 					<Input
-						placeholder="Search by name or author…"
+						placeholder="Search WASMs by name…"
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
 					/>

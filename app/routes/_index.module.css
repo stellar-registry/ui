@@ -8,13 +8,14 @@
 
 .hero {
 	background-color: var(--color-primary);
-	padding: 5rem 1.5rem 4rem;
+	padding: 5rem 0 4rem;
 	text-align: center;
 }
 
 .heroInner {
 	max-width: 56rem;
 	margin: 0 auto;
+	padding: 0 1.5rem;
 }
 
 .heroMark {
@@ -22,6 +23,30 @@
 	line-height: 1;
 	color: var(--color-primary-foreground);
 	margin-bottom: 1.25rem;
+}
+
+.heroHeadingWrapper {
+	position: relative;
+	display: inline-block;
+}
+
+.testnetStamp {
+	position: absolute;
+	right: -3.9rem;
+	top: -0.9rem;
+	font-size: 1.1rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #dc2626;
+	border: 2.5px solid #dc2626;
+	border-radius: 3px;
+	padding: 0.1875rem 0.5rem;
+	transform: rotate(12deg);
+	line-height: 1.3;
+	pointer-events: none;
+	user-select: none;
+	white-space: nowrap;
 }
 
 .heroHeading {
@@ -46,7 +71,7 @@
 	margin: 2rem auto 0;
 }
 
-/* Input sits on yellow — force white background regardless of theme */
+/* Input sits on yellow — force white background in light mode */
 .heroSearch input {
 	background-color: #ffffff;
 	border-color: rgba(26, 31, 46, 0.15);
@@ -55,6 +80,16 @@
 
 .heroSearch input::placeholder {
 	color: rgba(26, 31, 46, 0.4);
+}
+
+:global(.dark) .heroSearch input {
+	background-color: var(--color-card);
+	border-color: var(--color-input);
+	color: var(--color-foreground);
+}
+
+:global(.dark) .heroSearch input::placeholder {
+	color: var(--color-muted-foreground);
 }
 
 /* ── Feature cards ──────────────────────────────────── */

@@ -68,7 +68,7 @@ export default function ContractsIndex({ loaderData }: Route.ComponentProps) {
 			<main className={styles.main}>
 				<div className={styles.toolbar}>
 					<Input
-						placeholder="Search by name, WASM, or deployer…"
+						placeholder="Search contracts by name or WASM…"
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
 					/>
