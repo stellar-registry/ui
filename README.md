@@ -45,8 +45,8 @@ To deploy manually:
 
 ```bash
 npm run build
-npx wrangler deploy --env testnet
-npx wrangler deploy --env mainnet
+npx wrangler deploy --config wrangler.testnet.jsonc
+npx wrangler deploy --config wrangler.mainnet.jsonc
 ```
 
 ## Project structure

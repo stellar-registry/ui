@@ -1,14 +1,13 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "registry-ui",
+	"name": "registry-ui-testnet",
 	"main": "./workers/app.ts",
 	"compatibility_date": "2025-04-04",
 	"compatibility_flags": ["nodejs_compat"],
 	"observability": {
 		"enabled": true,
 	},
-
-	// Default vars for local development (wrangler dev reads .dev.vars)
+	"routes": [{ "pattern": "testnet.rgstry.xyz", "custom_domain": true }],
 	"vars": {
 		"REGISTRY_API_URL": "https://registry-indexer.fly.dev",
 		"REGISTRY_NETWORK": "testnet",
