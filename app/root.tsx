@@ -24,6 +24,51 @@ import { healthQueryOptions } from "~/lib/queries"
 // Runs before hydration to avoid flash of wrong theme. Defaults to dark.
 const themeScript = `(function(){try{if(localStorage.getItem('theme')!=='light')document.documentElement.classList.add('dark')}catch(e){}})();`
 
+function Header({
+	isDark,
+	onToggle,
+}: {
+	isDark: boolean
+	onToggle: () => void
+}) {
+	return (
+		<header className={styles.header}>
+			<div className={styles.headerInner}>
+				<Link to="/" className={styles.headerLogo}>
+					<span className={styles.headerLogoMark}>✦</span>
+					Stellar Registry
+				</Link>
+				<nav className={styles.nav}>
+					<NavLink
+						to="/wasms"
+						className={({ isActive }) =>
+							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
+						}
+					>
+						WASMs
+					</NavLink>
+					<NavLink
+						to="/contracts"
+						end
+						className={({ isActive }) =>
+							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
+						}
+					>
+						Contracts
+					</NavLink>
+				</nav>
+				<button
+					className={styles.themeToggle}
+					onClick={onToggle}
+					aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+				>
+					{isDark ? <Sun size={16} /> : <Moon size={16} />}
+				</button>
+			</div>
+		</header>
+	)
+}
+
 function Footer() {
 	const { data: healthy } = useQuery({
 		...healthQueryOptions(),
@@ -35,11 +80,11 @@ function Footer() {
 			<div className={styles.footerInner}>
 				<div className={styles.footerCol}>
 					<p className={styles.footerColTitle}>Registry</p>
-					<NavLink to="/contracts" className={styles.footerLink}>
-						Contracts
-					</NavLink>
 					<NavLink to="/wasms" className={styles.footerLink}>
 						WASMs
+					</NavLink>
+					<NavLink to="/contracts" className={styles.footerLink}>
+						Contracts
 					</NavLink>
 				</div>
 
@@ -206,56 +251,11 @@ function Footer() {
 						<span
 							className={`${styles.footerHealthDot} ${healthy ? styles.footerHealthUp : styles.footerHealthDown}`}
 						/>
-						Registry API {healthy ? "operational" : "unavailable"}
+						Registry Status: {healthy ? "Operational" : "Unavailable"}
 					</p>
 				)}
 			</div>
 		</footer>
-	)
-}
-
-function Header({
-	isDark,
-	onToggle,
-}: {
-	isDark: boolean
-	onToggle: () => void
-}) {
-	return (
-		<header className={styles.header}>
-			<div className={styles.headerInner}>
-				<Link to="/" className={styles.headerLogo}>
-					<span className={styles.headerLogoMark}>✦</span>
-					Stellar Registry
-				</Link>
-				<nav className={styles.nav}>
-					<NavLink
-						to="/contracts"
-						end
-						className={({ isActive }) =>
-							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
-						}
-					>
-						Contracts
-					</NavLink>
-					<NavLink
-						to="/wasms"
-						className={({ isActive }) =>
-							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
-						}
-					>
-						WASMs
-					</NavLink>
-				</nav>
-				<button
-					className={styles.themeToggle}
-					onClick={onToggle}
-					aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-				>
-					{isDark ? <Sun size={16} /> : <Moon size={16} />}
-				</button>
-			</div>
-		</header>
 	)
 }
 

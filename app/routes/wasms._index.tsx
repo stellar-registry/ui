@@ -30,7 +30,7 @@ function WasmRow({ wasm }: { wasm: Wasm }) {
 		<Link to={`/wasms/${wasm.wasm_name}`} className={styles.row}>
 			<div className={styles.rowMain}>
 				<span className={styles.rowName}>{wasm.wasm_name}</span>
-				<Badge variant="secondary">{wasm.version}</Badge>
+				<Badge variant="secondary">v{wasm.version}</Badge>
 			</div>
 			<p className={styles.rowSub}>{wasm.author}</p>
 		</Link>

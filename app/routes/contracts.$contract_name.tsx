@@ -73,13 +73,8 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					<div className={styles.field}>
 						<p className={styles.fieldLabel}>WASM</p>
 						<a href={`/wasms/${detail.wasm_name}`} className={styles.fieldLink}>
-							{detail.wasm_name}
+							{detail.wasm_name}@v{detail.version}
 						</a>
-					</div>
-
-					<div className={styles.field}>
-						<p className={styles.fieldLabel}>Version</p>
-						<p className={styles.fieldValue}>{detail.version}</p>
 					</div>
 
 					<div className={styles.field}>

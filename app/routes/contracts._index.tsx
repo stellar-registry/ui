@@ -28,9 +28,11 @@ function ContractRow({ contract }: { contract: Contract }) {
 		<Link to={`/contracts/${contract.contract_name}`} className={styles.row}>
 			<div className={styles.rowMain}>
 				<span className={styles.rowName}>{contract.contract_name}</span>
-				<Badge variant="secondary">{contract.version}</Badge>
+				<Badge variant="secondary">
+					{contract.wasm_name}@v{contract.version}
+				</Badge>
 			</div>
-			<p className={styles.rowSub}>{contract.deployer}</p>
+			<p className={styles.rowSub}>{contract.contract_id}</p>
 		</Link>
 	)
 }
