@@ -5,7 +5,10 @@ React Router v7 and deployed to Cloudflare Workers.
 
 ## Development
 
+Copy the example env file and start the dev server:
+
 ```bash
+cp .dev.vars.example .dev.vars
 npm install
 npm run dev
 ```
@@ -19,7 +22,6 @@ runtime locally (via miniflare), so behaviour matches production.
 | -------------------- | ------------------------------------------------- |
 | `npm run dev`        | Start local dev server                            |
 | `npm run build`      | Production build                                  |
-| `npm run deploy`     | Build and deploy to Cloudflare Workers            |
 | `npm run typecheck`  | Type-check (generates CF + RR types first)        |
 | `npm run lint`       | Run ESLint                                        |
 | `npm run format`     | Run Prettier                                      |
@@ -28,39 +30,54 @@ runtime locally (via miniflare), so behaviour matches production.
 ## Stack
 
 - **React Router v7** (SSR framework mode)
+- **TanStack Query** — client-side caching; loaders provide `initialData`
 - **Cloudflare Workers** — edge-deployed, no cold starts
 - **CSS Modules** — no Tailwind; design tokens in `app/app.css`
 - **shadcn/css** — copy-paste components (badge, button, card, input)
 
 ## Deployment
 
-Merges to `main` automatically deploy via GitHub Actions to a Cloudflare Workers
-subdomain by default. A custom domain can be added under **Workers & Pages →
-registry-ui → Settings → Domains & Routes**.
+Merges to `main` automatically deploy via GitHub Actions to both the `testnet`
+and `mainnet` Cloudflare Workers environments. Environments are defined in
+`wrangler.jsonc`; add domain routes there once custom domains are configured.
+
+To deploy manually:
+
+```bash
+npm run build
+npx wrangler deploy --env testnet
+npx wrangler deploy --env mainnet
+```
 
 ## Project structure
 
 ```
 app/
   routes/
-    _index.tsx                # / — browse contracts
-    contracts.$wasm_hash.tsx  # /contracts/:wasm_hash — contract detail
-  components/                 # Shared UI components
+    _index.tsx                   # / — hero + search + about
+    contracts._index.tsx         # /contracts — contract list with search
+    contracts.$contract_name.tsx # /contracts/:contract_name — contract detail
+    wasms._index.tsx             # /wasms — WASM list with search
+    wasms.$wasm_name.tsx         # /wasms/:wasm_name — WASM detail
+    api.$.tsx                    # /api/* — server-side proxy to backend API
+  components/                    # Shared UI components
   lib/
-    api.ts                    # API client
-    types.ts                  # TypeScript types
-  entry.server.tsx            # SSR entry point
-  root.tsx                    # Root layout
-  app.css                     # Global styles and design tokens
+    api.ts                       # API client (uses /api proxy client-side)
+    queries.ts                   # TanStack Query queryOptions
+    types.ts                     # TypeScript types
+  entry.server.tsx               # SSR entry point
+  root.tsx                       # Root layout
+  app.css                        # Global styles and design tokens
 workers/
-  app.ts                      # Cloudflare Worker entry
-wrangler.jsonc                # Cloudflare config
+  app.ts                         # Cloudflare Worker entry
+wrangler.jsonc                   # Cloudflare config (vars + env per network)
 ```
 
 ## Backend
 
-Data is fetched from a single AWS Lambda endpoint. See `app/lib/api.ts` for the
-base URL and `app/lib/types.ts` for the `Contract` type.
+Data is fetched from the Stellar Registry Indexer API. The base URL is set per
+environment via the `REGISTRY_API_URL` variable in `wrangler.jsonc`. All
+client-side requests are proxied through `/api/*` to avoid CORS issues.
 
 ---
 

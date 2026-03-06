@@ -7,4 +7,29 @@
 	"observability": {
 		"enabled": true,
 	},
+
+	// Default vars (used by `wrangler dev` and as fallback)
+	"vars": {
+		"REGISTRY_API_URL": "https://registry-indexer.fly.dev",
+		"REGISTRY_NETWORK": "testnet",
+	},
+
+	"env": {
+		"testnet": {
+			"name": "registry-ui-testnet",
+			// "routes": [{ "pattern": "testnet.example.com/*", "zone_name": "example.com" }],
+			"vars": {
+				"REGISTRY_API_URL": "https://registry-indexer.fly.dev",
+				"REGISTRY_NETWORK": "testnet",
+			},
+		},
+		"mainnet": {
+			"name": "registry-ui-mainnet",
+			// "routes": [{ "pattern": "example.com/*", "zone_name": "example.com" }],
+			"vars": {
+				"REGISTRY_API_URL": "https://registry-indexer-mainnet.fly.dev",
+				"REGISTRY_NETWORK": "mainnet",
+			},
+		},
+	},
 }

@@ -18,7 +18,16 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run deploy
+      - run: npm run build
+
+      - name: Deploy (testnet)
+        run: npx wrangler deploy --env testnet
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy (mainnet)
+        run: npx wrangler deploy --env mainnet
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

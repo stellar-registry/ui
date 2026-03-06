@@ -1,5 +1,10 @@
 import { createRequestHandler } from "react-router"
 
+interface Env {
+	REGISTRY_API_URL: string
+	REGISTRY_NETWORK: string
+}
+
 declare module "react-router" {
 	export interface AppLoadContext {
 		cloudflare: {

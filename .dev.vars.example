@@ -1,0 +1,14 @@
+# Local development environment variables for Cloudflare Workers (wrangler dev).
+# Copy this file to .dev.vars and fill in the values — it is gitignored.
+# See: https://developers.cloudflare.com/workers/configuration/secrets/#local-development-with-wrangler-dev
+
+# Base URL of the registry indexer API. Wrangler environments for testnet/mainnet
+# are configured in wrangler.jsonc — this file is only used for local development.
+#
+# Testnet:  https://registry-indexer.fly.dev
+# Mainnet:  https://registry-indexer-mainnet.fly.dev  (placeholder — update when live)
+REGISTRY_API_URL=https://registry-indexer.fly.dev
+
+# The Stellar network this instance targets. Used to label the UI.
+# Options: testnet | mainnet
+REGISTRY_NETWORK=testnet
