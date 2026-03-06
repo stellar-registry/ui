@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
-import { data } from "react-router"
+import { data, useRouteLoaderData } from "react-router"
 
 import { type Route } from "./+types/contracts.$contract_name"
 import styles from "./contracts.$contract_name.module.css"
 import { Badge } from "~/components/badge"
 import { getContract } from "~/lib/api"
 import { contractQueryOptions } from "~/lib/queries"
-
-const STELLAR_EXPERT = "https://stellar.expert/explorer/public"
+import { type loader as rootLoader } from "~/root"
 
 export async function loader({ params }: Route.LoaderArgs) {
 	try {
@@ -29,6 +28,7 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
 
 export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 	const { contract } = loaderData
+	const { stellarExpertURL } = useRouteLoaderData<typeof rootLoader>("root")
 
 	const { data: detail } = useQuery({
 		...contractQueryOptions(contract.contract_name),
@@ -49,7 +49,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					<div className={styles.field}>
 						<p className={styles.fieldLabel}>Contract ID</p>
 						<a
-							href={`${STELLAR_EXPERT}/contract/${detail.contract_id}`}
+							href={`${stellarExpertURL}/contract/${detail.contract_id}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.fieldLink}
@@ -61,7 +61,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					<div className={styles.field}>
 						<p className={styles.fieldLabel}>Deployer</p>
 						<a
-							href={`${STELLAR_EXPERT}/account/${detail.deployer}`}
+							href={`${stellarExpertURL}/account/${detail.deployer}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.fieldLink}
@@ -92,7 +92,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					<div className={styles.field}>
 						<p className={styles.fieldLabel}>Transaction</p>
 						<a
-							href={`${STELLAR_EXPERT}/tx/${detail.transaction_hash}`}
+							href={`${stellarExpertURL}/tx/${detail.transaction_hash}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.fieldLink}
@@ -105,7 +105,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 				<aside className={styles.sidebar}>
 					<div className={styles.sidebarPanel}>
 						<a
-							href={`${STELLAR_EXPERT}/contract/${detail.contract_id}`}
+							href={`${stellarExpertURL}/contract/${detail.contract_id}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.sidebarLink}
@@ -121,7 +121,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 							<span className={styles.sidebarLinkArrow}>→</span>
 						</a>
 						<a
-							href={`${STELLAR_EXPERT}/account/${detail.deployer}`}
+							href={`${stellarExpertURL}/account/${detail.deployer}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.sidebarLink}

@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
-import { data } from "react-router"
+import { data, useRouteLoaderData } from "react-router"
 
 import { type Route } from "./+types/wasms.$wasm_name"
 import styles from "./wasms.$wasm_name.module.css"
 import { Badge } from "~/components/badge"
 import { getWasm } from "~/lib/api"
 import { wasmQueryOptions } from "~/lib/queries"
-
-const STELLAR_EXPERT = "https://stellar.expert/explorer/public"
+import { type loader as rootLoader } from "~/root"
 
 export async function loader({ params }: Route.LoaderArgs) {
 	try {
@@ -25,6 +24,7 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
 
 export default function WasmDetail({ loaderData }: Route.ComponentProps) {
 	const { wasm } = loaderData
+	const { stellarExpertURL } = useRouteLoaderData<typeof rootLoader>("root")
 
 	const { data: detail } = useQuery({
 		...wasmQueryOptions(wasm.wasm_name),
@@ -45,7 +45,7 @@ export default function WasmDetail({ loaderData }: Route.ComponentProps) {
 					<div className={styles.field}>
 						<p className={styles.fieldLabel}>WASM Hash</p>
 						<a
-							href={`${STELLAR_EXPERT}/contract/${detail.wasm_hash}`}
+							href={`${stellarExpertURL}/contract/${detail.wasm_hash}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.fieldLink}
@@ -57,7 +57,7 @@ export default function WasmDetail({ loaderData }: Route.ComponentProps) {
 					<div className={styles.field}>
 						<p className={styles.fieldLabel}>Author</p>
 						<a
-							href={`${STELLAR_EXPERT}/account/${detail.author}`}
+							href={`${stellarExpertURL}/account/${detail.author}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.fieldLink}
@@ -86,7 +86,7 @@ export default function WasmDetail({ loaderData }: Route.ComponentProps) {
 					<div className={styles.field}>
 						<p className={styles.fieldLabel}>Transaction</p>
 						<a
-							href={`${STELLAR_EXPERT}/tx/${detail.transaction_hash}`}
+							href={`${stellarExpertURL}/tx/${detail.transaction_hash}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.fieldLink}
@@ -99,7 +99,7 @@ export default function WasmDetail({ loaderData }: Route.ComponentProps) {
 				<aside className={styles.sidebar}>
 					<div className={styles.sidebarPanel}>
 						<a
-							href={`${STELLAR_EXPERT}/contract/${detail.wasm_hash}`}
+							href={`${stellarExpertURL}/contract/${detail.wasm_hash}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.sidebarLink}
@@ -108,7 +108,7 @@ export default function WasmDetail({ loaderData }: Route.ComponentProps) {
 							<span className={styles.sidebarLinkArrow}>↗</span>
 						</a>
 						<a
-							href={`${STELLAR_EXPERT}/account/${detail.author}`}
+							href={`${stellarExpertURL}/account/${detail.author}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={styles.sidebarLink}

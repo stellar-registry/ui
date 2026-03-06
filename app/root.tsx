@@ -313,7 +313,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	)
 }
 
-export default function App() {
+export async function loader({ context }: Route.LoaderArgs) {
+	const network = context.cloudflare.env.REGISTRY_NETWORK
+	const stellarExpertURL = `https://stellar.expert/explorer/${network === "testnet" ? "testnet" : "public"}`
+
+	return { network, stellarExpertURL }
+}
+
+export default function App({ loaderData }: Route.ComponentProps) {
+	const { network } = loaderData
 	const [isDark, setIsDark] = useState(true)
 	const [queryClient] = useState(() => new QueryClient())
 
