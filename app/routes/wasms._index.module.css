@@ -1,0 +1,90 @@
+/* ── Page header ─────────────────────────────────────── */
+
+.pageHeader {
+	background-color: var(--color-card);
+	border-bottom: 1px solid var(--color-border);
+	padding: 2.5rem 1.5rem;
+}
+
+.pageHeaderInner {
+	max-width: 56rem;
+	margin: 0 auto;
+}
+
+.pageTitle {
+	font-family: var(--font-display);
+	font-size: 2rem;
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	margin: 0 0 0.5rem;
+}
+
+.pageSub {
+	font-size: 1rem;
+	color: var(--color-muted-foreground);
+	margin: 0;
+}
+
+/* ── Main ────────────────────────────────────────────── */
+
+.main {
+	max-width: 56rem;
+	margin: 0 auto;
+	padding: 0 1.5rem 4rem;
+}
+
+.toolbar {
+	padding: 1.5rem 0;
+}
+
+/* ── List ────────────────────────────────────────────── */
+
+.list {
+	border-top: 1px solid var(--color-border);
+}
+
+.row {
+	display: block;
+	padding: 1rem 0.75rem;
+	margin: 0 -0.75rem;
+	border-bottom: 1px solid var(--color-border);
+	text-decoration: none;
+	color: inherit;
+	border-radius: var(--radius-sm);
+	transition: background-color var(--default-transition-duration)
+		var(--default-transition-timing-function);
+}
+
+.row:hover {
+	background-color: var(--color-accent);
+}
+
+.rowMain {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.75rem;
+	margin-bottom: 0.25rem;
+}
+
+.rowName {
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--color-foreground);
+}
+
+.rowSub {
+	font-family: monospace;
+	font-size: 0.8125rem;
+	color: var(--color-muted-foreground);
+	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.emptyState {
+	padding: 2rem 0;
+	color: var(--color-muted-foreground);
+	text-align: center;
+}

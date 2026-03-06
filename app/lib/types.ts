@@ -1,21 +1,37 @@
-export interface Contract {
-	author: string // Stellar G... address
+export interface ListResponse<T> {
+	result: T[]
+	next: string | null
+}
+
+// ── WASMs ─────────────────────────────────────────────
+
+export interface Wasm {
+	author: string
 	version: string
 	wasm_name: string
 	wasm_hash: string
-	// TODO — add when backend supports:
-	// description?: string
-	// source_url?: string
-	// contract_id?: string   // deployed C... address
-	// network?: "mainnet" | "testnet" | "futurenet"
-	// deployed_at?: string   // ISO timestamp
-	// license?: string
-	// tags?: string[]
-	// readme?: string
-	// verified?: boolean
 }
 
-export interface ContractListResponse {
-	result: Contract[]
-	next: string | null
+export interface WasmDetail extends Wasm {
+	id: string
+	transaction_hash: string
+	ledger_sequence: number
+	created_at: string
+}
+
+// ── Contracts ─────────────────────────────────────────
+
+export interface Contract {
+	contract_id: string
+	contract_name: string
+	deployer: string
+	version: string
+	wasm_name: string
+}
+
+export interface ContractDetail extends Contract {
+	id: string
+	transaction_hash: string
+	ledger_sequence: number
+	created_at: string
 }

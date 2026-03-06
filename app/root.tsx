@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Moon, Sun } from "lucide-react"
 import { useEffect, useState } from "react"
 import {
@@ -5,6 +6,7 @@ import {
 	Link,
 	Links,
 	Meta,
+	NavLink,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
@@ -31,6 +33,25 @@ function Header({
 					<span className={styles.headerLogoMark}>✦</span>
 					Stellar Registry
 				</Link>
+				<nav className={styles.nav}>
+					<NavLink
+						to="/contracts"
+						end
+						className={({ isActive }) =>
+							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
+						}
+					>
+						Contracts
+					</NavLink>
+					<NavLink
+						to="/wasms"
+						className={({ isActive }) =>
+							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
+						}
+					>
+						WASMs
+					</NavLink>
+				</nav>
 				<button
 					className={styles.themeToggle}
 					onClick={onToggle}
@@ -64,6 +85,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
 	const [isDark, setIsDark] = useState(true)
+	const [queryClient] = useState(() => new QueryClient())
 
 	useEffect(() => {
 		setIsDark(document.documentElement.classList.contains("dark"))
@@ -77,10 +99,10 @@ export default function App() {
 	}
 
 	return (
-		<>
+		<QueryClientProvider client={queryClient}>
 			<Header isDark={isDark} onToggle={toggleTheme} />
 			<Outlet />
-		</>
+		</QueryClientProvider>
 	)
 }
 

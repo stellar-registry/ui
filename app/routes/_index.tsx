@@ -1,11 +1,8 @@
-import { useState } from "react"
-import { Link } from "react-router"
+import { Form, Link } from "react-router"
+
 import { type Route } from "./+types/_index"
 import styles from "./_index.module.css"
-import { Badge } from "~/components/badge"
 import { Input } from "~/components/input"
-import { getContracts } from "~/lib/api"
-import { type Contract } from "~/lib/types"
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -14,38 +11,7 @@ export function meta({}: Route.MetaArgs) {
 	]
 }
 
-export async function loader() {
-	const contracts = await getContracts()
-	return { contracts }
-}
-
-function ContractRow({ contract }: { contract: Contract }) {
-	return (
-		<Link
-			to={`/contracts/${contract.wasm_hash}`}
-			className={styles.contractRow}
-		>
-			<div className={styles.contractRowMain}>
-				<span className={styles.contractName}>{contract.wasm_name}</span>
-				<Badge variant="secondary">{contract.version}</Badge>
-			</div>
-			<p className={styles.contractAuthor}>{contract.author}</p>
-		</Link>
-	)
-}
-
-export default function Index({ loaderData }: Route.ComponentProps) {
-	const { contracts } = loaderData
-	const [query, setQuery] = useState("")
-
-	const filtered = query
-		? contracts.filter(
-				(c) =>
-					c.wasm_name.toLowerCase().includes(query.toLowerCase()) ||
-					c.author.toLowerCase().includes(query.toLowerCase()),
-			)
-		: contracts
-
+export default function Index() {
 	return (
 		<>
 			<section className={styles.hero}>
@@ -55,26 +21,37 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 					<p className={styles.heroSub}>
 						Browse and discover deployed smart contracts on the Stellar network.
 					</p>
-					<div className={styles.heroSearch}>
+					<Form action="/contracts" method="get" className={styles.heroSearch}>
 						<Input
-							placeholder="Search by name or author address…"
-							value={query}
-							onChange={(e) => setQuery(e.target.value)}
+							name="q"
+							placeholder="Search contracts by name, WASM, or deployer…"
 						/>
-					</div>
+					</Form>
 				</div>
 			</section>
 
 			<main className={styles.main}>
-				{filtered.length === 0 ? (
-					<p className={styles.emptyState}>No contracts found.</p>
-				) : (
-					<div className={styles.list}>
-						{filtered.map((contract) => (
-							<ContractRow key={contract.wasm_hash} contract={contract} />
-						))}
-					</div>
-				)}
+				<div className={styles.features}>
+					<Link to="/contracts" className={styles.featureCard}>
+						<h2 className={styles.featureTitle}>Contracts</h2>
+						<p className={styles.featureDesc}>
+							Browse deployed contract instances. Each contract is a live
+							on-chain deployment with a unique address, linked to a published
+							WASM module.
+						</p>
+						<span className={styles.featureLink}>Browse contracts →</span>
+					</Link>
+
+					<Link to="/wasms" className={styles.featureCard}>
+						<h2 className={styles.featureTitle}>WASMs</h2>
+						<p className={styles.featureDesc}>
+							Explore published WebAssembly modules. WASMs define the logic
+							shared across contract deployments and are identified by their
+							content hash.
+						</p>
+						<span className={styles.featureLink}>Explore WASMs →</span>
+					</Link>
+				</div>
 			</main>
 		</>
 	)

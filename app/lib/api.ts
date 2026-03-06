@@ -1,19 +1,40 @@
-import { type Contract, type ContractListResponse } from "./types"
+import {
+	type Contract,
+	type ContractDetail,
+	type ListResponse,
+	type Wasm,
+	type WasmDetail,
+} from "./types"
 
-const API_BASE =
-	"https://1q735crigc.execute-api.us-east-2.amazonaws.com/prod/registry"
+const API_BASE = "https://registry-indexer.fly.dev"
 
-export async function getContracts(cursor?: string): Promise<Contract[]> {
-	const url = new URL(`${API_BASE}/contracts`)
-	if (cursor) url.searchParams.set("cursor", cursor)
+async function apiFetch<T>(path: string): Promise<T> {
+	const res = await fetch(`${API_BASE}${path}`)
+	if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`)
+	return res.json() as Promise<T>
+}
 
-	const res = await fetch(url.toString())
-	if (!res.ok) {
-		throw new Error(
-			`Failed to fetch contracts: ${res.status} ${res.statusText}`,
-		)
-	}
-
-	const data: ContractListResponse = await res.json()
+export async function getContracts(): Promise<Contract[]> {
+	const data = await apiFetch<ListResponse<Contract>>("/contracts")
 	return data.result
+}
+
+export async function getContract(
+	contractName: string,
+): Promise<ContractDetail> {
+	return apiFetch<ContractDetail>(`/contracts/${contractName}`)
+}
+
+export async function getWasms(): Promise<Wasm[]> {
+	const data = await apiFetch<ListResponse<Wasm>>("/wasms")
+	return data.result
+}
+
+export async function getWasm(wasmName: string): Promise<WasmDetail> {
+	return apiFetch<WasmDetail>(`/wasms/${wasmName}`)
+}
+
+export async function checkHealth(): Promise<boolean> {
+	const res = await fetch(`${API_BASE}/health`)
+	return res.ok
 }
