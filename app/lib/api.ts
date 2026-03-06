@@ -6,7 +6,9 @@ import {
 	type WasmDetail,
 } from "./types"
 
-const API_BASE = "https://registry-indexer.fly.dev"
+const API_BASE = import.meta.env.SSR
+	? "https://registry-indexer.fly.dev"
+	: "/api"
 
 async function apiFetch<T>(path: string): Promise<T> {
 	const res = await fetch(`${API_BASE}${path}`)

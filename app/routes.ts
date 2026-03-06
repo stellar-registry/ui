@@ -6,5 +6,5 @@ export default [
 	route("contracts/:contract_name", "routes/contracts.$contract_name.tsx"),
 	route("wasms", "routes/wasms._index.tsx"),
 	route("wasms/:wasm_name", "routes/wasms.$wasm_name.tsx"),
-	route("health", "routes/health.tsx"),
+	route("api/*", "routes/api.$.tsx"),
 ] satisfies RouteConfig

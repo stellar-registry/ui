@@ -87,6 +87,129 @@
 	color: var(--color-foreground);
 }
 
+/* ── Content ─────────────────────────────────────────── */
+
+.content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+/* ── Footer ──────────────────────────────────────────── */
+
+.footer {
+	border-top: 1px solid var(--color-border);
+	background-color: var(--color-card);
+	margin-top: auto;
+}
+
+.footerInner {
+	max-width: 56rem;
+	margin: 0 auto;
+	padding: 3rem 1.5rem 2rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr 2fr;
+	gap: 2.5rem;
+}
+
+@media (max-width: 640px) {
+	.footerInner {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+.footerCol {
+	display: flex;
+	flex-direction: column;
+	gap: 0.625rem;
+}
+
+.footerColTitle {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--color-muted-foreground);
+	margin: 0 0 0.25rem;
+}
+
+.footerLink {
+	font-size: 0.875rem;
+	color: var(--color-foreground);
+	text-decoration: none;
+	opacity: 0.75;
+	transition: opacity var(--default-transition-duration)
+		var(--default-transition-timing-function);
+}
+
+.footerLink:hover {
+	opacity: 1;
+}
+
+.footerBrand {
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: var(--color-foreground);
+	text-decoration: none;
+}
+
+.footerBrand:hover {
+	color: var(--color-link);
+}
+
+.footerBrandLogo {
+	display: block;
+	width: 7.5rem;
+	height: auto;
+}
+
+.footerBrandDesc {
+	font-size: 0.875rem;
+	line-height: 1.6;
+	color: var(--color-muted-foreground);
+	margin: 0.25rem 0 0;
+}
+
+.footerBottom {
+	max-width: 56rem;
+	margin: 0 auto;
+	padding: 1rem 1.5rem;
+	border-top: 1px solid var(--color-border);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.footerCopy {
+	font-size: 0.8125rem;
+	color: var(--color-muted-foreground);
+	margin: 0;
+}
+
+.footerHealth {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: 0.8125rem;
+	color: var(--color-muted-foreground);
+	margin: 0;
+}
+
+.footerHealthDot {
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.footerHealthUp {
+	background-color: #3fb950;
+}
+
+.footerHealthDown {
+	background-color: var(--color-destructive);
+}
+
 /* ── Error boundary ──────────────────────────────────── */
 
 .errorMain {
