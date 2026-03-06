@@ -37,17 +37,10 @@ runtime locally (via miniflare), so behaviour matches production.
 
 ## Deployment
 
-Merges to `main` automatically deploy via GitHub Actions to both the `testnet`
-and `mainnet` Cloudflare Workers environments. Environments are defined in
-`wrangler.jsonc`; add domain routes there once custom domains are configured.
-
-To deploy manually:
-
-```bash
-npm run build
-npx wrangler deploy --config wrangler.testnet.jsonc
-npx wrangler deploy --config wrangler.mainnet.jsonc
-```
+Merges to `main` automatically deploy via GitHub Actions. A single worker serves
+all environments — the network config (API URL, network label) is derived from
+the request hostname at runtime. Custom domains are configured once in the
+Cloudflare dashboard.
 
 ## Project structure
 
