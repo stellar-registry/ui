@@ -17,7 +17,7 @@
 	"env": {
 		"testnet": {
 			"name": "registry-ui-testnet",
-			// "routes": [{ "pattern": "testnet.example.com/*", "zone_name": "example.com" }],
+			"routes": [{ "pattern": "testnet.rgstry.xyz", "custom_domain": true }],
 			"vars": {
 				"REGISTRY_API_URL": "https://registry-indexer.fly.dev",
 				"REGISTRY_NETWORK": "testnet",
@@ -25,7 +25,10 @@
 		},
 		"mainnet": {
 			"name": "registry-ui-mainnet",
-			// "routes": [{ "pattern": "example.com/*", "zone_name": "example.com" }],
+			"routes": [
+				{ "pattern": "mainnet.rgstry.xyz", "custom_domain": true },
+				{ "pattern": "rgstry.xyz", "custom_domain": true },
+			],
 			"vars": {
 				"REGISTRY_API_URL": "https://registry-indexer-mainnet.fly.dev",
 				"REGISTRY_NETWORK": "mainnet",
