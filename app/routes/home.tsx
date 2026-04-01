@@ -1,7 +1,7 @@
 import { Form, Link, useRouteLoaderData } from "react-router"
 
-import { type Route } from "./+types/_index"
-import styles from "./_index.module.css"
+import { type Route } from "./+types/home"
+import styles from "./home.module.css"
 import { Input } from "~/components/input"
 import { type loader as rootLoader } from "~/root"
 

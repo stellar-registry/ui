@@ -12,7 +12,7 @@ const STALE_TIME = 60_000
 export const contractsQueryOptions = () =>
 	queryOptions({
 		queryKey: ["contracts"],
-		queryFn: getContracts,
+		queryFn: () => getContracts(),
 		staleTime: STALE_TIME,
 	})
 
@@ -26,7 +26,7 @@ export const contractQueryOptions = (contractName: string) =>
 export const wasmsQueryOptions = () =>
 	queryOptions({
 		queryKey: ["wasms"],
-		queryFn: getWasms,
+		queryFn: () => getWasms(),
 		staleTime: STALE_TIME,
 	})
 
@@ -40,6 +40,6 @@ export const wasmQueryOptions = (wasmName: string, version?: string) =>
 export const healthQueryOptions = () =>
 	queryOptions({
 		queryKey: ["health"],
-		queryFn: checkHealth,
+		queryFn: () => checkHealth(),
 		staleTime: 30_000,
 	})

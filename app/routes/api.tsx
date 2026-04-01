@@ -1,4 +1,4 @@
-import { type Route } from "./+types/api.$"
+import { type Route } from "./+types/api"
 
 export async function loader({ params, request, context }: Route.LoaderArgs) {
 	const backend = context.cloudflare.env.REGISTRY_API_URL

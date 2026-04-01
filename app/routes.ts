@@ -1,14 +1,39 @@
-import { type RouteConfig, index, route } from "@react-router/dev/routes"
+import {
+	type RouteConfig,
+	index,
+	prefix,
+	route,
+} from "@react-router/dev/routes"
+
+const wasmChildren = (prefix: string) =>
+	[
+		index("routes/wasmDetails.tsx", { id: `${prefix}Details` }),
+		route("versions", "routes/wasmVersions.tsx", { id: `${prefix}Versions` }),
+		route("v/:version", "routes/wasmDetails.tsx", {
+			id: `${prefix}VersionDetail`,
+		}),
+	] satisfies RouteConfig
 
 export default [
-	index("routes/_index.tsx"),
-	route("contracts", "routes/contracts._index.tsx"),
-	route("contracts/:contract_name", "routes/contracts.$contract_name.tsx"),
-	route("wasms", "routes/wasms._index.tsx"),
-	route("wasms/:wasm_name", "routes/wasms.$wasm_name.tsx", { id: "wasm" }, [
-		index("routes/wasms.$wasm_name._index.tsx"),
-		route("versions", "routes/wasms.$wasm_name.versions.tsx"),
-		route("v/:version", "routes/wasms.$wasm_name.v.$version.tsx"),
+	index("routes/home.tsx"),
+	...prefix("contracts", [
+		index("routes/contracts.tsx"),
+		route(":name", "routes/contractDetails.tsx"),
 	]),
-	route("api/*", "routes/api.$.tsx"),
+	...prefix("wasms", [
+		index("routes/wasms.tsx"),
+		route(
+			"unverified/:name",
+			"routes/wasmOverview.tsx",
+			{ id: "unverifiedWasm" },
+			wasmChildren("unverifiedWasm"),
+		),
+		route(
+			":name",
+			"routes/wasmOverview.tsx",
+			{ id: "wasm" },
+			wasmChildren("wasm"),
+		),
+	]),
+	route("api/*", "routes/api.tsx"),
 ] satisfies RouteConfig

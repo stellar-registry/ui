@@ -1,8 +1,14 @@
-.DS_Store
-.env
+# Env Vars for Cloudflare Worker
 .dev.vars
-/node_modules/
+
+# Wrangler local dev state and build artifacts
+.wrangler/
 
 # React Router
 /.react-router/
 /build/
+
+# Other
+.DS_Store
+/node_modules/
+.log

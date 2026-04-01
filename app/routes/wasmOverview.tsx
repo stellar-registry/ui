@@ -1,0 +1,91 @@
+import { data, Outlet, useRouteLoaderData } from "react-router"
+import { type Route } from "./+types/wasmOverview"
+import styles from "./wasmOverview.module.css"
+import { Badge } from "~/components/badge"
+import {
+	SidebarAlert,
+	SidebarLink,
+	SidebarPanel,
+} from "~/components/detail-sidebar"
+import { getWasm } from "~/lib/api"
+import { fullName, isLatestWasm } from "~/lib/util"
+
+export async function loader({ request, params, context }: Route.LoaderArgs) {
+	const { name, version } = params
+	// Derive the channel from URL segments between /wasms/ and name.
+	// e.g. /wasms/registry → channel=undefined
+	// and  /wasms/unverified/registry → channel="unverified"
+	const pathname = new URL(request.url).pathname
+	const channel = pathname.match(/^\/wasms\/(unverified)\//)?.[1]
+	try {
+		const wasm = await getWasm(
+			name,
+			channel,
+			version,
+			context.cloudflare.env.REGISTRY_API_URL,
+		)
+		return { wasm, name, channel, version, fullName: fullName(wasm) }
+	} catch (e) {
+		console.error(e)
+		throw data("WASM not found", { status: 404 })
+	}
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+	if (!loaderData) return [{ title: "WASM Not Found" }]
+	return [{ title: `${loaderData.wasm.wasm_name} — Stellar Registry` }]
+}
+
+export default function WasmOverview({ loaderData }: Route.ComponentProps) {
+	const { wasm, fullName, version } = loaderData
+	const { network, stellarExpertURL } = useRouteLoaderData("root")
+	const displayVersion = version ?? wasm.wasm_version
+
+	console.log({ wasm, version, displayVersion })
+
+	return (
+		<main className={styles.main}>
+			<div className={styles.titleRow}>
+				<h1 className={styles.title}>{fullName}</h1>
+				<Badge variant="secondary">{displayVersion}</Badge>
+			</div>
+
+			<div className={styles.layout}>
+				<Outlet context={loaderData} />
+
+				<aside className={styles.sidebar}>
+					{network === "testnet" && (
+						<SidebarAlert
+							href="https://rgstry.xyz"
+							linkText="Switch to Mainnet →"
+						>
+							Testnet data — this WASM may not exist on mainnet.
+						</SidebarAlert>
+					)}
+					<SidebarPanel>
+						{version && !isLatestWasm(wasm) && (
+							<SidebarLink href={`/wasms/${fullName}`} data-highlight>
+								View Latest Version
+							</SidebarLink>
+						)}
+						<SidebarLink href={`/wasms/${fullName}/versions`}>
+							All Versions
+						</SidebarLink>
+						<SidebarLink
+							href={`${stellarExpertURL}/contract/${wasm.wasm_hash}`}
+							external
+						>
+							View on Stellar Expert
+						</SidebarLink>
+						<SidebarLink
+							href={`${stellarExpertURL}/account/${wasm.author}`}
+							external
+						>
+							View Author
+						</SidebarLink>
+					</SidebarPanel>
+				</aside>
+			</div>
+		</main>
+	)
+}

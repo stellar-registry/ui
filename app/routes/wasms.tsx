@@ -2,13 +2,14 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router"
 
-import { type Route } from "./+types/wasms._index"
-import styles from "./wasms._index.module.css"
+import { type Route } from "./+types/wasms"
+import styles from "./wasms.module.css"
 import { Badge } from "~/components/badge"
 import { Input } from "~/components/input"
 import { getWasms } from "~/lib/api"
 import { wasmsQueryOptions } from "~/lib/queries"
 import { type Wasm } from "~/lib/types"
+import { fullName } from "~/lib/util"
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -20,17 +21,18 @@ export function meta({}: Route.MetaArgs) {
 	]
 }
 
-export async function loader() {
-	const wasms = await getWasms()
+export async function loader({ context }: Route.LoaderArgs) {
+	const wasms = await getWasms(context.cloudflare.env.REGISTRY_API_URL)
 	return { wasms }
 }
 
 function WasmRow({ wasm }: { wasm: Wasm }) {
+	const name = fullName(wasm)
 	return (
-		<Link to={`/wasms/${wasm.wasm_name}`} className={styles.row}>
+		<Link to={`/wasms/${name}`} className={styles.row}>
 			<div className={styles.rowMain}>
-				<span className={styles.rowName}>{wasm.wasm_name}</span>
-				<Badge variant="secondary">v{wasm.version}</Badge>
+				<span className={styles.rowName}>{name}</span>
+				<Badge variant="secondary">v{wasm.wasm_version}</Badge>
 			</div>
 			<p className={styles.rowSub}>{wasm.wasm_hash}</p>
 		</Link>

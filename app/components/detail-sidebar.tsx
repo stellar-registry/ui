@@ -27,6 +27,7 @@ function SidebarLink({
 	href,
 	external,
 	children,
+	...props
 }: {
 	href: string
 	external?: boolean
@@ -37,6 +38,7 @@ function SidebarLink({
 			href={href}
 			className={styles.sidebarLink}
 			{...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+			{...props}
 		>
 			<span>{children}</span>
 			<span className={styles.sidebarLinkArrow}>{external ? "↗" : "→"}</span>

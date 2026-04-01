@@ -5,9 +5,9 @@
 # Base URL of the registry indexer API. Wrangler environments for testnet/mainnet
 # are configured in wrangler.jsonc — this file is only used for local development.
 #
-# Testnet:  https://registry-indexer.fly.dev
-# Mainnet:  https://registry-indexer-mainnet.fly.dev  (placeholder — update when live)
-REGISTRY_API_URL=https://registry-indexer.fly.dev
+# Testnet:  https://registry-indexer.fly.dev/v1
+# Mainnet:  https://registry-indexer-mainnet.fly.dev/v1  (placeholder — update when live)
+REGISTRY_API_URL=https://registry-indexer.fly.dev/v1
 
 # The Stellar network this instance targets. Used to label the UI.
 # Options: testnet | mainnet

@@ -58,3 +58,8 @@
 	color: var(--color-muted-foreground);
 	font-size: 0.75rem;
 }
+
+.sidebarLink[data-highlight] {
+	background-color: var(--color-primary);
+	color: var(--color-primary-foreground);
+}

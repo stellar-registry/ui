@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router"
 
-import { type Route } from "./+types/contracts._index"
-import styles from "./contracts._index.module.css"
+import { type Route } from "./+types/contracts"
+import styles from "./contracts.module.css"
 import { Badge } from "~/components/badge"
 import { Input } from "~/components/input"
 import { getContracts } from "~/lib/api"
@@ -17,9 +17,9 @@ export function meta({}: Route.MetaArgs) {
 	]
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
 	const q = new URL(request.url).searchParams.get("q") ?? ""
-	const contracts = await getContracts()
+	const contracts = await getContracts(context.cloudflare.env.REGISTRY_API_URL)
 	return { contracts, q }
 }
 

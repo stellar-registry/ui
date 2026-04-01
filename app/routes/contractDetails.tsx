@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import { data, useRouteLoaderData } from "react-router"
 
-import { type Route } from "./+types/contracts.$contract_name"
-import styles from "./contracts.$contract_name.module.css"
+import { type Route } from "./+types/contractDetails"
+import styles from "./contractDetails.module.css"
 import { Badge } from "~/components/badge"
 import {
 	DetailField,
@@ -19,9 +19,12 @@ import { getContract } from "~/lib/api"
 import { contractQueryOptions } from "~/lib/queries"
 import { type loader as rootLoader } from "~/root"
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, context }: Route.LoaderArgs) {
 	try {
-		const contract = await getContract(params.contract_name)
+		const contract = await getContract(
+			params.name,
+			context.cloudflare.env.REGISTRY_API_URL,
+		)
 		return { contract }
 	} catch {
 		throw data("Contract not found", { status: 404 })

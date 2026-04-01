@@ -6,43 +6,54 @@ import {
 	type WasmDetail,
 } from "./types"
 
-const API_BASE = import.meta.env.SSR
-	? "https://registry-indexer.fly.dev"
-	: "/api"
-
-async function apiFetch<T>(path: string): Promise<T> {
-	const res = await fetch(`${API_BASE}${path}`)
+async function apiFetch<T>(path: string, apiUrl?: string): Promise<T> {
+	// Server-side: use the runtime API URL passed from load context (Cloudflare env).
+	// Client-side: route through the /api proxy so all browser requests are same-origin.
+	const apiBase = import.meta.env.SSR ? apiUrl : "/api"
+	const res = await fetch(`${apiBase}${path}`)
 	if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`)
 	return res.json() as Promise<T>
 }
 
-export async function getContracts(): Promise<Contract[]> {
-	const data = await apiFetch<ListResponse<Contract>>("/contracts")
+export async function getContracts(apiUrl?: string): Promise<Contract[]> {
+	const data = await apiFetch<ListResponse<Contract>>("/contracts", apiUrl)
 	return data.result
 }
 
-export async function getContract(
-	contractName: string,
-): Promise<ContractDetail> {
-	return apiFetch<ContractDetail>(`/contracts/${contractName}`)
+function prefixName(name: string, channel?: string) {
+	return channel ? `${channel}/${name}` : name
 }
 
-export async function getWasms(): Promise<Wasm[]> {
-	const data = await apiFetch<ListResponse<Wasm>>("/wasms")
+export async function getContract(
+	name: string,
+	channel?: string,
+	apiUrl?: string,
+): Promise<ContractDetail> {
+	return apiFetch<ContractDetail>(
+		`/contracts/${prefixName(name, channel)}`,
+		apiUrl,
+	)
+}
+
+export async function getWasms(apiUrl?: string): Promise<Wasm[]> {
+	const data = await apiFetch<ListResponse<Wasm>>("/wasms", apiUrl)
 	return data.result
 }
 
 export async function getWasm(
-	wasmName: string,
+	name: string,
+	channel?: string,
 	version?: string,
+	apiUrl?: string,
 ): Promise<WasmDetail> {
 	const path = version
-		? `/wasms/${wasmName}/v/${version}`
-		: `/wasms/${wasmName}`
-	return apiFetch<WasmDetail>(path)
+		? `/wasms/${prefixName(name, channel)}/v/${version}`
+		: `/wasms/${prefixName(name, channel)}`
+	return apiFetch<WasmDetail>(path, apiUrl)
 }
 
-export async function checkHealth(): Promise<boolean> {
-	const res = await fetch(`${API_BASE}/health`)
-	return res.ok
+export function checkHealth(apiUrl?: string): Promise<boolean> {
+	return apiFetch<unknown>("/health", apiUrl)
+		.then(() => true)
+		.catch(() => false)
 }

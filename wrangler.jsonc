@@ -10,7 +10,7 @@
 
 	// Default vars for local development (wrangler dev reads .dev.vars)
 	"vars": {
-		"REGISTRY_API_URL": "https://registry-indexer.fly.dev",
+		"REGISTRY_API_URL": "https://registry-indexer.fly.dev/v1",
 		"REGISTRY_NETWORK": "testnet",
 	},
 }
