@@ -9,7 +9,7 @@ import { Input } from "~/components/input"
 import { getWasms } from "~/lib/api"
 import { wasmsQueryOptions } from "~/lib/queries"
 import { type Wasm } from "~/lib/types"
-import { fullName } from "~/lib/util"
+import { getFullName } from "~/lib/util"
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -27,14 +27,14 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 
 function WasmRow({ wasm }: { wasm: Wasm }) {
-	const name = fullName(wasm)
+	const fullName = getFullName(wasm)
 	return (
-		<Link to={`/wasms/${name}`} className={styles.row}>
+		<Link to={`/wasms/${fullName}`} className={styles.row}>
 			<div className={styles.rowMain}>
-				<span className={styles.rowName}>{name}</span>
+				<span className={styles.rowName}>{fullName}</span>
 				<Badge variant="secondary">v{wasm.wasm_version}</Badge>
 			</div>
-			<p className={styles.rowSub}>{wasm.wasm_hash}</p>
+			<p className={styles.rowSub}>Hash: {wasm.wasm_hash}</p>
 		</Link>
 	)
 }

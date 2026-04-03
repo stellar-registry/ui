@@ -18,6 +18,9 @@ export default [
 	index("routes/home.tsx"),
 	...prefix("contracts", [
 		index("routes/contracts.tsx"),
+		route("unverified/:name", "routes/contractDetails.tsx", {
+			id: "unverifiedContract",
+		}),
 		route(":name", "routes/contractDetails.tsx"),
 	]),
 	...prefix("wasms", [

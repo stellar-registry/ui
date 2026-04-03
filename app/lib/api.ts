@@ -5,12 +5,15 @@ import {
 	type Wasm,
 	type WasmDetail,
 } from "./types"
+import { prefixName } from "./util"
+
+const API_VERSION = "/v1"
 
 async function apiFetch<T>(path: string, apiUrl?: string): Promise<T> {
 	// Server-side: use the runtime API URL passed from load context (Cloudflare env).
 	// Client-side: route through the /api proxy so all browser requests are same-origin.
 	const apiBase = import.meta.env.SSR ? apiUrl : "/api"
-	const res = await fetch(`${apiBase}${path}`)
+	const res = await fetch(`${apiBase}${API_VERSION}${path}`)
 	if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`)
 	return res.json() as Promise<T>
 }
@@ -18,10 +21,6 @@ async function apiFetch<T>(path: string, apiUrl?: string): Promise<T> {
 export async function getContracts(apiUrl?: string): Promise<Contract[]> {
 	const data = await apiFetch<ListResponse<Contract>>("/contracts", apiUrl)
 	return data.result
-}
-
-function prefixName(name: string, channel?: string) {
-	return channel ? `${channel}/${name}` : name
 }
 
 export async function getContract(
@@ -52,8 +51,12 @@ export async function getWasm(
 	return apiFetch<WasmDetail>(path, apiUrl)
 }
 
-export function checkHealth(apiUrl?: string): Promise<boolean> {
-	return apiFetch<unknown>("/health", apiUrl)
-		.then(() => true)
-		.catch(() => false)
+export async function checkHealth(): Promise<boolean> {
+	try {
+		// NOTE: don't use `apiFetch` helper, only check response don't parse empty content
+		await fetch(`/api/health`)
+		return true
+	} catch {
+		return false
+	}
 }

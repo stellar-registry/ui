@@ -3,7 +3,7 @@ import {
 	QueryClientProvider,
 	useQuery,
 } from "@tanstack/react-query"
-import { Moon, Sun } from "lucide-react"
+import { ExternalLink, Moon, Sun } from "lucide-react"
 import { useEffect, useState } from "react"
 import {
 	isRouteErrorResponse,
@@ -14,12 +14,13 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useRouteLoaderData,
 } from "react-router"
 
 import { type Route } from "./+types/root"
 import "./app.css"
 import styles from "./root.module.css"
-import { healthQueryOptions } from "~/lib/queries"
+import { checkHealth } from "~/lib/api"
 
 // Runs before hydration to avoid flash of wrong theme. Defaults to dark.
 const themeScript = `(function(){try{if(localStorage.getItem('theme')!=='light')document.documentElement.classList.add('dark')}catch(e){}})();`
@@ -70,6 +71,17 @@ function Header({
 					</NavLink>
 				</nav>
 				<div className={styles.headerRight}>
+					<a
+						href={
+							network === "testnet"
+								? "https://stellar.rgstry.xyz"
+								: "https://testnet.rgstry.xyz"
+						}
+						className={styles.networkSwitch}
+					>
+						{network === "testnet" ? "Mainnet" : "Testnet"}
+						<ExternalLink size={11} />
+					</a>
 					<button
 						className={styles.themeToggle}
 						onClick={onToggle}
@@ -112,8 +124,10 @@ function ScaffoldBanner() {
 }
 
 function Footer() {
-	const { data: healthy } = useQuery({
-		...healthQueryOptions(),
+	const { isSuccess, isLoading } = useQuery({
+		queryKey: ["health"],
+		queryFn: () => checkHealth(),
+		staleTime: 30_000,
 		refetchInterval: 30_000,
 	})
 
@@ -288,16 +302,81 @@ function Footer() {
 				<p className={styles.footerCopy}>
 					&copy; {new Date().getFullYear()} The Aha Company
 				</p>
-				{healthy !== undefined && (
-					<p className={styles.footerHealth}>
-						<span
-							className={`${styles.footerHealthDot} ${healthy ? styles.footerHealthUp : styles.footerHealthDown}`}
-						/>
-						Registry Status: {healthy ? "Operational" : "Unavailable"}
-					</p>
-				)}
+				<p className={styles.footerHealth}>
+					<span
+						className={`${styles.footerHealthDot} ${isSuccess ? styles.footerHealthUp : styles.footerHealthDown}`}
+					/>
+					Registry Status:{" "}
+					{isSuccess ? "Operational" : isLoading ? "⏳" : "Unavailable"}
+				</p>
 			</div>
 		</footer>
+	)
+}
+
+function ComingSoon() {
+	return (
+		<>
+			<section className={styles.comingSoonHero}>
+				<div className={styles.comingSoonHeroInner}>
+					<div className={styles.comingSoonMark}>✦</div>
+					<h1 className={styles.comingSoonHeading}>Stellar Registry</h1>
+					<p className={styles.comingSoonSub}>
+						Browse and discover deployed smart contracts on the Stellar network.
+					</p>
+				</div>
+			</section>
+
+			<main className={styles.comingSoonMain}>
+				<section className={styles.comingSoonSection}>
+					<h2 className={styles.comingSoonAlert}>Coming Soon…</h2>
+					<p className={styles.comingSoonEyebrow}>Mainnet</p>
+					<p className={styles.comingSoonBody}>
+						The Stellar Registry is being prepared for mainnet. Once live,
+						you&apos;ll be able to browse and discover named smart contracts
+						deployed on Stellar.
+					</p>
+					<p className={styles.comingSoonBody}>
+						In the meantime, explore the testnet registry to see what&apos;s
+						coming.
+					</p>
+					<a
+						href="https://testnet.rgstry.xyz"
+						className={styles.comingSoonLink}
+					>
+						Explore on Testnet →
+					</a>
+				</section>
+
+				<section className={styles.comingSoonAbout}>
+					<h2 className={styles.comingSoonAboutHeading}>
+						What is the Stellar Registry?
+					</h2>
+					<p className={styles.comingSoonBody}>
+						The Stellar Registry is a naming and discovery system for smart
+						contracts on the Stellar network. Rather than tracking raw contract
+						addresses, it lets developers publish and find{" "}
+						<strong>contracts by name</strong>, making it easier to build on top
+						of existing on-chain logic and standardizing how contracts are
+						deployed and referenced.
+					</p>
+					<p className={styles.comingSoonBody}>
+						The registry separates two distinct concepts: <strong>WASMs</strong>
+						, the compiled WebAssembly modules that define contract logic and
+						are identified by their content hash, and <strong>Contracts</strong>
+						, which are live deployed instances of those modules.
+					</p>
+					<a
+						href="https://scaffoldstellar.org/docs/registry"
+						target="_blank"
+						rel="noopener noreferrer"
+						className={styles.comingSoonLink}
+					>
+						Read the full documentation →
+					</a>
+				</section>
+			</main>
+		</>
 	)
 }
 
@@ -322,11 +401,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	)
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-	const network = context.cloudflare.env.REGISTRY_NETWORK
-	const stellarExpertURL = `https://stellar.expert/explorer/${network === "testnet" ? "testnet" : "public"}`
+// Default to testnet at runtime, just in case...
+function getNetworkContext(network = "testnet") {
+	return {
+		network,
+		stellarExpertUrl: `https://stellar.expert/explorer/${network === "mainnet" ? "public" : "testnet"}`,
+	}
+}
 
-	return { network, stellarExpertURL }
+export async function loader({ context }: Route.LoaderArgs) {
+	return getNetworkContext(context.cloudflare.env.REGISTRY_NETWORK)
+}
+
+export function useRootData() {
+	const loaderData = useRouteLoaderData<typeof loader>("root")
+	return loaderData ? loaderData : getNetworkContext()
 }
 
 export default function App({ loaderData }: Route.ComponentProps) {
@@ -349,7 +438,8 @@ export default function App({ loaderData }: Route.ComponentProps) {
 		<QueryClientProvider client={queryClient}>
 			<Header isDark={isDark} network={network} onToggle={toggleTheme} />
 			<div className={styles.content}>
-				<Outlet />
+				{/** TODO: remove for mainnet launch */}
+				{network !== "testnet" ? <ComingSoon /> : <Outlet />}
 			</div>
 			<ScaffoldBanner />
 			<Footer />

@@ -1,4 +1,4 @@
-import { data, Outlet, useRouteLoaderData } from "react-router"
+import { data, Outlet } from "react-router"
 import { type Route } from "./+types/wasmOverview"
 import styles from "./wasmOverview.module.css"
 import { Badge } from "~/components/badge"
@@ -8,7 +8,8 @@ import {
 	SidebarPanel,
 } from "~/components/detail-sidebar"
 import { getWasm } from "~/lib/api"
-import { fullName, isLatestWasm } from "~/lib/util"
+import { getFullName, isLatestWasm } from "~/lib/util"
+import { useRootData } from "~/root"
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
 	const { name, version } = params
@@ -24,7 +25,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
 			version,
 			context.cloudflare.env.REGISTRY_API_URL,
 		)
-		return { wasm, name, channel, version, fullName: fullName(wasm) }
+		return { wasm, name, channel, version, fullName: getFullName(wasm) }
 	} catch (e) {
 		console.error(e)
 		throw data("WASM not found", { status: 404 })
@@ -33,15 +34,13 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
 
 export function meta({ loaderData }: Route.MetaArgs) {
 	if (!loaderData) return [{ title: "WASM Not Found" }]
-	return [{ title: `${loaderData.wasm.wasm_name} — Stellar Registry` }]
+	return [{ title: `${loaderData.fullName} — Stellar Registry` }]
 }
 
 export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 	const { wasm, fullName, version } = loaderData
-	const { network, stellarExpertURL } = useRouteLoaderData("root")
+	const { network, stellarExpertUrl } = useRootData()
 	const displayVersion = version ?? wasm.wasm_version
-
-	console.log({ wasm, version, displayVersion })
 
 	return (
 		<main className={styles.main}>
@@ -72,13 +71,13 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 							All Versions
 						</SidebarLink>
 						<SidebarLink
-							href={`${stellarExpertURL}/contract/${wasm.wasm_hash}`}
+							href={`${stellarExpertUrl}/contract/${wasm.wasm_hash}`}
 							external
 						>
 							View on Stellar Expert
 						</SidebarLink>
 						<SidebarLink
-							href={`${stellarExpertURL}/account/${wasm.author}`}
+							href={`${stellarExpertUrl}/account/${wasm.author}`}
 							external
 						>
 							View Author

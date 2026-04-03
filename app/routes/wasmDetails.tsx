@@ -1,4 +1,4 @@
-import { useOutletContext, useRouteLoaderData } from "react-router"
+import { useOutletContext } from "react-router"
 
 import {
 	DetailField,
@@ -6,12 +6,12 @@ import {
 	FieldLink,
 	FieldValue,
 } from "~/components/detail-field"
-import { type loader as rootLoader } from "~/root"
-import { type WasmOutletContext } from "~/routes/wasmOverview"
+import { type WasmOutletContext } from "~/lib/types"
+import { useRootData } from "~/root"
 
 export default function WasmDetail() {
 	const { wasm } = useOutletContext<WasmOutletContext>()
-	const { stellarExpertURL } = useRouteLoaderData<typeof rootLoader>("root")
+	const { stellarExpertUrl } = useRootData()
 
 	const createdAt = new Date(wasm.created_at).toLocaleString()
 
@@ -19,7 +19,7 @@ export default function WasmDetail() {
 		<DetailFields>
 			<DetailField label="WASM Hash">
 				<FieldLink
-					href={`${stellarExpertURL}/contract/${wasm.wasm_hash}`}
+					href={`${stellarExpertUrl}/contract/${wasm.wasm_hash}`}
 					external
 				>
 					{wasm.wasm_hash}
@@ -27,7 +27,7 @@ export default function WasmDetail() {
 			</DetailField>
 
 			<DetailField label="Author">
-				<FieldLink href={`${stellarExpertURL}/account/${wasm.author}`} external>
+				<FieldLink href={`${stellarExpertUrl}/account/${wasm.author}`} external>
 					{wasm.author}
 				</FieldLink>
 			</DetailField>
@@ -42,7 +42,7 @@ export default function WasmDetail() {
 
 			<DetailField label="Transaction">
 				<FieldLink
-					href={`${stellarExpertURL}/tx/${wasm.transaction_hash}`}
+					href={`${stellarExpertUrl}/tx/${wasm.transaction_hash}`}
 					external
 				>
 					{wasm.transaction_hash}
