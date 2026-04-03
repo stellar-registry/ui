@@ -6,6 +6,7 @@ export interface ListResponse<T> {
 // ── WASMs ─────────────────────────────────────────────
 
 export interface Wasm {
+	channel: string
 	author: string
 	wasm_version: string
 	wasm_name: string
@@ -27,12 +28,14 @@ export function isWasm(data: unknown): data is Wasm {
 	)
 }
 
+export type WasmVersion = Omit<Wasm, "channel">
+
 export interface WasmDetail extends Wasm {
 	id: string
 	transaction_hash: string
 	ledger_sequence: number
 	created_at: string
-	versions: Wasm[]
+	versions: WasmVersion[]
 }
 
 export function isWasmDetail(data: unknown): data is WasmDetail {
@@ -76,11 +79,13 @@ export function isWasmOutletContext(data: unknown): data is WasmOutletContext {
 // ── Contracts ─────────────────────────────────────────
 
 export interface Contract {
+	channel?: string
 	contract_id: string
 	contract_name: string
-	deployer: string
-	version: string
-	wasm_name: string
+	deployer?: string
+	wasm_version?: string
+	wasm_name?: string
+	is_stellar_asset_contract: boolean
 }
 
 export interface ContractDetail extends Contract {

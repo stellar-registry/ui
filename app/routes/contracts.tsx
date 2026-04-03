@@ -9,6 +9,7 @@ import { Input } from "~/components/input"
 import { getContracts } from "~/lib/api"
 import { contractsQueryOptions } from "~/lib/queries"
 import { type Contract } from "~/lib/types"
+import { getFullName } from "~/lib/util"
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -24,15 +25,19 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 }
 
 function ContractRow({ contract }: { contract: Contract }) {
+	const fullName = getFullName(contract)
 	return (
-		<Link to={`/contracts/${contract.contract_name}`} className={styles.row}>
+		<Link to={`/contracts/${fullName}`} className={styles.row}>
 			<div className={styles.rowMain}>
-				<span className={styles.rowName}>{contract.contract_name}</span>
-				<Badge variant="secondary">
-					{contract.wasm_name}@v{contract.version}
-				</Badge>
+				<span className={styles.rowName}>{fullName}</span>
+
+				{contract.wasm_name && (
+					<Badge variant="secondary">
+						{contract.wasm_name}@{contract.wasm_version}
+					</Badge>
+				)}
 			</div>
-			<p className={styles.rowSub}>{contract.contract_id}</p>
+			<p className={styles.rowSub}>Contract ID: {contract.contract_id}</p>
 		</Link>
 	)
 }
@@ -49,8 +54,8 @@ export default function ContractsIndex({ loaderData }: Route.ComponentProps) {
 		? contracts.filter(
 				(c) =>
 					c.contract_name.toLowerCase().includes(query.toLowerCase()) ||
-					c.wasm_name.toLowerCase().includes(query.toLowerCase()) ||
-					c.deployer.toLowerCase().includes(query.toLowerCase()),
+					c.wasm_name?.toLowerCase().includes(query.toLowerCase()) ||
+					c.deployer?.toLowerCase().includes(query.toLowerCase()),
 			)
 		: contracts
 

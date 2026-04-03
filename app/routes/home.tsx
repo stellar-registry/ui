@@ -1,9 +1,8 @@
-import { Form, Link, useRouteLoaderData } from "react-router"
-
+import { Form, Link } from "react-router"
 import { type Route } from "./+types/home"
 import styles from "./home.module.css"
 import { Input } from "~/components/input"
-import { type loader as rootLoader } from "~/root"
+import { useRootData } from "~/root"
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -13,7 +12,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Index() {
-	const { network } = useRouteLoaderData<typeof rootLoader>("root")
+	const { network } = useRootData()
 
 	return (
 		<>

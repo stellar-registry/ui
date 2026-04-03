@@ -1,6 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
 import { data, useRouteLoaderData } from "react-router"
-
 import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
 import { Badge } from "~/components/badge"
@@ -16,89 +14,97 @@ import {
 	SidebarPanel,
 } from "~/components/detail-sidebar"
 import { getContract } from "~/lib/api"
-import { contractQueryOptions } from "~/lib/queries"
-import { type loader as rootLoader } from "~/root"
+import { getFullName, prefixName } from "~/lib/util"
 
-export async function loader({ params, context }: Route.LoaderArgs) {
+export async function loader({ request, params, context }: Route.LoaderArgs) {
+	const { name } = params
+	// Derive the channel from URL segments between /contracts/ and name.
+	// e.g. /contracts/registry → channel=undefined
+	// and  /contracts/unverified/registry → channel="unverified"
+	const pathname = new URL(request.url).pathname
+	const channel = pathname.match(/^\/contracts\/(unverified)\//)?.[1]
 	try {
 		const contract = await getContract(
-			params.name,
+			name,
+			channel,
 			context.cloudflare.env.REGISTRY_API_URL,
 		)
-		return { contract }
-	} catch {
+		return { contract, name, channel, fullName: getFullName(contract) }
+	} catch (e) {
+		console.error(e)
 		throw data("Contract not found", { status: 404 })
 	}
 }
 
-export function meta({ data: loaderData }: Route.MetaArgs) {
+export function meta({ loaderData }: Route.MetaArgs) {
 	if (!loaderData) return [{ title: "Contract Not Found" }]
-	return [
-		{
-			title: `${loaderData.contract.contract_name} — Stellar Registry`,
-		},
-	]
+	return [{ title: `${loaderData.fullName} — Stellar Registry` }]
 }
 
 export default function ContractDetail({ loaderData }: Route.ComponentProps) {
-	const { contract } = loaderData
-	const { network, stellarExpertURL } =
-		useRouteLoaderData<typeof rootLoader>("root")
+	const { contract, fullName } = loaderData
+	const { network, stellarExpertURL } = useRouteLoaderData("root")
 
-	const { data: detail } = useQuery({
-		...contractQueryOptions(contract.contract_name),
-		initialData: contract,
-	})
+	const createdAt = new Date(contract.created_at).toLocaleString()
 
-	const createdAt = new Date(detail.created_at).toLocaleString()
+	const hasWasm = !!contract.wasm_name
+	const fullWasmName = hasWasm
+		? prefixName(contract.wasm_name!, contract.channel)
+		: ""
+	const wasmAndVersion = hasWasm
+		? `${contract.wasm_name}v${contract.wasm_version}`
+		: ""
 
 	return (
 		<main className={styles.main}>
 			<div className={styles.titleRow}>
-				<h1 className={styles.title}>{detail.contract_name}</h1>
-				<Badge variant="secondary">{detail.version}</Badge>
+				<h1 className={styles.title}>{fullName}</h1>
+
+				{hasWasm && <Badge variant="secondary">{wasmAndVersion}</Badge>}
 			</div>
 
 			<div className={styles.layout}>
 				<DetailFields>
 					<DetailField label="Contract ID">
 						<FieldLink
-							href={`${stellarExpertURL}/contract/${detail.contract_id}`}
+							href={`${stellarExpertURL}/contract/${contract.contract_id}`}
 							external
 						>
-							{detail.contract_id}
+							{contract.contract_id}
 						</FieldLink>
 					</DetailField>
 
 					<DetailField label="Deployer">
 						<FieldLink
-							href={`${stellarExpertURL}/account/${detail.deployer}`}
+							href={`${stellarExpertURL}/account/${contract.deployer}`}
 							external
 						>
-							{detail.deployer}
+							{contract.deployer}
 						</FieldLink>
 					</DetailField>
 
-					<DetailField label="WASM">
-						<FieldLink href={`/wasms/${detail.wasm_name}`}>
-							{detail.wasm_name}@v{detail.version}
-						</FieldLink>
-					</DetailField>
+					{hasWasm && (
+						<DetailField label="WASM">
+							<FieldLink href={`/wasms/${fullWasmName}`}>
+								{wasmAndVersion}
+							</FieldLink>
+						</DetailField>
+					)}
 
 					<DetailField label="Deployed">
 						<FieldValue>{createdAt}</FieldValue>
 					</DetailField>
 
 					<DetailField label="Ledger">
-						<FieldValue>{detail.ledger_sequence.toLocaleString()}</FieldValue>
+						<FieldValue>{contract.ledger_sequence.toLocaleString()}</FieldValue>
 					</DetailField>
 
 					<DetailField label="Transaction">
 						<FieldLink
-							href={`${stellarExpertURL}/tx/${detail.transaction_hash}`}
+							href={`${stellarExpertURL}/tx/${contract.transaction_hash}`}
 							external
 						>
-							{detail.transaction_hash}
+							{contract.transaction_hash}
 						</FieldLink>
 					</DetailField>
 				</DetailFields>
@@ -114,16 +120,18 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					)}
 					<SidebarPanel>
 						<SidebarLink
-							href={`${stellarExpertURL}/contract/${detail.contract_id}`}
+							href={`${stellarExpertURL}/contract/${contract.contract_id}`}
 							external
 						>
 							View on Stellar Expert
 						</SidebarLink>
-						<SidebarLink href={`/wasms/${detail.wasm_name}`}>
-							View WASM
-						</SidebarLink>
+						{hasWasm && (
+							<SidebarLink href={`/wasms/${fullWasmName}`}>
+								View WASM
+							</SidebarLink>
+						)}
 						<SidebarLink
-							href={`${stellarExpertURL}/account/${detail.deployer}`}
+							href={`${stellarExpertURL}/account/${contract.deployer}`}
 							external
 						>
 							View Deployer
