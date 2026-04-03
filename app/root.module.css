@@ -114,6 +114,30 @@
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
+/* ── Network switch ──────────────────────────────────── */
+
+.networkSwitch {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.25rem 0.625rem;
+	border-radius: var(--radius-sm);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--color-primary);
+	background-color: var(--color-primary-foreground);
+	text-decoration: none;
+	opacity: 0.8;
+	transition: opacity var(--default-transition-duration)
+		var(--default-transition-timing-function);
+}
+
+.networkSwitch:hover {
+	opacity: 1;
+}
+
 /* ── Theme toggle ────────────────────────────────────── */
 
 .themeToggle {

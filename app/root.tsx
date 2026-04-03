@@ -3,7 +3,7 @@ import {
 	QueryClientProvider,
 	useQuery,
 } from "@tanstack/react-query"
-import { Moon, Sun } from "lucide-react"
+import { ExternalLink, Moon, Sun } from "lucide-react"
 import { useEffect, useState } from "react"
 import {
 	isRouteErrorResponse,
@@ -71,6 +71,17 @@ function Header({
 					</NavLink>
 				</nav>
 				<div className={styles.headerRight}>
+					<a
+						href={
+							network === "testnet"
+								? "https://stellar.rgstry.xyz"
+								: "https://testnet.rgstry.xyz"
+						}
+						className={styles.networkSwitch}
+					>
+						{network === "testnet" ? "Mainnet" : "Testnet"}
+						<ExternalLink size={11} />
+					</a>
 					<button
 						className={styles.themeToggle}
 						onClick={onToggle}
