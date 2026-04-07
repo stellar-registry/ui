@@ -85,7 +85,7 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 				<aside className={styles.sidebar}>
 					{network === "testnet" && (
 						<SidebarAlert
-							href="https://rgstry.xyz"
+							href="https://stellar.rgstry.xyz"
 							linkText="Switch to Mainnet →"
 						>
 							Testnet data — this WASM may not exist on mainnet.
