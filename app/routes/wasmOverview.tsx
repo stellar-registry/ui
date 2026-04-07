@@ -7,6 +7,7 @@ import {
 	SidebarLink,
 	SidebarPanel,
 } from "~/components/detail-sidebar"
+import { UsageSection } from "~/components/usage-section"
 import { getWasm } from "~/lib/api"
 import { getFullName, isLatestWasm } from "~/lib/util"
 import { useRootData } from "~/root"
@@ -35,6 +36,35 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
 export function meta({ loaderData }: Route.MetaArgs) {
 	if (!loaderData) return [{ title: "WASM Not Found" }]
 	return [{ title: `${loaderData.fullName} — Stellar Registry` }]
+}
+
+export function buildWasmUsageItems(
+	wasmName: string,
+	wasmVersion: string,
+	pinned: boolean,
+) {
+	const modName = wasmName.replaceAll("-", "_")
+	const importCode = pinned
+		? `stellar_registry::import_contract_client!("${modName}@${wasmVersion}");`
+		: `stellar_registry::import_contract_client!(${modName});`
+	const useClient = `
+let client = ${modName}::Client::new(&env, &contract_address);
+
+// 🎉 That's it! Start calling ${modName}'s methods:
+let result = client.method_name(&arg);
+`
+	return [
+		{
+			label: "Import Wasm",
+			lang: "rust",
+			code: importCode,
+		},
+		{
+			label: "Instantiate Client",
+			lang: "rust",
+			code: useClient,
+		},
+	]
 }
 
 export default function WasmOverview({ loaderData }: Route.ComponentProps) {
@@ -85,6 +115,18 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 					</SidebarPanel>
 				</aside>
 			</div>
+
+			<UsageSection
+				items={buildWasmUsageItems(fullName, wasm.wasm_version, !!version)}
+				description="Use the registered name of this Wasm to create a module for it and start calling its methods."
+				footer={
+					<p>
+						The macro downloads this Wasm at build time and generates a
+						type-safe Rust client. Your editor's autocomplete should show all
+						available methods as well as their argument and return types.
+					</p>
+				}
+			/>
 		</main>
 	)
 }
