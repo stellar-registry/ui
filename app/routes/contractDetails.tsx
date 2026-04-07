@@ -1,6 +1,7 @@
 import { data, useRouteLoaderData } from "react-router"
 import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
+import { buildWasmUsageItems } from "./wasmOverview"
 import { Badge } from "~/components/badge"
 import {
 	DetailField,
@@ -13,6 +14,7 @@ import {
 	SidebarLink,
 	SidebarPanel,
 } from "~/components/detail-sidebar"
+import { UsageSection } from "~/components/usage-section"
 import { getContract } from "~/lib/api"
 import { getFullName, prefixName } from "~/lib/util"
 
@@ -139,6 +141,39 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					</SidebarPanel>
 				</aside>
 			</div>
+
+			<UsageSection
+				items={
+					hasWasm
+						? buildWasmUsageItems(
+								fullWasmName,
+								contract.wasm_version ?? "",
+								true,
+							)
+						: []
+				}
+				description="Use the registered name of this Contract's Wasm to create a module for it and start calling its methods."
+				footer={
+					<>
+						<p style={{ margin: "0 0 1rem" }}>
+							The macro downloads this Wasm at build time and generates a
+							type-safe Rust client. Your editor's autocomplete should show all
+							available methods as well as their argument and return types.
+						</p>
+						<p>
+							Importing a Contract directly by name with the{" "}
+							<code>import_contract!</code> macro is in development.{" "}
+							<a
+								href="https://github.com/theahaco/scaffold-stellar/issues/419"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								Follow progress on GitHub →
+							</a>
+						</p>
+					</>
+				}
+			/>
 		</main>
 	)
 }

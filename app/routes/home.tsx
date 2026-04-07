@@ -1,6 +1,7 @@
 import { Form, Link } from "react-router"
 import { type Route } from "./+types/home"
 import styles from "./home.module.css"
+import { CodeBlock } from "~/components/code-block"
 import { Input } from "~/components/input"
 import { useRootData } from "~/root"
 
@@ -80,6 +81,31 @@ export default function Index() {
 						className={styles.aboutLink}
 					>
 						Read the full documentation →
+					</a>
+				</section>
+
+				<section className={styles.install}>
+					<h2 className={styles.installHeading}>Add to your project</h2>
+					<p className={styles.installBody}>
+						Use{" "}
+						<a
+							href="https://github.com/theahaco/scaffold-stellar"
+							target="_blank"
+							rel="noopener noreferrer"
+							className={styles.installLink}
+						>
+							stellar-registry
+						</a>{" "}
+						to import contract clients directly in your Soroban smart contracts.
+					</p>
+					<CodeBlock lang="shell">cargo add stellar-registry</CodeBlock>
+					<a
+						href="https://scaffoldstellar.org/docs/registry"
+						target="_blank"
+						rel="noopener noreferrer"
+						className={styles.aboutLink}
+					>
+						Read the installation guide →
 					</a>
 				</section>
 			</main>
