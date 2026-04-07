@@ -39,4 +39,5 @@ export default [
 		),
 	]),
 	route("api/*", "routes/api.tsx"),
+	route("*", "routes/404.tsx"),
 ] satisfies RouteConfig
