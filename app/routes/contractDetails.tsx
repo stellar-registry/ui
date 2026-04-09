@@ -54,7 +54,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 		? prefixName(contract.wasm_name!, contract.channel)
 		: ""
 	const wasmAndVersion = hasWasm
-		? `${contract.wasm_name}v${contract.wasm_version}`
+		? `${contract.wasm_name}@v${contract.wasm_version}`
 		: ""
 
 	return (
