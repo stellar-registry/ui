@@ -85,6 +85,7 @@ export interface Contract {
 	deployer?: string
 	wasm_version?: string
 	wasm_name?: string
+	wasm_channel?: string
 	is_stellar_asset_contract: boolean
 }
 

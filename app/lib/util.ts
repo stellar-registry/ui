@@ -2,7 +2,7 @@ import { type Contract, type Wasm, type WasmDetail } from "./types"
 
 /** Prefix a Wasm or Contract name with its Channel, if it exists and isn't verified */
 export function prefixName(name: string, channel?: string) {
-	return channel && channel !== "main" ? `${channel}/${name}` : name
+	return channel && channel !== "root" ? `${channel}/${name}` : name
 }
 
 export function getFullName(wasmOrContract: Wasm | Contract) {

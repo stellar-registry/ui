@@ -9,7 +9,7 @@ import { Input } from "~/components/input"
 import { getContracts } from "~/lib/api"
 import { contractsQueryOptions } from "~/lib/queries"
 import { type Contract } from "~/lib/types"
-import { getFullName } from "~/lib/util"
+import { getFullName, prefixName } from "~/lib/util"
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -33,7 +33,8 @@ function ContractRow({ contract }: { contract: Contract }) {
 
 				{contract.wasm_name && (
 					<Badge variant="secondary">
-						{contract.wasm_name}@{contract.wasm_version}
+						{prefixName(contract.wasm_name, contract.wasm_channel)}@
+						{contract.wasm_version}
 					</Badge>
 				)}
 			</div>
