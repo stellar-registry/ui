@@ -18,13 +18,8 @@ import { UsageSection } from "~/components/usage-section"
 import { getContract } from "~/lib/api"
 import { getFullName, prefixName } from "~/lib/util"
 
-export async function loader({ request, params, context }: Route.LoaderArgs) {
-	const { name } = params
-	// Derive the channel from URL segments between /contracts/ and name.
-	// e.g. /contracts/registry → channel=undefined
-	// and  /contracts/unverified/registry → channel="unverified"
-	const pathname = new URL(request.url).pathname
-	const channel = pathname.match(/^\/contracts\/(unverified)\//)?.[1]
+export async function loader({ params, context }: Route.LoaderArgs) {
+	const { name, channel } = params
 	try {
 		const contract = await getContract(
 			name,
@@ -51,10 +46,10 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 
 	const hasWasm = !!contract.wasm_name
 	const fullWasmName = hasWasm
-		? prefixName(contract.wasm_name!, contract.channel)
+		? prefixName(contract.wasm_name!, contract.wasm_channel)
 		: ""
 	const wasmAndVersion = hasWasm
-		? `${contract.wasm_name}@v${contract.wasm_version}`
+		? `${fullWasmName}@v${contract.wasm_version}`
 		: ""
 
 	return (
@@ -87,7 +82,9 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 
 					{hasWasm && (
 						<DetailField label="WASM">
-							<FieldLink href={`/wasms/${fullWasmName}`}>
+							<FieldLink
+								href={`/wasms/${fullWasmName}/v/${contract.wasm_version}`}
+							>
 								{wasmAndVersion}
 							</FieldLink>
 						</DetailField>

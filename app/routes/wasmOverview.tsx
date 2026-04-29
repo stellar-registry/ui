@@ -12,13 +12,8 @@ import { getWasm } from "~/lib/api"
 import { getFullName, isLatestWasm } from "~/lib/util"
 import { useRootData } from "~/root"
 
-export async function loader({ request, params, context }: Route.LoaderArgs) {
-	const { name, version } = params
-	// Derive the channel from URL segments between /wasms/ and name.
-	// e.g. /wasms/registry → channel=undefined
-	// and  /wasms/unverified/registry → channel="unverified"
-	const pathname = new URL(request.url).pathname
-	const channel = pathname.match(/^\/wasms\/(unverified)\//)?.[1]
+export async function loader({ params, context }: Route.LoaderArgs) {
+	const { name, version, channel } = params
 	try {
 		const wasm = await getWasm(
 			name,
