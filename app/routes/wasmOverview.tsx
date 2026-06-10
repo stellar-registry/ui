@@ -98,6 +98,11 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 						<SidebarLink href={`/wasms/${fullName}/versions`}>
 							All Versions
 						</SidebarLink>
+						{wasm.meta?.source_repo && (
+							<SidebarLink href={wasm.meta.source_repo} external>
+								Source Repository
+							</SidebarLink>
+						)}
 						<SidebarLink
 							href={`${stellarExpertUrl}/contract/${wasm.wasm_hash}`}
 							external
