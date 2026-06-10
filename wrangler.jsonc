@@ -10,7 +10,7 @@
 
 	// Default vars for local development (wrangler dev reads .dev.vars)
 	"vars": {
-		"REGISTRY_API_URL": "https://registry-indexer.fly.dev",
+		"REGISTRY_API_URL": "https://stellar-registry-testnet.fly.dev",
 		"REGISTRY_NETWORK": "testnet",
 	},
 
@@ -21,7 +21,7 @@
 			"routes": [{ "pattern": "stellar.rgstry.xyz", "custom_domain": true }],
 			"vars": {
 				// TODO: point to mainnet indexer once launched
-				"REGISTRY_API_URL": "https://registry-indexer.fly.dev",
+				"REGISTRY_API_URL": "https://stellar-registry-testnet.fly.dev",
 				"REGISTRY_NETWORK": "mainnet",
 			},
 		},
@@ -31,7 +31,7 @@
 			"name": "rgstry-testnet",
 			"routes": [{ "pattern": "testnet.rgstry.xyz", "custom_domain": true }],
 			"vars": {
-				"REGISTRY_API_URL": "https://registry-indexer.fly.dev",
+				"REGISTRY_API_URL": "https://stellar-registry-testnet.fly.dev",
 				"REGISTRY_NETWORK": "testnet",
 			},
 		},
