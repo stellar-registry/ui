@@ -3,6 +3,9 @@ import { createRequestHandler } from "react-router"
 interface Env {
 	REGISTRY_API_URL: string
 	REGISTRY_NETWORK: string
+  TANSU_ID: string
+  REGISTRY_ID: string
+  MANAGER_ID: string
 }
 
 declare module "react-router" {
