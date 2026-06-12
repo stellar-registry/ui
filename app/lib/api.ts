@@ -1,3 +1,4 @@
+import { fetchGithubMetadata, parseGithubSourceRepo } from "./github"
 import {
 	type Contract,
 	type ContractDetail,
@@ -59,4 +60,8 @@ export async function checkHealth(): Promise<boolean> {
 	} catch {
 		return false
 	}
+}
+
+export function getWasmMeta(sourceRepoUrl: string) {
+	return fetchGithubMetadata(parseGithubSourceRepo(sourceRepoUrl))
 }

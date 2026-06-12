@@ -5,67 +5,28 @@ import remarkGfm from "remark-gfm"
 
 import styles from "./metadata-section.module.css"
 import {
-	buildGithubRawFileCandidates,
-	type GithubRawFileCandidate,
+	type GithubSourceRepo,
 	parseGithubSourceRepo,
 	resolveGithubMarkdownImage,
 	resolveGithubMarkdownLink,
-} from "~/lib/util"
+} from "~/lib/github"
+import { wasmMetaQueryOptions } from "~/lib/queries"
 
 interface MetadataSectionProps {
 	sourceRepoUrl: string
 }
 
 const STORAGE_KEY = "registry-metadata-expanded"
-const README_FILENAMES = ["README.md", "README.MD", "readme.md"]
-const LICENSE_FILENAMES = [
-	"LICENSE",
-	"LICENSE.md",
-	"LICENSE.txt",
-	"LICENCE",
-	"LICENCE.md",
-	"LICENCE.txt",
-	"COPYING",
-	"COPYING.md",
-	"COPYING.txt",
-]
-
-type ResolvedMetadataFile = {
-	content: string
-	path: string
-}
-
-async function fetchFirstAvailableContent(
-	candidates: GithubRawFileCandidate[],
-): Promise<ResolvedMetadataFile | null> {
-	for (const candidate of candidates) {
-		try {
-			const response = await fetch(candidate.url)
-			if (response.ok) {
-				return {
-					content: await response.text(),
-					path: candidate.path,
-				}
-			}
-		} catch {
-			continue
-		}
-	}
-
-	return null
-}
 
 function ReadmeSection({
 	content,
 	path,
-	sourceRepoUrl,
+	sourceRepo,
 }: {
 	content: string
 	path: string
-	sourceRepoUrl: string
+	sourceRepo: GithubSourceRepo | null
 }) {
-	const sourceRepo = parseGithubSourceRepo(sourceRepoUrl)
-
 	return (
 		<article className={styles.panel}>
 			<h3 className={styles.subheading}>Readme</h3>
@@ -80,7 +41,9 @@ function ReadmeSection({
 										? resolveGithubMarkdownLink(sourceRepo, path, href)
 										: href
 								}
-								{...(href.startsWith("#") ? {} : { target: "_blank" })}
+								{...(href.startsWith("#")
+									? {}
+									: { target: "_blank", rel: "noopener noreferrer" })}
 								{...props}
 							/>
 						),
@@ -118,35 +81,7 @@ export function MetadataSection({ sourceRepoUrl }: MetadataSectionProps) {
 	const sourceRepo = parseGithubSourceRepo(sourceRepoUrl)
 	const [expanded, setExpanded] = useState(true)
 
-	const { data } = useQuery({
-		queryKey: ["wasm-meta", sourceRepoUrl],
-		enabled: Boolean(sourceRepo),
-		staleTime: 5 * 60_000,
-		queryFn: async () => {
-			if (!sourceRepo) {
-				return { readme: null, license: null }
-			}
-
-			const readmeCandidates = buildGithubRawFileCandidates(
-				sourceRepo,
-				README_FILENAMES,
-			)
-			const licenseCandidates = buildGithubRawFileCandidates(
-				sourceRepo,
-				LICENSE_FILENAMES,
-			)
-
-			const [readme, license] = await Promise.all([
-				fetchFirstAvailableContent(readmeCandidates),
-				fetchFirstAvailableContent(licenseCandidates),
-			])
-
-			return {
-				readme,
-				license,
-			}
-		},
-	})
+	const { data } = useQuery(wasmMetaQueryOptions(sourceRepoUrl))
 
 	useEffect(() => {
 		const stored = localStorage.getItem(STORAGE_KEY)
@@ -179,7 +114,7 @@ export function MetadataSection({ sourceRepoUrl }: MetadataSectionProps) {
 						<ReadmeSection
 							content={data.readme.content}
 							path={data.readme.path}
-							sourceRepoUrl={sourceRepoUrl}
+							sourceRepo={sourceRepo}
 						/>
 					)}
 					{data.license && <LicenseSection content={data.license.content} />}

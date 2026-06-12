@@ -1,5 +1,11 @@
 import { queryOptions } from "@tanstack/react-query"
-import { getContract, getContracts, getWasm, getWasms } from "./api"
+import {
+	getContract,
+	getContracts,
+	getWasm,
+	getWasmMeta,
+	getWasms,
+} from "./api"
 
 const STALE_TIME = 60_000
 
@@ -29,4 +35,11 @@ export const wasmQueryOptions = (wasmName: string, version?: string) =>
 		queryKey: ["wasms", wasmName, version],
 		queryFn: () => getWasm(wasmName, version),
 		staleTime: STALE_TIME,
+	})
+
+export const wasmMetaQueryOptions = (repoUrl: string) =>
+	queryOptions({
+		queryKey: ["wasm-meta", repoUrl],
+		staleTime: STALE_TIME,
+		queryFn: () => getWasmMeta(repoUrl),
 	})
