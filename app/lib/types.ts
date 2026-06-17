@@ -30,12 +30,22 @@ export function isWasm(data: unknown): data is Wasm {
 
 export type WasmVersion = Omit<Wasm, "channel">
 
+export interface WasmMeta {
+	rsver: string
+	rssdkver: string
+	rssdk_spec_shaking: string
+	cliver: string
+	source_repo: string
+	binver: string
+}
+
 export interface WasmDetail extends Wasm {
 	id: string
 	transaction_hash: string
 	ledger_sequence: number
 	created_at: string
 	versions: WasmVersion[]
+	meta?: WasmMeta
 }
 
 export function isWasmDetail(data: unknown): data is WasmDetail {

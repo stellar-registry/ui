@@ -7,7 +7,7 @@
 #
 # Testnet:  https://registry-indexer.fly.dev
 # Mainnet:  https://registry-indexer-mainnet.fly.dev  (placeholder — update when live)
-REGISTRY_API_URL=https://registry-indexer.fly.dev
+REGISTRY_API_URL=https://stellar-registry-testnet.fly.dev
 
 # The Stellar network this instance targets. Used to label the UI.
 # Options: testnet | mainnet

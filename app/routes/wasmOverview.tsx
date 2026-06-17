@@ -7,6 +7,7 @@ import {
 	SidebarLink,
 	SidebarPanel,
 } from "~/components/detail-sidebar"
+import { MetadataSection } from "~/components/metadata-section"
 import { UsageSection } from "~/components/usage-section"
 import { getWasm } from "~/lib/api"
 import { getFullName, isLatestWasm } from "~/lib/util"
@@ -97,6 +98,11 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 						<SidebarLink href={`/wasms/${fullName}/versions`}>
 							All Versions
 						</SidebarLink>
+						{wasm.meta?.source_repo && (
+							<SidebarLink href={wasm.meta.source_repo} external>
+								Source Repository
+							</SidebarLink>
+						)}
 						<SidebarLink
 							href={`${stellarExpertUrl}/contract/${wasm.wasm_hash}`}
 							external
@@ -123,6 +129,9 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 					</p>
 				}
 			/>
+			{wasm.meta?.source_repo && (
+				<MetadataSection sourceRepoUrl={wasm.meta.source_repo} />
+			)}
 		</main>
 	)
 }
