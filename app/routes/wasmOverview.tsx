@@ -104,12 +104,6 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 							</SidebarLink>
 						)}
 						<SidebarLink
-							href={`${stellarExpertUrl}/contract/${wasm.wasm_hash}`}
-							external
-						>
-							View on Stellar Expert
-						</SidebarLink>
-						<SidebarLink
 							href={`${stellarExpertUrl}/account/${wasm.author}`}
 							external
 						>
