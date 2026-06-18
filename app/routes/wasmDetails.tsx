@@ -17,9 +17,7 @@ export default function WasmDetail() {
 
 	return (
 		<DetailFields>
-			<DetailField label="WASM Hash">
-        {wasm.wasm_hash}
-			</DetailField>
+			<DetailField label="WASM Hash">{wasm.wasm_hash}</DetailField>
 
 			<DetailField label="Author">
 				<FieldLink href={`${stellarExpertUrl}/account/${wasm.author}`} external>

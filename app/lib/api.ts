@@ -1,3 +1,4 @@
+import { data } from "react-router"
 import { fetchGithubMetadata, parseGithubSourceRepo } from "./github"
 import {
 	type Contract,
@@ -15,7 +16,20 @@ async function apiFetch<T>(path: string, apiUrl?: string): Promise<T> {
 	// Client-side: route through the /api proxy so all browser requests are same-origin.
 	const apiBase = import.meta.env.SSR ? apiUrl : "/api"
 	const res = await fetch(`${apiBase}${API_VERSION}${path}`)
-	if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`)
+	if (!res.ok) {
+		const payload = (await res.json().catch(() => ({}))) as {
+			error?: string
+			request_id?: string
+		}
+
+		throw data(
+			{
+				error: payload.error ?? res.statusText ?? "Request failed",
+				request_id: res.status === 500 ? payload.request_id : undefined,
+			},
+			{ status: res.status, statusText: res.statusText || "Error" },
+		)
+	}
 	return res.json() as Promise<T>
 }
 

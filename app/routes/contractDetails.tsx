@@ -1,4 +1,4 @@
-import { data, useRouteLoaderData } from "react-router"
+import { data, useRouteLoaderData, isRouteErrorResponse } from "react-router"
 import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
 import { buildWasmUsageItems } from "./wasmOverview"
@@ -29,6 +29,9 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 		return { contract, name, channel, fullName: getFullName(contract) }
 	} catch (e) {
 		console.error(e)
+		if (isRouteErrorResponse(e) && e.status === 500) {
+			throw e
+		}
 		throw data("Contract not found", { status: 404 })
 	}
 }
