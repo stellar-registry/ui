@@ -1,3 +1,4 @@
+import { data } from "react-router"
 import { fetchGithubMetadata, parseGithubSourceRepo } from "./github"
 import {
 	type Contract,
@@ -10,12 +11,36 @@ import { prefixName } from "./util"
 
 const API_VERSION = "/v1"
 
+type InternalServerError = {
+	error?: string
+	request_id?: string
+}
+
+function isInternalServerError(value: unknown): value is InternalServerError {
+	if (typeof value !== "object" || value === null) return false
+	if ("error" in value && typeof value.error !== "string") return false
+	if ("request_id" in value && typeof value.request_id !== "string")
+		return false
+	return true
+}
+
 async function apiFetch<T>(path: string, apiUrl?: string): Promise<T> {
 	// Server-side: use the runtime API URL passed from load context (Cloudflare env).
 	// Client-side: route through the /api proxy so all browser requests are same-origin.
 	const apiBase = import.meta.env.SSR ? apiUrl : "/api"
 	const res = await fetch(`${apiBase}${API_VERSION}${path}`)
-	if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`)
+	if (!res.ok) {
+		const raw = await res.json().catch(() => undefined)
+		const payload = isInternalServerError(raw) ? raw : undefined
+
+		throw data(
+			{
+				error: payload?.error ?? res.statusText ?? "Request failed",
+				request_id: res.status === 500 ? payload?.request_id : undefined,
+			},
+			{ status: res.status, statusText: res.statusText || "Error" },
+		)
+	}
 	return res.json() as Promise<T>
 }
 

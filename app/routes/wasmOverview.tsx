@@ -1,4 +1,4 @@
-import { data, Outlet } from "react-router"
+import { data, Outlet, isRouteErrorResponse } from "react-router"
 import { type Route } from "./+types/wasmOverview"
 import styles from "./wasmOverview.module.css"
 import { Badge } from "~/components/badge"
@@ -25,6 +25,9 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 		return { wasm, name, channel, version, fullName: getFullName(wasm) }
 	} catch (e) {
 		console.error(e)
+		if (isRouteErrorResponse(e) && e.status === 500) {
+			throw e
+		}
 		throw data("WASM not found", { status: 404 })
 	}
 }

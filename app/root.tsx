@@ -450,15 +450,28 @@ export default function App({ loaderData }: Route.ComponentProps) {
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	let message = "Oops!"
 	let details = "An unexpected error occurred."
+	let requestId: string | undefined
 	let stack: string | undefined
 
 	if (isRouteErrorResponse(error)) {
+		const payload =
+			error.data && typeof error.data === "object"
+				? (error.data as { error?: unknown; request_id?: unknown })
+				: undefined
+
 		message = error.status === 404 ? "404" : "Error"
 		details =
 			error.status === 404
 				? "The requested page could not be found."
-				: error.statusText || details
-	} else if (import.meta.env.DEV && error && error instanceof Error) {
+				: typeof payload?.error === "string"
+					? payload.error
+					: error.statusText || details
+
+		requestId =
+			error.status === 500 && typeof payload?.request_id === "string"
+				? payload.request_id
+				: undefined
+	} else if (import.meta.env.DEV && error instanceof Error) {
 		details = error.message
 		stack = error.stack
 	}
@@ -467,6 +480,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 		<main className={styles.errorMain}>
 			<h1>{message}</h1>
 			<p>{details}</p>
+			{requestId && (
+				<p>
+					Request ID: <code>{requestId}</code>
+				</p>
+			)}
 			{stack && (
 				<pre className={styles.errorStack}>
 					<code>{stack}</code>
