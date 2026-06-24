@@ -42,8 +42,9 @@ export function buildWasmUsageItems(
 	wasmVersion?: string,
 	contractId?: string,
 ) {
-	const modName = wasmName.replaceAll("-", "_")
-	const importCode = `stellar_registry::import_contract_client!("${modName}${wasmVersion ? `@v${wasmVersion}` : ""}");`
+	const fullName = wasmName.replaceAll("-", "_")
+	const modName = fullName.split("/").at(-1)
+	const importCode = `stellar_registry::import_contract_client!("${fullName}${wasmVersion ? `@v${wasmVersion}` : ""}");`
 	const useClient = `
 let addr = soroban_sdk::Address::from_str(
     &env,
