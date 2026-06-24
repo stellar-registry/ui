@@ -105,3 +105,7 @@ export interface ContractDetail extends Contract {
 	ledger_sequence: number
 	created_at: string
 }
+
+export interface SearchParams {
+	query?: string
+}

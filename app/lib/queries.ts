@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query"
+import { keepPreviousData, queryOptions } from "@tanstack/react-query"
 import {
 	getContract,
 	getContracts,
@@ -6,6 +6,7 @@ import {
 	getWasmMeta,
 	getWasms,
 } from "./api"
+import { type SearchParams } from "./types"
 
 const STALE_TIME = 60_000
 
@@ -23,11 +24,12 @@ export const contractQueryOptions = (contractName: string, channel?: string) =>
 		staleTime: STALE_TIME,
 	})
 
-export const wasmsQueryOptions = () =>
+export const wasmsQueryOptions = (params: SearchParams) =>
 	queryOptions({
-		queryKey: ["wasms"],
-		queryFn: () => getWasms(),
+		queryKey: ["wasms", params.query ?? ""],
+		queryFn: () => getWasms(undefined, params),
 		staleTime: STALE_TIME,
+		placeholderData: keepPreviousData,
 	})
 
 export const wasmQueryOptions = (wasmName: string, version?: string) =>
