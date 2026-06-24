@@ -38,6 +38,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export function buildWasmUsageItems(
+	contractName: string,
 	wasmName: string,
 	wasmVersion?: string,
 	contractId?: string,
@@ -49,9 +50,9 @@ let addr = soroban_sdk::Address::from_str(
     &env,
     "${contractId || "[YOUR CONTRACT ID]"}",
 );
-let client = ${modName}::Client::new(&env, &addr);
+let client = ${contractName}::Client::new(&env, &addr);
 
-// 🎉 That's it! Start calling ${modName}'s methods:
+// 🎉 That's it! Start calling ${contractName}'s methods:
 let result = client.method_name(&arg);
 `
 	return [
@@ -69,9 +70,10 @@ let result = client.method_name(&arg);
 }
 
 export default function WasmOverview({ loaderData }: Route.ComponentProps) {
-	const { wasm, fullName, version } = loaderData
+	const { wasm, fullName, version, name } = loaderData
 	const { network, stellarExpertUrl } = useRootData()
 	const displayVersion = version ?? wasm.wasm_version
+	const contractName = name.replaceAll("-", "_")
 
 	return (
 		<main className={styles.main}>
@@ -116,7 +118,7 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 				</aside>
 			</div>
 			<UsageSection
-				items={buildWasmUsageItems(fullName, wasm.wasm_version)}
+				items={buildWasmUsageItems(contractName, fullName, wasm.wasm_version)}
 				description="Use the registered name of this Wasm to create a module for it and start calling its methods."
 				footer={
 					<p>
