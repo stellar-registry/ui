@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, useSearchParams } from "react-router"
 
 import { type Route } from "./+types/wasms"
@@ -30,6 +30,24 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 	return { wasms, query }
 }
 
+type ShouldRevalidateArgs = {
+	currentUrl: URL
+	nextUrl: URL
+	defaultShouldRevalidate: boolean
+}
+
+export function shouldRevalidate({
+	currentUrl,
+	nextUrl,
+	defaultShouldRevalidate,
+}: ShouldRevalidateArgs) {
+	if (currentUrl.pathname === nextUrl.pathname) {
+		return false
+	}
+
+	return defaultShouldRevalidate
+}
+
 function WasmRow({ wasm }: { wasm: Wasm }) {
 	const fullName = getFullName(wasm)
 	return (
@@ -45,16 +63,33 @@ function WasmRow({ wasm }: { wasm: Wasm }) {
 
 export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 	const [searchParams, setSearchParams] = useSearchParams()
-	const [query, setQuery] = useState(loaderData.query)
+	const urlQuery = searchParams.get("query") ?? ""
+	const [query, setQuery] = useState(urlQuery)
 	const debouncedQuery = useDebounced(query, 300)
+	const previousUrlQueryRef = useRef(urlQuery)
+	const pendingUrlWriteRef = useRef<string | null>(null)
 
 	useEffect(() => {
-		setQuery(loaderData.query)
-	}, [loaderData.query])
+		if (previousUrlQueryRef.current === urlQuery) {
+			return
+		}
+
+		previousUrlQueryRef.current = urlQuery
+
+		if (pendingUrlWriteRef.current === urlQuery) {
+			pendingUrlWriteRef.current = null
+			return
+		}
+
+		setQuery(urlQuery)
+	}, [urlQuery])
 
 	useEffect(() => {
-		const currentQuery = searchParams.get("query") ?? ""
-		if (debouncedQuery === currentQuery) {
+		if (
+			previousUrlQueryRef.current !== urlQuery ||
+			debouncedQuery !== query ||
+			debouncedQuery === urlQuery
+		) {
 			return
 		}
 
@@ -65,16 +100,16 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 			nextSearchParams.delete("query")
 		}
 
+		pendingUrlWriteRef.current = debouncedQuery
 		setSearchParams(nextSearchParams, { replace: true })
-	}, [debouncedQuery, searchParams, setSearchParams])
+	}, [debouncedQuery, query, searchParams, setSearchParams, urlQuery])
 
 	const { data: wasms = [] } = useQuery({
 		...wasmsQueryOptions({
-			query: debouncedQuery,
+			query: urlQuery,
 		}),
-		initialData: loaderData.wasms,
+		initialData: urlQuery === loaderData.query ? loaderData.wasms : undefined,
 	})
-
 	return (
 		<>
 			<section className={styles.pageHeader}>
