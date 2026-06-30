@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
-import { Link } from "react-router"
+import { useEffect, useState } from "react"
+import { Link, useSearchParams } from "react-router"
 
 import { type Route } from "./+types/wasms"
 import styles from "./wasms.module.css"
 import { Badge } from "~/components/badge"
 import { Input } from "~/components/input"
+import { useDebounced } from "~/hooks/useDebounce"
 import { getWasms } from "~/lib/api"
 import { wasmsQueryOptions } from "~/lib/queries"
 import { type Wasm } from "~/lib/types"
@@ -21,9 +22,12 @@ export function meta({}: Route.MetaArgs) {
 	]
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-	const wasms = await getWasms(context.cloudflare.env.REGISTRY_API_URL)
-	return { wasms }
+export async function loader({ request, context }: Route.LoaderArgs) {
+	const query = new URL(request.url).searchParams.get("query") ?? ""
+	const wasms = await getWasms(context.cloudflare.env.REGISTRY_API_URL, {
+		query,
+	})
+	return { wasms, query }
 }
 
 function WasmRow({ wasm }: { wasm: Wasm }) {
@@ -40,20 +44,36 @@ function WasmRow({ wasm }: { wasm: Wasm }) {
 }
 
 export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
+	const [searchParams, setSearchParams] = useSearchParams()
+	const [query, setQuery] = useState(loaderData.query)
+	const debouncedQuery = useDebounced(query, 300)
+
+	useEffect(() => {
+		setQuery(loaderData.query)
+	}, [loaderData.query])
+
+	useEffect(() => {
+		const currentQuery = searchParams.get("query") ?? ""
+		if (debouncedQuery === currentQuery) {
+			return
+		}
+
+		const nextSearchParams = new URLSearchParams(searchParams)
+		if (debouncedQuery) {
+			nextSearchParams.set("query", debouncedQuery)
+		} else {
+			nextSearchParams.delete("query")
+		}
+
+		setSearchParams(nextSearchParams, { replace: true })
+	}, [debouncedQuery, searchParams, setSearchParams])
+
 	const { data: wasms = [] } = useQuery({
-		...wasmsQueryOptions(),
+		...wasmsQueryOptions({
+			query: debouncedQuery,
+		}),
 		initialData: loaderData.wasms,
 	})
-
-	const [query, setQuery] = useState("")
-
-	const filtered = query
-		? wasms.filter(
-				(w) =>
-					w.wasm_name.toLowerCase().includes(query.toLowerCase()) ||
-					w.author.toLowerCase().includes(query.toLowerCase()),
-			)
-		: wasms
 
 	return (
 		<>
@@ -75,11 +95,11 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 					/>
 				</div>
 
-				{filtered.length === 0 ? (
+				{wasms.length === 0 ? (
 					<p className={styles.emptyState}>No WASMs found.</p>
 				) : (
 					<div className={styles.list}>
-						{filtered.map((wasm) => (
+						{wasms.map((wasm) => (
 							<WasmRow key={wasm.wasm_hash} wasm={wasm} />
 						))}
 					</div>

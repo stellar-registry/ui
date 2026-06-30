@@ -1,6 +1,7 @@
 import { data } from "react-router"
 import { fetchGithubMetadata, parseGithubSourceRepo } from "./github"
 import {
+	type SearchParams,
 	type Contract,
 	type ContractDetail,
 	type ListResponse,
@@ -24,11 +25,18 @@ function isInternalServerError(value: unknown): value is InternalServerError {
 	return true
 }
 
-async function apiFetch<T>(path: string, apiUrl?: string): Promise<T> {
+async function apiFetch<T>(
+	path: string,
+	apiUrl?: string,
+	params?: SearchParams,
+): Promise<T> {
 	// Server-side: use the runtime API URL passed from load context (Cloudflare env).
 	// Client-side: route through the /api proxy so all browser requests are same-origin.
 	const apiBase = import.meta.env.SSR ? apiUrl : "/api"
-	const res = await fetch(`${apiBase}${API_VERSION}${path}`)
+	const search = params?.query
+		? `?${new URLSearchParams({ query: params.query }).toString()}`
+		: ""
+	const res = await fetch(`${apiBase}${API_VERSION}${path}${search}`)
 	if (!res.ok) {
 		const raw = await res.json().catch(() => undefined)
 		const payload = isInternalServerError(raw) ? raw : undefined
@@ -60,8 +68,11 @@ export async function getContract(
 	)
 }
 
-export async function getWasms(apiUrl?: string): Promise<Wasm[]> {
-	const data = await apiFetch<ListResponse<Wasm>>("/wasms", apiUrl)
+export async function getWasms(
+	apiUrl?: string,
+	params?: SearchParams,
+): Promise<Wasm[]> {
+	const data = await apiFetch<ListResponse<Wasm>>("/wasms", apiUrl, params)
 	return data.result
 }
 
