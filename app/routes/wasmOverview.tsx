@@ -127,6 +127,9 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 					</p>
 				}
 			/>
+      <button>
+        Deploy a contract using this Wasm
+      </button>
 			{wasm.meta?.source_repo && (
 				<MetadataSection sourceRepoUrl={wasm.meta.source_repo} />
 			)}
