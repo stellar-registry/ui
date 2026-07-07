@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
-import { Link, useSearchParams } from "react-router"
+import { useEffect, useState } from "react"
+import { Link, useNavigationType, useSearchParams } from "react-router"
 
 import { type Route } from "./+types/wasms"
 import styles from "./wasms.module.css"
@@ -64,45 +64,40 @@ function WasmRow({ wasm }: { wasm: Wasm }) {
 export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const urlQuery = searchParams.get("query") ?? ""
-	const [query, setQuery] = useState(urlQuery)
-	const debouncedQuery = useDebounced(query, 300)
-	const previousUrlQueryRef = useRef(urlQuery)
-	const pendingUrlWriteRef = useRef<string | null>(null)
 
+	// This holds the input's live value so typing feels instant; it's kept in
+	// sync with the URL (the source of truth) any time the URL changes from
+	// elsewhere (e.g. mount, browser back/forward, or a shared link).
+	const [input, setInput] = useState(urlQuery)
+	const inputOnChange: React.ChangeEventHandler<HTMLInputElement> = (e) =>
+		setInput(e.target.value)
+	const debouncedInput = useDebounced(input, 300)
+	const navigationType = useNavigationType()
+
+	// Our own debounced write below always navigates with `replace: true`
+	// (-> navigationType "REPLACE"), so any other urlQuery change is external
+	// (back/forward, a shared link) and should overwrite the in-progress input.
 	useEffect(() => {
-		if (previousUrlQueryRef.current === urlQuery) {
+		if (navigationType === "REPLACE") {
 			return
 		}
-
-		previousUrlQueryRef.current = urlQuery
-
-		if (pendingUrlWriteRef.current === urlQuery) {
-			pendingUrlWriteRef.current = null
-			return
-		}
-
-		setQuery(urlQuery)
-	}, [urlQuery])
+		setInput(urlQuery)
+	}, [urlQuery, navigationType])
 
 	useEffect(() => {
-		if (
-			previousUrlQueryRef.current !== urlQuery ||
-			debouncedQuery !== query ||
-			debouncedQuery === urlQuery
-		) {
+		if (debouncedInput === urlQuery) {
 			return
 		}
 
 		const nextSearchParams = new URLSearchParams(searchParams)
-		if (debouncedQuery) {
-			nextSearchParams.set("query", debouncedQuery)
+		if (debouncedInput) {
+			nextSearchParams.set("query", debouncedInput)
 		} else {
 			nextSearchParams.delete("query")
 		}
 
-		pendingUrlWriteRef.current = debouncedQuery
 		setSearchParams(nextSearchParams, { replace: true })
-	}, [debouncedQuery, query, searchParams, setSearchParams, urlQuery])
+	}, [debouncedInput, searchParams, setSearchParams, urlQuery])
 
 	const { data: wasms = [] } = useQuery({
 		...wasmsQueryOptions({
@@ -125,8 +120,8 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 				<div className={styles.toolbar}>
 					<Input
 						placeholder="Search WASMs by name…"
-						value={query}
-						onChange={(e) => setQuery(e.target.value)}
+						value={input}
+						onChange={inputOnChange}
 					/>
 				</div>
 
