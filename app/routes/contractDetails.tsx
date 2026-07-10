@@ -3,6 +3,7 @@ import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
 import { buildWasmUsageItems } from "./wasmOverview"
 import { Badge } from "~/components/badge"
+import { ContractExplorerPanel } from "~/components/contract-explorer-panel"
 import {
 	DetailField,
 	DetailFields,
@@ -16,6 +17,7 @@ import {
 } from "~/components/detail-sidebar"
 import { UsageSection } from "~/components/usage-section"
 import { getContract } from "~/lib/api"
+import { getNetwork } from "~/lib/network"
 import { getFullName, prefixName } from "~/lib/util"
 
 export async function loader({ params, context }: Route.LoaderArgs) {
@@ -143,39 +145,44 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 			</div>
 
 			{!hasWasm ? null : (
-        <>
-          <h1>Interact with this contract</h1>
-          <div><a href="https://www.npmjs.com/package/@theahaco/contract-explorer">Contract Explorer</a> goes here</div>
-          <UsageSection
-            items={buildWasmUsageItems(
-              fullWasmName,
-              contract.wasm_version,
-              contract.contract_id,
-            )}
-            description="Use the registered name of this Contract's Wasm to create a module for it and start calling its methods."
-            footer={
-              <>
-                <p style={{ margin: "0 0 1rem" }}>
-                  The macro downloads this Wasm at build time and generates a
-                  type-safe Rust client. Your editor's autocomplete should show
-                  all available methods as well as their argument and return
-                  types.
-                </p>
-                <p>
-                  Importing a Contract directly by name with the{" "}
-                  <code>import_contract!</code> macro is in development.{" "}
-                  <a
-                    href="https://github.com/theahaco/scaffold-stellar/issues/419"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Follow progress on GitHub →
-                  </a>
-                </p>
-              </>
-            }
-          />
-        </>
+				<>
+					<h2 className={styles.sectionHeading}>Interact with this contract</h2>
+					<ContractExplorerPanel
+						contractId={contract.contract_id}
+						contractName={fullName}
+						network={getNetwork(network)}
+					/>
+
+					<UsageSection
+						items={buildWasmUsageItems(
+							fullWasmName,
+							contract.wasm_version,
+							contract.contract_id,
+						)}
+						description="Use the registered name of this Contract's Wasm to create a module for it and start calling its methods."
+						footer={
+							<>
+								<p style={{ margin: "0 0 1rem" }}>
+									The macro downloads this Wasm at build time and generates a
+									type-safe Rust client. Your editor's autocomplete should show
+									all available methods as well as their argument and return
+									types.
+								</p>
+								<p>
+									Importing a Contract directly by name with the{" "}
+									<code>import_contract!</code> macro is in development.{" "}
+									<a
+										href="https://github.com/theahaco/scaffold-stellar/issues/419"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										Follow progress on GitHub →
+									</a>
+								</p>
+							</>
+						}
+					/>
+				</>
 			)}
 		</main>
 	)
