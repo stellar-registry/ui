@@ -4,6 +4,7 @@ import {
 	type Network,
 } from "@theahaco/contract-explorer"
 import { useEffect, useState } from "react"
+import "~/lib/buffer-polyfill"
 import styles from "./contract-explorer-panel.module.css"
 
 // `Contracts` isn't exported by `@theahaco/contract-explorer`, so derive it
