@@ -30,7 +30,10 @@ export default function Index() {
 						Browse and discover deployed smart contracts on the Stellar network.
 					</p>
 					<Form action="/contracts" method="get" className={styles.heroSearch}>
-						<Input name="q" placeholder="Search contracts by name or WASM…" />
+						<Input
+							name="query"
+							placeholder="Search contracts by name or WASM…"
+						/>
 					</Form>
 				</div>
 			</section>

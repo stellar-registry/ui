@@ -10,11 +10,12 @@ import { type SearchParams } from "./types"
 
 const STALE_TIME = 60_000
 
-export const contractsQueryOptions = () =>
+export const contractsQueryOptions = (params: SearchParams) =>
 	queryOptions({
-		queryKey: ["contracts"],
-		queryFn: () => getContracts(),
+		queryKey: ["contracts", params.query ?? ""],
+		queryFn: () => getContracts(undefined, params),
 		staleTime: STALE_TIME,
+		placeholderData: keepPreviousData,
 	})
 
 export const contractQueryOptions = (contractName: string, channel?: string) =>

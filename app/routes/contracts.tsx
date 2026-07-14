@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
-import { Link } from "react-router"
+import { Link, useSearchParams } from "react-router"
 
 import { type Route } from "./+types/contracts"
 import styles from "./contracts.module.css"
 import { Badge } from "~/components/badge"
-import { Input } from "~/components/input"
+import { QuerySearchInput } from "~/components/query-search-input"
 import { getContracts } from "~/lib/api"
 import { contractsQueryOptions } from "~/lib/queries"
+import { shouldRevalidateWhenPathChanges } from "~/lib/revalidation"
 import { type Contract } from "~/lib/types"
 import { getFullName, prefixName } from "~/lib/util"
 
@@ -19,10 +19,17 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request, context }: Route.LoaderArgs) {
-	const q = new URL(request.url).searchParams.get("q") ?? ""
-	const contracts = await getContracts(context.cloudflare.env.REGISTRY_API_URL)
-	return { contracts, q }
+	const query = new URL(request.url).searchParams.get("query") ?? ""
+	const contracts = await getContracts(
+		context.cloudflare.env.REGISTRY_API_URL,
+		{
+			query,
+		},
+	)
+	return { contracts, query }
 }
+
+export const shouldRevalidate = shouldRevalidateWhenPathChanges
 
 function ContractRow({ contract }: { contract: Contract }) {
 	const fullName = getFullName(contract)
@@ -44,21 +51,13 @@ function ContractRow({ contract }: { contract: Contract }) {
 }
 
 export default function ContractsIndex({ loaderData }: Route.ComponentProps) {
+	const [searchParams] = useSearchParams()
+	const query = searchParams.get("query") ?? ""
+
 	const { data: contracts = [] } = useQuery({
-		...contractsQueryOptions(),
-		initialData: loaderData.contracts,
+		...contractsQueryOptions({ query }),
+		initialData: query === loaderData.query ? loaderData.contracts : undefined,
 	})
-
-	const [query, setQuery] = useState(loaderData.q)
-
-	const filtered = query
-		? contracts.filter(
-				(c) =>
-					c.contract_name.toLowerCase().includes(query.toLowerCase()) ||
-					c.wasm_name?.toLowerCase().includes(query.toLowerCase()) ||
-					c.deployer?.toLowerCase().includes(query.toLowerCase()),
-			)
-		: contracts
 
 	return (
 		<>
@@ -73,18 +72,14 @@ export default function ContractsIndex({ loaderData }: Route.ComponentProps) {
 
 			<main className={styles.main}>
 				<div className={styles.toolbar}>
-					<Input
-						placeholder="Search contracts by name or WASM…"
-						value={query}
-						onChange={(e) => setQuery(e.target.value)}
-					/>
+					<QuerySearchInput placeholder="Search contracts by name or WASM…" />
 				</div>
 
-				{filtered.length === 0 ? (
+				{contracts.length === 0 ? (
 					<p className={styles.emptyState}>No contracts found.</p>
 				) : (
 					<div className={styles.list}>
-						{filtered.map((contract) => (
+						{contracts.map((contract) => (
 							<ContractRow key={contract.contract_id} contract={contract} />
 						))}
 					</div>
