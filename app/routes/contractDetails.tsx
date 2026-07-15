@@ -1,4 +1,4 @@
-import { data, useRouteLoaderData, isRouteErrorResponse } from "react-router"
+import { data, isRouteErrorResponse } from "react-router"
 import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
 import { buildWasmUsageItems } from "./wasmOverview"
@@ -17,6 +17,7 @@ import {
 import { UsageSection } from "~/components/usage-section"
 import { getContract } from "~/lib/api"
 import { getFullName, prefixName } from "~/lib/util"
+import { useRootData } from "~/root"
 
 export async function loader({ params, context }: Route.LoaderArgs) {
 	const { name, channel } = params
@@ -43,7 +44,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 	const { contract, fullName } = loaderData
-	const { network, stellarExpertURL } = useRouteLoaderData("root")
+	const { network, stellarExpertUrl } = useRootData()
 
 	const createdAt = new Date(contract.created_at).toLocaleString()
 
@@ -67,7 +68,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 				<DetailFields>
 					<DetailField label="Contract ID">
 						<FieldLink
-							href={`${stellarExpertURL}/contract/${contract.contract_id}`}
+							href={`${stellarExpertUrl}/contract/${contract.contract_id}`}
 							external
 						>
 							{contract.contract_id}
@@ -76,7 +77,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 
 					<DetailField label="Deployer">
 						<FieldLink
-							href={`${stellarExpertURL}/account/${contract.deployer}`}
+							href={`${stellarExpertUrl}/account/${contract.deployer}`}
 							external
 						>
 							{contract.deployer}
@@ -103,7 +104,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 
 					<DetailField label="Transaction">
 						<FieldLink
-							href={`${stellarExpertURL}/tx/${contract.transaction_hash}`}
+							href={`${stellarExpertUrl}/tx/${contract.transaction_hash}`}
 							external
 						>
 							{contract.transaction_hash}
@@ -122,7 +123,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					)}
 					<SidebarPanel>
 						<SidebarLink
-							href={`${stellarExpertURL}/contract/${contract.contract_id}`}
+							href={`${stellarExpertUrl}/contract/${contract.contract_id}`}
 							external
 						>
 							View on Stellar Expert
@@ -133,7 +134,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 							</SidebarLink>
 						)}
 						<SidebarLink
-							href={`${stellarExpertURL}/account/${contract.deployer}`}
+							href={`${stellarExpertUrl}/account/${contract.deployer}`}
 							external
 						>
 							View Deployer
