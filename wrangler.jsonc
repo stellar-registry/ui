@@ -20,7 +20,6 @@
 			"name": "rgstry-stellar",
 			"routes": [{ "pattern": "stellar.rgstry.xyz", "custom_domain": true }],
 			"vars": {
-				// TODO: point to mainnet indexer once launched
 				"REGISTRY_API_URL": "https://stellar-registry-mainnet.fly.dev",
 				"REGISTRY_NETWORK": "mainnet",
 			},
