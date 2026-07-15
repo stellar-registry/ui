@@ -102,8 +102,11 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 						<SidebarLink href={`/wasms/${fullName}/versions`}>
 							All Versions
 						</SidebarLink>
-						{wasm.meta?.source_repo && (
-							<SidebarLink href={wasm.meta.source_repo} external>
+						{wasm.meta?.source_repo && /github/.test(wasm.meta.source_repo) && (
+							<SidebarLink
+								href={`https://github.com/${wasm.meta.source_repo.split(":")[1]}`}
+								external
+							>
 								Source Repository
 							</SidebarLink>
 						)}
