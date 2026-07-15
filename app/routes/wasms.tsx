@@ -1,14 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
-import { Link, useNavigationType, useSearchParams } from "react-router"
+import { Link, useSearchParams } from "react-router"
 
 import { type Route } from "./+types/wasms"
 import styles from "./wasms.module.css"
 import { Badge } from "~/components/badge"
-import { Input } from "~/components/input"
-import { useDebounced } from "~/hooks/useDebounce"
+import { QuerySearchInput } from "~/components/query-search-input"
 import { getWasms } from "~/lib/api"
 import { wasmsQueryOptions } from "~/lib/queries"
+import { shouldRevalidateWhenPathChanges } from "~/lib/revalidation"
 import { type Wasm } from "~/lib/types"
 import { getFullName } from "~/lib/util"
 
@@ -30,23 +29,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 	return { wasms, query }
 }
 
-type ShouldRevalidateArgs = {
-	currentUrl: URL
-	nextUrl: URL
-	defaultShouldRevalidate: boolean
-}
-
-export function shouldRevalidate({
-	currentUrl,
-	nextUrl,
-	defaultShouldRevalidate,
-}: ShouldRevalidateArgs) {
-	if (currentUrl.pathname === nextUrl.pathname) {
-		return false
-	}
-
-	return defaultShouldRevalidate
-}
+export const shouldRevalidate = shouldRevalidateWhenPathChanges
 
 function WasmRow({ wasm }: { wasm: Wasm }) {
 	const fullName = getFullName(wasm)
@@ -62,42 +45,8 @@ function WasmRow({ wasm }: { wasm: Wasm }) {
 }
 
 export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
-	const [searchParams, setSearchParams] = useSearchParams()
+	const [searchParams] = useSearchParams()
 	const urlQuery = searchParams.get("query") ?? ""
-
-	// This holds the input's live value so typing feels instant; it's kept in
-	// sync with the URL (the source of truth) any time the URL changes from
-	// elsewhere (e.g. mount, browser back/forward, or a shared link).
-	const [input, setInput] = useState(urlQuery)
-	const inputOnChange: React.ChangeEventHandler<HTMLInputElement> = (e) =>
-		setInput(e.target.value)
-	const debouncedInput = useDebounced(input, 300)
-	const navigationType = useNavigationType()
-
-	// Our own debounced write below always navigates with `replace: true`
-	// (-> navigationType "REPLACE"), so any other urlQuery change is external
-	// (back/forward, a shared link) and should overwrite the in-progress input.
-	useEffect(() => {
-		if (navigationType === "REPLACE") {
-			return
-		}
-		setInput(urlQuery)
-	}, [urlQuery, navigationType])
-
-	useEffect(() => {
-		if (debouncedInput === urlQuery) {
-			return
-		}
-
-		const nextSearchParams = new URLSearchParams(searchParams)
-		if (debouncedInput) {
-			nextSearchParams.set("query", debouncedInput)
-		} else {
-			nextSearchParams.delete("query")
-		}
-
-		setSearchParams(nextSearchParams, { replace: true })
-	}, [debouncedInput, searchParams, setSearchParams, urlQuery])
 
 	const { data: wasms = [] } = useQuery({
 		...wasmsQueryOptions({
@@ -118,11 +67,7 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 
 			<main className={styles.main}>
 				<div className={styles.toolbar}>
-					<Input
-						placeholder="Search WASMs by name…"
-						value={input}
-						onChange={inputOnChange}
-					/>
+					<QuerySearchInput placeholder="Search WASMs by name…" />
 				</div>
 
 				{wasms.length === 0 ? (

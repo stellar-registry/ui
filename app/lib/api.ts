@@ -52,8 +52,15 @@ async function apiFetch<T>(
 	return res.json() as Promise<T>
 }
 
-export async function getContracts(apiUrl?: string): Promise<Contract[]> {
-	const data = await apiFetch<ListResponse<Contract>>("/contracts", apiUrl)
+export async function getContracts(
+	apiUrl?: string,
+	params?: SearchParams,
+): Promise<Contract[]> {
+	const data = await apiFetch<ListResponse<Contract>>(
+		"/contracts",
+		apiUrl,
+		params,
+	)
 	return data.result
 }
 
