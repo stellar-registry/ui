@@ -75,14 +75,16 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 						</FieldLink>
 					</DetailField>
 
-					<DetailField label="Deployer">
-						<FieldLink
-							href={`${stellarExpertUrl}/account/${contract.deployer}`}
-							external
-						>
-							{contract.deployer}
-						</FieldLink>
-					</DetailField>
+					{contract.deployer && (
+						<DetailField label="Deployer">
+							<FieldLink
+								href={`${stellarExpertUrl}/account/${contract.deployer}`}
+								external
+							>
+								{contract.deployer}
+							</FieldLink>
+						</DetailField>
+					)}
 
 					{hasWasm && (
 						<DetailField label="WASM">
@@ -133,12 +135,14 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 								View WASM
 							</SidebarLink>
 						)}
-						<SidebarLink
-							href={`${stellarExpertUrl}/account/${contract.deployer}`}
-							external
-						>
-							View Deployer
-						</SidebarLink>
+						{contract.deployer && (
+							<SidebarLink
+								href={`${stellarExpertUrl}/account/${contract.deployer}`}
+								external
+							>
+								View Deployer
+							</SidebarLink>
+						)}
 					</SidebarPanel>
 				</aside>
 			</div>
