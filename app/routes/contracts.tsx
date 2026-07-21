@@ -80,7 +80,10 @@ export default function ContractsIndex({ loaderData }: Route.ComponentProps) {
 				) : (
 					<div className={styles.list}>
 						{contracts.map((contract) => (
-							<ContractRow key={contract.contract_id} contract={contract} />
+							<ContractRow
+								key={contract.contract_id + contract.channel}
+								contract={contract}
+							/>
 						))}
 					</div>
 				)}

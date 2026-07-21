@@ -75,7 +75,7 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 				) : (
 					<div className={styles.list}>
 						{wasms.map((wasm) => (
-							<WasmRow key={wasm.wasm_hash} wasm={wasm} />
+							<WasmRow key={wasm.wasm_hash + wasm.channel} wasm={wasm} />
 						))}
 					</div>
 				)}
