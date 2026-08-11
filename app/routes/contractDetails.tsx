@@ -133,7 +133,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 											>
 												{versionLabel}
 											</Link>{" "}
-											{version.kind}
+											{version.kind} {idx === 0 && "(latest)"}
 										</li>
 									)
 								})}
