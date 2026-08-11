@@ -118,29 +118,27 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					</DetailField>
 					{linkedContractVersions.length > 0 && (
 						<DetailField label="Contract History">
-							<FieldValue>
-								<ul className={styles.versionList}>
-									{linkedContractVersions.reverse().map((version, idx) => {
-										const versionWasmName = prefixName(
-											version.wasm_name!,
-											version.wasm_channel,
-										)
-										const versionLabel = `${versionWasmName}@v${version.wasm_version}`
+							<ul className={styles.versionList}>
+								{linkedContractVersions.reverse().map((version, idx) => {
+									const versionWasmName = prefixName(
+										version.wasm_name!,
+										version.wasm_channel,
+									)
+									const versionLabel = `${versionWasmName}@v${version.wasm_version}`
 
-										return (
-											<li key={`${versionWasmName}-${version.wasm_version}`}>
-												{version.version_index}:&nbsp;
-												<Link
-													to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
-												>
-													{versionLabel}
-												</Link>{" "}
-												{version.kind} {idx === 0 ? "(latest)" : ""}
-											</li>
-										)
-									})}
-								</ul>
-							</FieldValue>
+									return (
+										<li key={`${versionWasmName}-${version.wasm_version}`}>
+											{version.version_index}:&nbsp;
+											<Link
+												to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
+											>
+												{versionLabel}
+											</Link>{" "}
+											{version.kind} {idx === 0 ? "(latest)" : ""}
+										</li>
+									)
+								})}
+							</ul>
 						</DetailField>
 					)}
 				</DetailFields>

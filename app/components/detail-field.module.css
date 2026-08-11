@@ -28,7 +28,8 @@
 	text-decoration: underline;
 }
 
-.fieldValue {
+.fieldValue,
+.field ul {
 	font-family: monospace;
 	font-size: 0.875rem;
 	margin: 0;
