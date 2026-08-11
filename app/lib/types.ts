@@ -97,8 +97,6 @@ export interface Contract {
 	wasm_name?: string
 	wasm_channel?: string
 	is_stellar_asset_contract: boolean
-	version_index?: number
-	kind?: string
 }
 
 interface ContractVersion {
