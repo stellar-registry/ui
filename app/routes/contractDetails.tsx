@@ -55,10 +55,9 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 	const wasmAndVersion = hasWasm
 		? `${fullWasmName}@v${contract.wasm_version}`
 		: ""
-	const contractVersions = contract.versions ?? []
-	const linkedContractVersions = contractVersions.filter(
-		(version) => version.wasm_name && version.wasm_version,
-	)
+	const contractVersions = contract.versions
+		? contract.versions.slice().reverse()
+		: []
 
 	return (
 		<main className={styles.main}>
@@ -116,10 +115,10 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 							{contract.transaction_hash}
 						</FieldLink>
 					</DetailField>
-					{linkedContractVersions.length > 0 && (
+					{contractVersions.length > 0 && (
 						<DetailField label="Contract History">
-							<ul className={styles.versionList}>
-								{linkedContractVersions.reverse().map((version, idx) => {
+							<ul>
+								{contractVersions.map((version, idx) => {
 									const versionWasmName = prefixName(
 										version.wasm_name!,
 										version.wasm_channel,
@@ -134,7 +133,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 											>
 												{versionLabel}
 											</Link>{" "}
-											{version.kind} {idx === 0 ? "(latest)" : ""}
+											{version.kind}
 										</li>
 									)
 								})}
