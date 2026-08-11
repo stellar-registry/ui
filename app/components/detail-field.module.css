@@ -33,4 +33,7 @@
 	font-size: 0.875rem;
 	margin: 0;
 	color: var(--color-foreground);
+	a {
+		color: var(--color-link);
+	}
 }

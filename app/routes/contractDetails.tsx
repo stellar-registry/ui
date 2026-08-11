@@ -1,4 +1,4 @@
-import { data, isRouteErrorResponse } from "react-router"
+import { data, isRouteErrorResponse, Link } from "react-router"
 import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
 import { buildWasmUsageItems } from "./wasmOverview"
@@ -55,6 +55,10 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 	const wasmAndVersion = hasWasm
 		? `${fullWasmName}@v${contract.wasm_version}`
 		: ""
+	const contractVersions = contract.versions ?? []
+	const linkedContractVersions = contractVersions.filter(
+		(version) => version.wasm_name && version.wasm_version,
+	)
 
 	return (
 		<main className={styles.main}>
@@ -112,6 +116,33 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 							{contract.transaction_hash}
 						</FieldLink>
 					</DetailField>
+					{linkedContractVersions.length > 0 && (
+						<DetailField label="Contract History">
+							<FieldValue>
+								<ul className={styles.versionList}>
+									{linkedContractVersions.reverse().map((version, idx) => {
+										const versionWasmName = prefixName(
+											version.wasm_name!,
+											version.wasm_channel,
+										)
+										const versionLabel = `${versionWasmName}@v${version.wasm_version}`
+
+										return (
+											<li key={`${versionWasmName}-${version.wasm_version}`}>
+												{version.version_index}:&nbsp;
+												<Link
+													to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
+												>
+													{versionLabel}
+												</Link>{" "}
+												{version.kind} {idx === 0 ? "(latest)" : ""}
+											</li>
+										)
+									})}
+								</ul>
+							</FieldValue>
+						</DetailField>
+					)}
 				</DetailFields>
 
 				<aside className={styles.sidebar}>

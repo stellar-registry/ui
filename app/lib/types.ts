@@ -97,6 +97,8 @@ export interface Contract {
 	wasm_name?: string
 	wasm_channel?: string
 	is_stellar_asset_contract: boolean
+	version_index?: number
+	kind?: string
 }
 
 export interface ContractDetail extends Contract {
@@ -104,6 +106,7 @@ export interface ContractDetail extends Contract {
 	transaction_hash: string
 	ledger_sequence: number
 	created_at: string
+	versions?: Contract[]
 }
 
 export interface SearchParams {
