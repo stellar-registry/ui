@@ -29,7 +29,7 @@
 }
 
 .fieldValue,
-.field ul {
+.field ol {
 	font-family: monospace;
 	font-size: 0.875rem;
 	margin: 0;
@@ -37,4 +37,8 @@
 	a {
 		color: var(--color-link);
 	}
+}
+
+.field ol {
+	list-style-type: circle;
 }
