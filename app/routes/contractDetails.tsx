@@ -55,9 +55,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 	const wasmAndVersion = hasWasm
 		? `${fullWasmName}@v${contract.wasm_version}`
 		: ""
-	const contractVersions = contract.versions
-		? contract.versions.slice().reverse()
-		: []
+	const contractVersions = contract.versions.slice().reverse()
 
 	return (
 		<main className={styles.main}>

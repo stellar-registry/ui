@@ -112,7 +112,7 @@ export interface ContractDetail extends Contract {
 	transaction_hash: string
 	ledger_sequence: number
 	created_at: string
-	versions?: ContractVersion[]
+	versions: ContractVersion[]
 }
 
 export interface SearchParams {
