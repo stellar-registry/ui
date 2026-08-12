@@ -118,7 +118,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					{contractVersions.length > 0 && (
 						<DetailField label="Contract History">
 							<ol reversed>
-								{contractVersions.map((version, idx) => {
+								{contractVersions.map((version) => {
 									const versionWasmName = prefixName(
 										version.wasm_name!,
 										version.wasm_channel,
@@ -133,7 +133,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 											>
 												{versionLabel}
 											</Link>{" "}
-											{version.kind} {idx === 0 && "(latest)"}
+											{version.kind}
 										</li>
 									)
 								})}

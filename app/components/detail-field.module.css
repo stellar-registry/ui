@@ -41,4 +41,7 @@
 
 .field ol {
 	list-style-type: circle;
+	> li:first-child::after {
+		content: " (latest)";
+	}
 }
