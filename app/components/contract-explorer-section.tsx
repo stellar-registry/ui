@@ -14,7 +14,7 @@ const ContractExplorerPanel = lazy(() =>
 	})),
 )
 
-const LOADING = <p className={styles.loading}>"Loading contract explorer…"</p>
+const LOADING = <p className={styles.loading}>Loading contract explorer…</p>
 
 /**
  * Client-only boundary around ContractExplorerPanel.

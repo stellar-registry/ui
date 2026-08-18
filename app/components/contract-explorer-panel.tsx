@@ -6,6 +6,7 @@ import {
 } from "@theahaco/contract-explorer"
 import { useEffect, useMemo, useState } from "react"
 import "~/lib/buffer-polyfill"
+import "./contract-explorer-panel.css"
 import styles from "./contract-explorer-panel.module.css"
 import { WalletButton } from "./wallet-button"
 import { WALLET_QUERY_KEY, walletQueryOptions } from "~/lib/queries"
@@ -96,7 +97,9 @@ export function ContractExplorerPanel({
 	}, [contractId, contractName, network])
 
 	return (
-		<div className={isDark ? "sds-theme-dark" : "sds-theme-light"}>
+		<div
+			className={`ContractExplorer ${isDark ? "sds-theme-dark" : "sds-theme-light"}`}
+		>
 			<WalletButton network={network} state={wallet} isPending={isPending} />
 
 			{contracts ? (

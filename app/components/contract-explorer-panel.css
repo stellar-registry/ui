@@ -1,0 +1,30 @@
+/**
+ * Stellar Design System styles for the embedded contract explorer.
+ *
+ * TODO: I need to fix @theahaco/contract-explorer's CSS export and it does not
+ * import SDS's styles, so we have to supply it for now.
+ *
+ * Pulled into a cascade layer on purpose. The file bundles normalize.css,
+ * whose bare element rules would undo the reset in app.css. Unlayered styles
+ * beat layered ones regardless of order or specificity, so the registry's own
+ * rules keep winning site-wide while the `.sds-*` component styles, which
+ * nothing else defines, still apply inside the panel.
+ */
+@import "@stellar/design-system/build/styles.min.css" layer(sds);
+
+.ContractExplorer {
+	background: inherit;
+}
+
+.ContractExplorer .Layout__content .Layout__inset {
+	padding: 0;
+	margin: 0;
+}
+
+/** Hide contract selector */
+.ContractExplorer .Layout__content .Layout__inset:first-child {
+	display: none;
+}
+.ContractExplorer .Layout__content .Layout__inset:last-child {
+	display: block;
+}

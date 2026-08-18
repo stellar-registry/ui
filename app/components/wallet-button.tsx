@@ -31,21 +31,18 @@ export function WalletButton({ network, state, isPending }: WalletButtonProps) {
 			<div className={styles.bar}>
 				{state?.address ? (
 					<>
-						<span className={styles.status}>
-							Connected — calls will be signed with this account.
-						</span>
 						<button
 							className={`${styles.button} ${styles.address}`}
 							onClick={() => profile.mutate()}
 						>
 							{shortAddress(state.address)}
 						</button>
+						<span className={styles.status}>
+							Connected. Calls will be signed with this account.
+						</span>
 					</>
 				) : (
 					<>
-						<span className={styles.status}>
-							Read-only. Connect a wallet to submit transactions.
-						</span>
 						<button
 							className={styles.button}
 							onClick={() => connect.mutate()}
@@ -53,6 +50,9 @@ export function WalletButton({ network, state, isPending }: WalletButtonProps) {
 						>
 							{busy ? "Connecting…" : "Connect wallet"}
 						</button>
+						<span className={styles.status}>
+							Read-only. Connect a wallet to submit transactions.
+						</span>
 					</>
 				)}
 			</div>
