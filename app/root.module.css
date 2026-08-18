@@ -40,8 +40,9 @@
 }
 
 .headerLogoMark {
-	font-size: 1.1rem;
-	line-height: 1;
+	width: 1.1rem;
+	height: auto;
+	flex-shrink: 0;
 }
 
 .headerLogoWrapper {
@@ -84,6 +85,9 @@
 }
 
 .navLink {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
 	padding: 0.25rem 0.625rem;
 	border-radius: var(--radius-sm);
 	font-size: 0.875rem;
@@ -96,6 +100,12 @@
 			var(--default-transition-timing-function),
 		background-color var(--default-transition-duration)
 			var(--default-transition-timing-function);
+}
+
+.navLinkIcon {
+	width: 0.875rem;
+	height: 0.875rem;
+	flex-shrink: 0;
 }
 
 .navLink:hover {

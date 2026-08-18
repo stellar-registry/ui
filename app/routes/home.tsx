@@ -2,14 +2,16 @@ import { Form, Link } from "react-router"
 import { type Route } from "./+types/home"
 import styles from "./home.module.css"
 import { CodeBlock } from "~/components/code-block"
+import { RegistryLogo } from "~/components/icons"
 import { Input } from "~/components/input"
+import { pageMeta } from "~/lib/meta"
 import { useRootData } from "~/root"
 
 export function meta({}: Route.MetaArgs) {
-	return [
-		{ title: "Stellar Registry" },
-		{ name: "description", content: "Browse deployed Stellar smart contracts" },
-	]
+	return pageMeta({
+		title: "Stellar Registry",
+		description: "Browse deployed Stellar smart contracts",
+	})
 }
 
 export default function Index() {
@@ -19,7 +21,7 @@ export default function Index() {
 		<>
 			<section className={styles.hero}>
 				<div className={styles.heroInner}>
-					<div className={styles.heroMark}>✦</div>
+					<RegistryLogo className={styles.heroMark} />
 					<div className={styles.heroHeadingWrapper}>
 						<h1 className={styles.heroHeading}>Stellar Registry</h1>
 						{network === "testnet" && (

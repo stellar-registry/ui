@@ -4,21 +4,20 @@ import { Link, useSearchParams } from "react-router"
 import { type Route } from "./+types/wasms"
 import styles from "./wasms.module.css"
 import { Badge } from "~/components/badge"
+import { WasmIcon } from "~/components/icons"
 import { QuerySearchInput } from "~/components/query-search-input"
 import { getWasms } from "~/lib/api"
+import { pageMeta } from "~/lib/meta"
 import { wasmsQueryOptions } from "~/lib/queries"
 import { shouldRevalidateWhenPathChanges } from "~/lib/revalidation"
 import { type Wasm } from "~/lib/types"
 import { getFullName } from "~/lib/util"
 
 export function meta({}: Route.MetaArgs) {
-	return [
-		{ title: "WASMs — Stellar Registry" },
-		{
-			name: "description",
-			content: "Browse published WASM modules on Stellar",
-		},
-	]
+	return pageMeta({
+		title: "WASMs — Stellar Registry",
+		description: "Browse published WASM modules on Stellar",
+	})
 }
 
 export async function loader({ request, context }: Route.LoaderArgs) {
@@ -58,7 +57,10 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 		<>
 			<section className={styles.pageHeader}>
 				<div className={styles.pageHeaderInner}>
-					<h1 className={styles.pageTitle}>WASMs</h1>
+					<h1 className={styles.pageTitle}>
+						<WasmIcon className={styles.pageTitleIcon} />
+						WASMs
+					</h1>
 					<p className={styles.pageSub}>
 						Published WebAssembly modules available on the Stellar network.
 					</p>

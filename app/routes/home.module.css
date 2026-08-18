@@ -19,8 +19,8 @@
 }
 
 .heroMark {
-	font-size: 2.25rem;
-	line-height: 1;
+	width: 2.5rem;
+	height: auto;
 	color: var(--color-primary-foreground);
 	margin-bottom: 1.25rem;
 }

@@ -20,6 +20,7 @@ import {
 import { type Route } from "./+types/root"
 import "./app.css"
 import styles from "./root.module.css"
+import { ContractIcon, RegistryLogo, WasmIcon } from "~/components/icons"
 import { checkHealth } from "~/lib/api"
 
 // Runs before hydration to avoid flash of wrong theme. Defaults to dark.
@@ -39,7 +40,7 @@ function Header({
 			<div className={styles.headerInner}>
 				<div className={styles.headerLogoWrapper}>
 					<Link to="/" className={styles.headerLogo}>
-						<span className={styles.headerLogoMark}>✦</span>
+						<RegistryLogo className={styles.headerLogoMark} />
 						Stellar Registry
 					</Link>
 					{network === "testnet" && (
@@ -53,6 +54,7 @@ function Header({
 							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
 						}
 					>
+						<WasmIcon className={styles.navLinkIcon} />
 						WASMs
 					</NavLink>
 					<NavLink
@@ -61,6 +63,7 @@ function Header({
 							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
 						}
 					>
+						<ContractIcon className={styles.navLinkIcon} />
 						Contracts
 					</NavLink>
 					<NavLink
