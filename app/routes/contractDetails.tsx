@@ -3,7 +3,7 @@ import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
 import { buildWasmUsageItems } from "./wasmOverview"
 import { Badge } from "~/components/badge"
-import { ContractExplorerPanel } from "~/components/contract-explorer-panel"
+import { ContractExplorerSection } from "~/components/contract-explorer-section"
 import {
 	DetailField,
 	DetailFields,
@@ -152,7 +152,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 			{!hasWasm ? null : (
 				<>
 					<h2 className={styles.sectionHeading}>Interact with this contract</h2>
-					<ContractExplorerPanel
+					<ContractExplorerSection
 						contractId={contract.contract_id}
 						contractName={fullName}
 						network={getNetwork(network)}

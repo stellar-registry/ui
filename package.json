@@ -12,6 +12,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "^2.5.0",
     "@tanstack/react-query": "^5.90.21",
     "@theahaco/contract-explorer": "^1.3.0",
     "buffer": "^6.0.3",

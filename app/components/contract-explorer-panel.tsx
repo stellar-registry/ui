@@ -1,11 +1,15 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
 	ContractExplorer,
 	loadContractsFromNetwork,
 	type Network,
 } from "@theahaco/contract-explorer"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import "~/lib/buffer-polyfill"
 import styles from "./contract-explorer-panel.module.css"
+import { WalletButton } from "./wallet-button"
+import { WALLET_QUERY_KEY, walletQueryOptions } from "~/lib/queries"
+import { makeSignTransaction, subscribeToWallet } from "~/lib/wallet"
 
 // `Contracts` isn't exported by `@theahaco/contract-explorer`, so derive it
 // from the loader's return type instead.
@@ -34,6 +38,29 @@ function useIsDark() {
 	return isDark
 }
 
+/**
+ * Wallet state, read once and then kept current by the kit's own events.
+ *
+ * The query establishes the initial value (and restores a persisted session);
+ * this effect is the single writer that pushes later changes into the cache.
+ * `subscribeToWallet` dedupes the underlying kit listeners itself, so a second
+ * mount is harmless.
+ */
+function useWallet(network: Network) {
+	const queryClient = useQueryClient()
+	const { data, isPending } = useQuery(walletQueryOptions(network))
+
+	useEffect(
+		() =>
+			subscribeToWallet(network, (state) =>
+				queryClient.setQueryData(WALLET_QUERY_KEY, state),
+			),
+		[network, queryClient],
+	)
+
+	return { wallet: data, isPending }
+}
+
 export function ContractExplorerPanel({
 	contractId,
 	contractName,
@@ -41,6 +68,11 @@ export function ContractExplorerPanel({
 }: ContractExplorerPanelProps) {
 	const [contracts, setContracts] = useState<Contracts | null>(null)
 	const isDark = useIsDark()
+	const { wallet, isPending } = useWallet(network)
+
+	// Rebuild only when the network changes so the explorer isn't handed a new
+	// function on every wallet update, causing re-renders
+	const signTransaction = useMemo(() => makeSignTransaction(network), [network])
 
 	useEffect(() => {
 		let cancelled = false
@@ -65,8 +97,15 @@ export function ContractExplorerPanel({
 
 	return (
 		<div className={isDark ? "sds-theme-dark" : "sds-theme-light"}>
+			<WalletButton network={network} state={wallet} isPending={isPending} />
+
 			{contracts ? (
-				<ContractExplorer contracts={contracts} network={network} />
+				<ContractExplorer
+					contracts={contracts}
+					network={network}
+					address={wallet?.address}
+					signTransaction={signTransaction}
+				/>
 			) : (
 				<p className={styles.loading}>Loading contract explorer…</p>
 			)}
