@@ -8,14 +8,17 @@ declare namespace Cloudflare {
 	interface StellarEnv {
 		REGISTRY_API_URL: string
 		REGISTRY_NETWORK: string
+		REGISTRY_RPC_URL: string
 	}
 	interface TestnetEnv {
 		REGISTRY_API_URL: string
 		REGISTRY_NETWORK: string
+		REGISTRY_RPC_URL: string
 	}
 	interface Env {
 		REGISTRY_API_URL: string
 		REGISTRY_NETWORK: string
+		REGISTRY_RPC_URL: string
 	}
 }
 interface Env extends Cloudflare.Env {}
@@ -26,7 +29,10 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 }
 declare namespace NodeJS {
 	interface ProcessEnv extends StringifyValues<
-		Pick<Cloudflare.Env, "REGISTRY_API_URL" | "REGISTRY_NETWORK">
+		Pick<
+			Cloudflare.Env,
+			"REGISTRY_API_URL" | "REGISTRY_NETWORK" | "REGISTRY_RPC_URL"
+		>
 	> {}
 }
 
