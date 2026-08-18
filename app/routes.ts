@@ -23,6 +23,14 @@ export default [
 			}),
 		]),
 	]),
+	...prefix("governance", [
+		index("routes/governance.tsx"),
+		route("add-wasm", "routes/governanceAddWasm.tsx"),
+		route("add-contract", "routes/governanceAddContract.tsx"),
+		route("new-subregistry", "routes/governanceNewSubregistry.tsx"),
+		route("change-wasm-owner", "routes/governanceChangeWasmOwner.tsx"),
+		route("change-contract-owner", "routes/governanceChangeContractOwner.tsx"),
+	]),
 	route("api/*", "routes/api.tsx"),
 	route("*", "routes/404.tsx"),
 ] satisfies RouteConfig

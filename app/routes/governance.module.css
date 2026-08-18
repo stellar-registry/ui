@@ -1,0 +1,88 @@
+/* ── Page header ─────────────────────────────────────── */
+
+.pageHeader {
+	background-color: var(--color-card);
+	border-bottom: 1px solid var(--color-border);
+	padding: 2.5rem 0;
+}
+
+.pageHeaderInner {
+	max-width: 56rem;
+	margin: 0 auto;
+	padding: 0 1.5rem;
+}
+
+.pageTitle {
+	font-family: var(--font-display);
+	font-size: 2rem;
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	margin: 0 0 0.5rem;
+}
+
+.pageSub {
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--color-muted-foreground);
+	margin: 0;
+	max-width: 42rem;
+}
+
+/* ── Main ────────────────────────────────────────────── */
+
+.main {
+	max-width: 56rem;
+	margin: 0 auto;
+	padding: 2rem 1.5rem 4rem;
+}
+
+.operations {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.25rem;
+}
+
+@media (max-width: 600px) {
+	.operations {
+		grid-template-columns: 1fr;
+	}
+}
+
+.operationCard {
+	display: flex;
+	flex-direction: column;
+	padding: 1.5rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	text-decoration: none;
+	color: inherit;
+	background-color: var(--color-card);
+	transition: border-color var(--default-transition-duration)
+		var(--default-transition-timing-function);
+}
+
+.operationCard:hover {
+	border-color: var(--color-ring);
+}
+
+.operationTitle {
+	font-family: var(--font-display);
+	font-size: 1.125rem;
+	font-weight: 500;
+	margin: 0 0 0.625rem;
+	color: var(--color-foreground);
+}
+
+.operationDesc {
+	font-size: 0.9375rem;
+	line-height: 1.6;
+	color: var(--color-muted-foreground);
+	margin: 0 0 1.25rem;
+	flex: 1;
+}
+
+.operationLink {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--color-link);
+}

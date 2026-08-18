@@ -1,0 +1,10 @@
+.label {
+	display: flex;
+	align-items: center;
+	gap: calc(var(--spacing) * 2);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	line-height: 1;
+	color: var(--color-foreground);
+	user-select: none;
+}
