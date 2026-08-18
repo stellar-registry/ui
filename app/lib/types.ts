@@ -118,3 +118,56 @@ export interface ContractDetail extends Contract {
 export interface SearchParams {
 	query?: string
 }
+
+// ── Deploy spec ───────────────────────────────────────
+//
+// GET /wasms/{wasm_hash}/deploy-spec returns the wasm's `__constructor`
+// function spec, if it has one. Types are serialized straight from XDR
+// `ScSpecTypeDef`: primitives are bare strings ("address", "u32", "i128", …);
+// composites are single-key objects ("vec"/"map"/"option"/"tuple"/"udt").
+// `udt` only carries a type *name* — the endpoint can't tell us a custom
+// struct/enum's fields, so those (and every other composite) are treated as
+// unsupported by the deploy form.
+
+export type PrimitiveSpecType =
+	| "u32"
+	| "i32"
+	| "u64"
+	| "i64"
+	| "u128"
+	| "i128"
+	| "u256"
+	| "i256"
+	| "bool"
+	| "void"
+	| "bytes"
+	| "string"
+	| "symbol"
+	| "address"
+	| "timepoint"
+	| "duration"
+
+export type ScSpecTypeDef =
+	| PrimitiveSpecType
+	| { bytes_n: { n: number } }
+	| { option: { value_type: ScSpecTypeDef } }
+	| { result: { ok_type: ScSpecTypeDef; error_type: ScSpecTypeDef } }
+	| { vec: { element_type: ScSpecTypeDef } }
+	| { map: { key_type: ScSpecTypeDef; value_type: ScSpecTypeDef } }
+	| { tuple: { value_types: ScSpecTypeDef[] } }
+	| { udt: { name: string } }
+
+export interface FunctionInput {
+	doc: string
+	name: string
+	type: ScSpecTypeDef
+}
+
+export interface FunctionSpec {
+	doc?: string
+	inputs: FunctionInput[]
+}
+
+export interface DeploySpec {
+	__constructor?: FunctionSpec
+}

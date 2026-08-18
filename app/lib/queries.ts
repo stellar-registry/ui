@@ -2,6 +2,7 @@ import { keepPreviousData, queryOptions } from "@tanstack/react-query"
 import {
 	getContract,
 	getContracts,
+	getDeploySpec,
 	getWasm,
 	getWasmMeta,
 	getWasms,
@@ -45,4 +46,11 @@ export const wasmMetaQueryOptions = (repoUrl: string) =>
 		queryKey: ["wasm-meta", repoUrl],
 		staleTime: STALE_TIME,
 		queryFn: () => getWasmMeta(repoUrl),
+	})
+
+export const deploySpecQueryOptions = (wasmHash: string) =>
+	queryOptions({
+		queryKey: ["deploy-spec", wasmHash],
+		staleTime: STALE_TIME,
+		queryFn: () => getDeploySpec(wasmHash),
 	})

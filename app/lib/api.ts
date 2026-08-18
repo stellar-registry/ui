@@ -4,6 +4,7 @@ import {
 	type SearchParams,
 	type Contract,
 	type ContractDetail,
+	type DeploySpec,
 	type ListResponse,
 	type Wasm,
 	type WasmDetail,
@@ -93,6 +94,13 @@ export async function getWasm(
 		? `/wasms/${prefixName(name, channel)}/v/${version}`
 		: `/wasms/${prefixName(name, channel)}`
 	return apiFetch<WasmDetail>(path, apiUrl)
+}
+
+export async function getDeploySpec(
+	wasmHash: string,
+	apiUrl?: string,
+): Promise<DeploySpec> {
+	return apiFetch<DeploySpec>(`/wasms/${wasmHash}/deploy-spec`, apiUrl)
 }
 
 export async function checkHealth(): Promise<boolean> {

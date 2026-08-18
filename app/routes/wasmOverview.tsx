@@ -1,16 +1,39 @@
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { useEffect, useState } from "react"
 import { data, Outlet, isRouteErrorResponse } from "react-router"
 import { type Route } from "./+types/wasmOverview"
 import styles from "./wasmOverview.module.css"
 import { Badge } from "~/components/badge"
+import { Button } from "~/components/button"
 import {
 	SidebarAlert,
 	SidebarLink,
 	SidebarPanel,
 } from "~/components/detail-sidebar"
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "~/components/dialog"
+import { Input } from "~/components/input"
 import { MetadataSection } from "~/components/metadata-section"
 import { UsageSection } from "~/components/usage-section"
 import { getWasm } from "~/lib/api"
+import { type DeployResult, deployFromWasm } from "~/lib/deploy"
+import { networkPassphrase, registryContractId } from "~/lib/network"
+import { deploySpecQueryOptions } from "~/lib/queries"
+import {
+	type SupportedSpecType,
+	isSupportedSpecType,
+	specTypeLabel,
+} from "~/lib/scval"
+import { type FunctionInput } from "~/lib/types"
 import { getFullName, isLatestWasm } from "~/lib/util"
+import { connectWallet, restoreAddress, signTransaction } from "~/lib/wallet"
 import { useRootData } from "~/root"
 
 export async function loader({ params, context }: Route.LoaderArgs) {
@@ -67,6 +90,270 @@ let result = client.method_name(&arg);
 			code: useClient,
 		},
 	]
+}
+
+function placeholderForType(type: SupportedSpecType) {
+	switch (type) {
+		case "address":
+			return "G... or C..."
+		case "bytes":
+			return "hex, e.g. 1a2b3c…"
+		case "string":
+		case "symbol":
+			return "value"
+		default:
+			return "0"
+	}
+}
+
+function ConstructorField({
+	input,
+	value,
+	onChange,
+}: {
+	input: FunctionInput
+	value: string
+	onChange: (value: string) => void
+}) {
+	const type = input.type as SupportedSpecType
+
+	if (type === "bool") {
+		return (
+			<label className={styles.deployField}>
+				<span>{input.name}</span>
+				<input
+					type="checkbox"
+					checked={value === "true"}
+					onChange={(e) => onChange(e.target.checked ? "true" : "false")}
+				/>
+			</label>
+		)
+	}
+
+	return (
+		<label className={styles.deployField}>
+			<span>
+				{input.name} <code className={styles.deployFieldType}>{type}</code>
+			</span>
+			<Input
+				value={value}
+				onChange={(e) => onChange(e.target.value)}
+				placeholder={placeholderForType(type)}
+				required
+			/>
+		</label>
+	)
+}
+
+function DeployWasmDialog({
+	fullName,
+	wasmVersion,
+	wasmHash,
+}: {
+	fullName: string
+	wasmVersion?: string
+	wasmHash: string
+}) {
+	const { network, rpcUrl, stellarExpertUrl } = useRootData()
+	const passphrase = networkPassphrase(network)
+
+	const [open, setOpen] = useState(false)
+	const [address, setAddress] = useState<string>()
+	const [connecting, setConnecting] = useState(false)
+	const [connectError, setConnectError] = useState<string>()
+	const [values, setValues] = useState<Record<string, string>>({})
+	const [result, setResult] = useState<DeployResult>()
+	const [copied, setCopied] = useState(false)
+
+	const {
+		data: spec,
+		isLoading: specLoading,
+		isError: specError,
+	} = useQuery({ ...deploySpecQueryOptions(wasmHash), enabled: open })
+
+	useEffect(() => {
+		if (!open) return
+		void restoreAddress(passphrase).then((restored) => {
+			if (restored) setAddress(restored)
+		})
+	}, [open, passphrase])
+
+	useEffect(() => {
+		if (!copied) return
+		const id = setTimeout(() => setCopied(false), 2000)
+		return () => clearTimeout(id)
+	}, [copied])
+
+	const inputs = spec?.__constructor?.inputs ?? []
+	const unsupported = inputs.filter((input) => !isSupportedSpecType(input.type))
+	const isBlocked = unsupported.length > 0
+	const hasArgs = inputs.length > 0 && !isBlocked
+
+	const deployMutation = useMutation({
+		mutationFn: async () => {
+			if (!address) throw new Error("Connect a wallet first.")
+			return deployFromWasm({
+				rpcUrl,
+				networkPassphrase: passphrase,
+				registryContractId: registryContractId(network),
+				wasmName: fullName,
+				wasmVersion,
+				constructorArgs: hasArgs
+					? inputs.map((input) => ({
+							name: input.name,
+							type: input.type as SupportedSpecType,
+							rawValue: values[input.name] ?? "",
+						}))
+					: undefined,
+				deployerAddress: address,
+				signTransaction: (xdr) => signTransaction(xdr, address, passphrase),
+			})
+		},
+		onSuccess: setResult,
+	})
+
+	async function handleConnect() {
+		setConnecting(true)
+		setConnectError(undefined)
+		try {
+			setAddress(await connectWallet(passphrase))
+		} catch (e) {
+			const message = e instanceof Error ? e.message : String(e)
+			// The user closing the wallet picker isn't a real error.
+			if (!message.includes("closed the modal")) setConnectError(message)
+		} finally {
+			setConnecting(false)
+		}
+	}
+
+	function handleOpenChange(next: boolean) {
+		setOpen(next)
+		if (!next) {
+			setValues({})
+			setResult(undefined)
+			setConnectError(undefined)
+			deployMutation.reset()
+		}
+	}
+
+	function copyContractId() {
+		if (!result) return
+		void navigator.clipboard
+			.writeText(result.contractId)
+			.then(() => setCopied(true))
+	}
+
+	const showFooter = !result && !isBlocked && !specLoading && !specError
+	const canSubmit =
+		!hasArgs || inputs.every((input) => (values[input.name] ?? "") !== "")
+
+	return (
+		<Dialog open={open} onOpenChange={handleOpenChange}>
+			<DialogTrigger asChild>
+				<Button variant="outline">Deploy a contract using this Wasm</Button>
+			</DialogTrigger>
+			<DialogContent
+				// Stellar Wallets Kit renders its wallet picker as its own overlay
+				// appended straight to <body>, outside this dialog's DOM subtree.
+				// Radix treats a pointerdown there as "outside" this dialog and
+				// would otherwise close it mid-click (before the wallet picker's
+				// own click handler ever fires) — so this dialog only closes via
+				// its explicit close button or Escape.
+				onPointerDownOutside={(e) => e.preventDefault()}
+				onInteractOutside={(e) => e.preventDefault()}
+			>
+				<DialogHeader>
+					<DialogTitle>Deploy {fullName}</DialogTitle>
+					<DialogDescription>
+						Calls <code>deploy_unnamed</code> on the Registry contract to deploy
+						a new instance of this Wasm.
+					</DialogDescription>
+				</DialogHeader>
+
+				{result ? (
+					<div className={styles.deploySuccess}>
+						<p>Deployed successfully.</p>
+						<div className={styles.deployContractId}>
+							<code>{result.contractId}</code>
+							<Button variant="ghost" size="sm" onClick={copyContractId}>
+								{copied ? "Copied!" : "Copy"}
+							</Button>
+						</div>
+						<a
+							href={`${stellarExpertUrl}/contract/${result.contractId}`}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							View on Stellar Expert →
+						</a>
+					</div>
+				) : specLoading ? (
+					<p>Loading deploy info…</p>
+				) : specError ? (
+					<p className={styles.deployError}>
+						Couldn&apos;t load deploy info for this Wasm. Try again later.
+					</p>
+				) : isBlocked ? (
+					<p className={styles.deployError}>
+						This Wasm&apos;s constructor takes argument type
+						{unsupported.length > 1 ? "s" : ""} the deploy UI doesn&apos;t
+						support yet:{" "}
+						{unsupported
+							.map((input) => `${input.name} (${specTypeLabel(input.type)})`)
+							.join(", ")}
+						.
+					</p>
+				) : (
+					<>
+						{hasArgs && (
+							<div className={styles.deployFields}>
+								{inputs.map((input) => (
+									<ConstructorField
+										key={input.name}
+										input={input}
+										value={values[input.name] ?? ""}
+										onChange={(value) =>
+											setValues((prev) => ({ ...prev, [input.name]: value }))
+										}
+									/>
+								))}
+							</div>
+						)}
+						{deployMutation.isError && (
+							<p className={styles.deployError}>
+								{deployMutation.error instanceof Error
+									? deployMutation.error.message
+									: "Deploy failed."}
+							</p>
+						)}
+						{connectError && (
+							<p className={styles.deployError}>{connectError}</p>
+						)}
+					</>
+				)}
+
+				{showFooter && (
+					<DialogFooter>
+						{address ? (
+							<Button
+								onClick={() => deployMutation.mutate()}
+								disabled={deployMutation.isPending || !canSubmit}
+							>
+								{deployMutation.isPending ? "Deploying…" : "Deploy"}
+							</Button>
+						) : (
+							<Button
+								onClick={() => void handleConnect()}
+								disabled={connecting}
+							>
+								{connecting ? "Connecting…" : "Connect Wallet"}
+							</Button>
+						)}
+					</DialogFooter>
+				)}
+			</DialogContent>
+		</Dialog>
+	)
 }
 
 export default function WasmOverview({ loaderData }: Route.ComponentProps) {
@@ -127,9 +414,11 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 					</p>
 				}
 			/>
-      <button>
-        Deploy a contract using this Wasm
-      </button>
+			<DeployWasmDialog
+				fullName={fullName}
+				wasmVersion={wasm.wasm_version}
+				wasmHash={wasm.wasm_hash}
+			/>
 			{wasm.meta?.source_repo && (
 				<MetadataSection sourceRepoUrl={wasm.meta.source_repo} />
 			)}
