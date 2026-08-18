@@ -28,9 +28,20 @@
 	text-decoration: underline;
 }
 
-.fieldValue {
+.fieldValue,
+.field ol {
 	font-family: monospace;
 	font-size: 0.875rem;
 	margin: 0;
 	color: var(--color-foreground);
+	a {
+		color: var(--color-link);
+	}
+}
+
+.field ol {
+	list-style-type: circle;
+	> li:first-child::after {
+		content: " (latest)";
+	}
 }
