@@ -11,6 +11,15 @@ import { type Networks } from "@creit.tech/stellar-wallets-kit"
 
 let initializedFor: string | undefined
 
+// restoreAddress() is called from a `useEffect` that reruns on every deploy
+// dialog open, but the underlying kit.getAddress() probes every configured
+// wallet-connector module and at least one of them leaks a `close` listener
+// per call (see MaxListenersExceededWarning reports on repeated opens).
+// Caching the in-flight/resolved probe per kit lifetime keeps that call to
+// one-per-network-session instead of one-per-open. Reset alongside
+// `initializedFor` so switching networks still gets a fresh restore check.
+let restoreAttempted: Promise<string | undefined> | undefined
+
 async function getKit(networkPassphrase: string) {
 	const [{ StellarWalletsKit }, { defaultModules }] = await Promise.all([
 		import("@creit.tech/stellar-wallets-kit"),
@@ -22,6 +31,7 @@ async function getKit(networkPassphrase: string) {
 			network: networkPassphrase as Networks,
 		})
 		initializedFor = networkPassphrase
+		restoreAttempted = undefined
 	}
 	return StellarWalletsKit
 }
@@ -31,12 +41,17 @@ export async function restoreAddress(
 	networkPassphrase: string,
 ): Promise<string | undefined> {
 	const kit = await getKit(networkPassphrase)
-	try {
-		const { address } = await kit.getAddress()
-		return address || undefined
-	} catch {
-		return undefined
+	if (!restoreAttempted) {
+		restoreAttempted = (async () => {
+			try {
+				const { address } = await kit.getAddress()
+				return address || undefined
+			} catch {
+				return undefined
+			}
+		})()
 	}
+	return restoreAttempted
 }
 
 /** Opens the wallet picker and resolves once the user has connected one. */
