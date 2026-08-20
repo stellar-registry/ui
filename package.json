@@ -40,6 +40,10 @@
     "vite-tsconfig-paths": "^5.1.4",
     "wrangler": "^4.70.0"
   },
+  "overrides": {
+    "axios": "1.19.0",
+    "protobufjs": "7.5.5"
+  },
   "lint-staged": {
     "**/*": [
       "eslint --fix --no-warn-ignored",
