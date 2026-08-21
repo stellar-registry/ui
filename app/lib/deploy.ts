@@ -1,6 +1,9 @@
 // Builds, simulates, signs, and submits the `deploy_unnamed` invocation
-// against the Registry contract. Client-only — dynamically imports
-// @stellar/stellar-sdk so it's never pulled into the SSR bundle.
+// against the Registry contract, via the generated `registry-client`
+// bindings (see clients/registry-client — regenerate with
+// `npm run generate:registry-client`). Client-only — dynamically imports
+// @stellar/stellar-sdk and registry-client so neither is ever pulled into
+// the SSR bundle.
 //
 // See stellar-registry/contracts registry::contract::deploy_unnamed:
 //   fn deploy_unnamed(wasm_name, version, init, salt, deployer) -> Address
@@ -13,9 +16,6 @@ export type ConstructorArg = {
 	type: SupportedSpecType
 	rawValue: string
 }
-
-const POLL_INTERVAL_MS = 1500
-const POLL_TIMEOUT_MS = 30_000
 
 export type DeployResult = { contractId: string }
 
@@ -39,83 +39,56 @@ export async function deployFromWasm({
 	deployerAddress: string
 	signTransaction: (xdr: string) => Promise<string>
 }): Promise<DeployResult> {
-	const {
-		rpc,
-		TransactionBuilder,
-		Operation,
-		BASE_FEE,
-		nativeToScVal,
-		scValToNative,
-		xdr,
-	} = await import("@stellar/stellar-sdk")
-
-	const server = new rpc.Server(rpcUrl)
+	const [{ nativeToScVal }, { Client: RegistryClient }] = await Promise.all([
+		import("@stellar/stellar-sdk"),
+		import("registry-client"),
+	])
 
 	const salt = crypto.getRandomValues(new Uint8Array(32))
 
-	const initArg = constructorArgs
-		? xdr.ScVal.scvVec(
-				constructorArgs.map((arg) => {
-					const value = parseArgValue(arg.type, arg.rawValue)
-					// "bool" isn't a valid nativeToScVal type hint — a JS boolean
-					// converts to scvBool unambiguously without one.
-					return arg.type === "bool"
-						? nativeToScVal(value)
-						: nativeToScVal(value, { type: arg.type })
-				}),
-			)
-		: xdr.ScVal.scvVoid()
+	const init = constructorArgs
+		? constructorArgs.map((arg) => {
+				const value = parseArgValue(arg.type, arg.rawValue)
+				// "bool" isn't a valid nativeToScVal type hint — a JS boolean
+				// converts to scvBool unambiguously without one.
+				return arg.type === "bool"
+					? nativeToScVal(value)
+					: nativeToScVal(value, { type: arg.type })
+			})
+		: undefined
 
-	const args = [
-		nativeToScVal(wasmName, { type: "string" }),
-		wasmVersion
-			? nativeToScVal(wasmVersion, { type: "string" })
-			: xdr.ScVal.scvVoid(),
-		initArg,
-		nativeToScVal(salt, { type: "bytes" }),
-		nativeToScVal(deployerAddress, { type: "address" }),
-	]
-
-	const account = await server.getAccount(deployerAddress)
-	const tx = new TransactionBuilder(account, {
-		fee: BASE_FEE,
+	const registry = new RegistryClient({
+		contractId: registryContractId,
 		networkPassphrase,
+		rpcUrl,
+		allowHttp: true,
+		publicKey: deployerAddress,
+		// registry-client's ClientOptions expects the Freighter-shaped signer
+		// (xdr, opts) => Promise<{ signedTxXdr }>; wallet.ts's signTransaction is
+		// the simpler (xdr) => Promise<string> shape used throughout the deploy
+		// dialog, so adapt it here rather than changing that call site.
+		signTransaction: async (xdr) => ({
+			signedTxXdr: await signTransaction(xdr),
+		}),
 	})
-		.addOperation(
-			Operation.invokeContractFunction({
-				contract: registryContractId,
-				function: "deploy_unnamed",
-				args,
-			}),
+
+	let tx
+	try {
+		tx = await registry.deploy_unnamed({
+			wasm_name: wasmName,
+			version: wasmVersion,
+			init,
+			salt: Buffer.from(salt),
+			deployer: deployerAddress,
+		})
+	} catch (e) {
+		throw new Error(
+			`Failed to prepare the deploy transaction: ${e instanceof Error ? e.message : String(e)}`,
 		)
-		.setTimeout(60)
-		.build()
-
-	const prepared = await server.prepareTransaction(tx)
-	const signedXdr = await signTransaction(prepared.toXDR())
-	const signedTx = TransactionBuilder.fromXDR(signedXdr, networkPassphrase)
-
-	const sent = await server.sendTransaction(signedTx)
-	if (sent.status !== "PENDING") {
-		throw new Error(`Failed to submit transaction: ${sent.status}`)
 	}
 
-	const deadline = Date.now() + POLL_TIMEOUT_MS
-	while (Date.now() < deadline) {
-		const result = await server.getTransaction(sent.hash)
-		if (result.status === "SUCCESS") {
-			if (!result.returnValue) {
-				throw new Error("Deploy succeeded but returned no contract address.")
-			}
-			return { contractId: scValToNative(result.returnValue) as string }
-		}
-		if (result.status === "FAILED") {
-			throw new Error("Deploy transaction failed on-chain.")
-		}
-		await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS))
-	}
-
-	throw new Error(
-		"Timed out waiting for the deploy transaction to confirm. Check the transaction hash on stellar.expert.",
-	)
+	const { result } = await tx.signAndSend()
+	// `result` is a Rust-style Result<Address, Error> — unwrap() throws the
+	// contract's own error message (e.g. "NoSuchWasmPublished") on failure.
+	return { contractId: result.unwrap() }
 }
