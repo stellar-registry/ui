@@ -23,11 +23,7 @@
 			"vars": {
 				"REGISTRY_API_URL": "https://stellar-registry-mainnet.fly.dev",
 				"REGISTRY_NETWORK": "mainnet",
-				// TODO: no free public mainnet Soroban RPC endpoint exists — this
-				// must be replaced with a real provider URL before the "Deploy"
-				// button will work on mainnet. Deploys will fail against this
-				// placeholder.
-				"REGISTRY_RPC_URL": "https://REPLACE-ME-mainnet-rpc.example.com",
+				"REGISTRY_RPC_URL": "https://mainnet.sorobanrpc.com",
 			},
 		},
 

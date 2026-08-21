@@ -14,6 +14,5 @@ REGISTRY_API_URL=https://stellar-registry-testnet.fly.dev
 REGISTRY_NETWORK=testnet
 
 # Soroban RPC endpoint used client-side to simulate/submit the "Deploy a
-# contract using this Wasm" transaction. Testnet has a public SDF default;
-# mainnet has no free official one, see wrangler.jsonc's `env.stellar` entry.
+# contract using this Wasm" transaction.
 REGISTRY_RPC_URL=https://soroban-testnet.stellar.org
