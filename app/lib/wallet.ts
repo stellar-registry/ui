@@ -12,12 +12,11 @@ import { type Networks } from "@creit.tech/stellar-wallets-kit"
 let initializedFor: string | undefined
 
 // restoreAddress() is called from a `useEffect` that reruns on every deploy
-// dialog open, but the underlying kit.getAddress() probes every configured
-// wallet-connector module and at least one of them leaks a `close` listener
-// per call (see MaxListenersExceededWarning reports on repeated opens).
-// Caching the in-flight/resolved probe per kit lifetime keeps that call to
-// one-per-network-session instead of one-per-open. Reset alongside
-// `initializedFor` so switching networks still gets a fresh restore check.
+// dialog open. kit.getAddress() itself is a cheap local read (it doesn't
+// touch the connector modules), so caching it here is just a minor
+// optimization to keep that read to one-per-network-session instead of
+// one-per-open. Reset alongside `initializedFor` so switching networks still
+// gets a fresh restore check.
 let restoreAttempted: Promise<string | undefined> | undefined
 
 async function getKit(networkPassphrase: string) {
