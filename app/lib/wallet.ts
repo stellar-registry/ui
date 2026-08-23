@@ -7,7 +7,7 @@
 // address) under its own localStorage keys, so there's nothing for us to
 // track here beyond which network passphrase it was last initialized with.
 
-import { type Networks } from "@creit.tech/stellar-wallets-kit"
+import { closeEvent, type Networks } from "@creit.tech/stellar-wallets-kit"
 
 let initializedFor: string | undefined
 
@@ -58,8 +58,43 @@ export async function connectWallet(
 	networkPassphrase: string,
 ): Promise<string> {
 	const kit = await getKit(networkPassphrase)
-	const { address } = await kit.authModal()
-	return address
+
+	// The deploy dialog underneath is a modal Radix Dialog, which locks
+	// `body` to `pointer-events: none` while open and grants `auto` back only
+	// to the DOM nodes it tracks itself (see DialogContentModal in
+	// @radix-ui/react-dialog). Stellar Wallets Kit's picker is appended
+	// straight to <body>, outside Radix's tree, so by default it inherits
+	// that "none" and every click on it falls through to whatever's rendered
+	// underneath (e.g. an <input> in the deploy form) instead of registering.
+	//
+	// Rather than relax the lock for the whole page, give the kit a
+	// container we own that stays interactive regardless of `body`'s state.
+	// Passing `container` switches the kit out of its own full-screen "FIXED"
+	// mode (see its `SwkApp` component), so we reproduce that positioning and
+	// backdrop here, including wiring the backdrop click to the kit's own
+	// `closeEvent` so "click outside to cancel" still works.
+	const container = document.createElement("div")
+	Object.assign(container.style, {
+		position: "fixed",
+		inset: "0",
+		zIndex: "999",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		pointerEvents: "auto",
+		backgroundColor: "rgb(0 0 0 / 0.5)",
+	})
+	container.addEventListener("click", (e) => {
+		if (e.target === container) closeEvent.next()
+	})
+	document.body.appendChild(container)
+
+	try {
+		const { address } = await kit.authModal({ container })
+		return address
+	} finally {
+		container.remove()
+	}
 }
 
 /**
