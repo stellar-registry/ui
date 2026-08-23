@@ -33,7 +33,13 @@ import {
 } from "~/lib/scval"
 import { type FunctionInput } from "~/lib/types"
 import { getFullName, isLatestWasm } from "~/lib/util"
-import { connectWallet, restoreAddress, signTransaction } from "~/lib/wallet"
+import {
+	connectWallet,
+	disconnectWallet,
+	fetchLiveAddress,
+	restoreAddress,
+	signTransaction,
+} from "~/lib/wallet"
 import { useRootData } from "~/root"
 
 export async function loader({ params, context }: Route.LoaderArgs) {
@@ -90,6 +96,10 @@ let result = client.method_name(&arg);
 			code: useClient,
 		},
 	]
+}
+
+function truncateAddress(address: string): string {
+	return `${address.slice(0, 4)}…${address.slice(-4)}`
 }
 
 function placeholderForType(type: SupportedSpecType) {
@@ -166,6 +176,7 @@ function DeployWasmDialog({
 	const [open, setOpen] = useState(false)
 	const [address, setAddress] = useState<string>()
 	const [connecting, setConnecting] = useState(false)
+	const [disconnecting, setDisconnecting] = useState(false)
 	const [connectError, setConnectError] = useState<string>()
 	const [values, setValues] = useState<Record<string, string>>({})
 	const [result, setResult] = useState<DeployResult>()
@@ -218,6 +229,19 @@ function DeployWasmDialog({
 					`Couldn't resolve the "${channel}" subregistry's contract.`,
 				)
 			}
+
+			// The user can switch accounts in their wallet extension without our
+			// UI knowing — re-verify against its live state right before we build
+			// a transaction whose auth is pinned to `address`, rather than risk a
+			// mismatched signature reaching the network as a bare txBadAuth.
+			const liveAddress = await fetchLiveAddress(passphrase)
+			if (liveAddress !== address) {
+				setAddress(liveAddress)
+				throw new Error(
+					"Your connected wallet account changed. Click Deploy again to continue with the new account.",
+				)
+			}
+
 			return deployFromWasm({
 				rpcUrl,
 				networkPassphrase: passphrase,
@@ -249,6 +273,18 @@ function DeployWasmDialog({
 			if (!message.includes("closed the modal")) setConnectError(message)
 		} finally {
 			setConnecting(false)
+		}
+	}
+
+	async function handleDisconnect() {
+		setDisconnecting(true)
+		try {
+			await disconnectWallet(passphrase)
+		} finally {
+			setAddress(undefined)
+			setConnectError(undefined)
+			deployMutation.reset()
+			setDisconnecting(false)
 		}
 	}
 
@@ -374,12 +410,25 @@ function DeployWasmDialog({
 				{showFooter && (
 					<DialogFooter>
 						{address ? (
-							<Button
-								onClick={() => deployMutation.mutate()}
-								disabled={deployMutation.isPending || !canSubmit}
-							>
-								{deployMutation.isPending ? "Deploying…" : "Deploy"}
-							</Button>
+							<>
+								<span className={styles.deployConnectedAs}>
+									<code>{truncateAddress(address)}</code>
+								</span>
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => void handleDisconnect()}
+									disabled={deployMutation.isPending || disconnecting}
+								>
+									Disconnect
+								</Button>
+								<Button
+									onClick={() => deployMutation.mutate()}
+									disabled={deployMutation.isPending || !canSubmit}
+								>
+									{deployMutation.isPending ? "Deploying…" : "Deploy"}
+								</Button>
+							</>
 						) : (
 							<Button
 								onClick={() => void handleConnect()}

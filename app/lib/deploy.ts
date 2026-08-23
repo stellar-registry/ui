@@ -87,8 +87,23 @@ export async function deployFromWasm({
 		)
 	}
 
-	const { result } = await tx.signAndSend()
+	let sent
+	try {
+		sent = await tx.signAndSend()
+	} catch (e) {
+		const message = e instanceof Error ? e.message : String(e)
+		// txBadAuth almost always means the connected wallet's account changed
+		// (in the extension, out of band) between building and submitting the
+		// transaction — surface that instead of the raw RPC failure JSON.
+		if (message.includes("txBadAuth")) {
+			throw new Error(
+				"The network rejected the transaction's signature (txBadAuth) — this usually means the connected wallet account changed. Disconnect and reconnect your wallet, then try deploying again.",
+			)
+		}
+		throw new Error(`Failed to send the deploy transaction: ${message}`)
+	}
 	// `result` is a Rust-style Result<Address, Error> — unwrap() throws the
 	// contract's own error message (e.g. "NoSuchWasmPublished") on failure.
+	const { result } = sent
 	return { contractId: result.unwrap() }
 }

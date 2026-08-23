@@ -62,15 +62,53 @@ export async function connectWallet(
 	return address
 }
 
+/**
+ * Live read of the address currently active in the wallet extension itself
+ * (not the kit's cached copy — see `restoreAddress`). The user can switch
+ * accounts inside their wallet extension at any time without our UI knowing,
+ * so call this right before an operation whose correctness depends on "who
+ * is connected right now" — e.g. immediately before building/signing a
+ * transaction — rather than trusting previously-cached state.
+ */
+export async function fetchLiveAddress(
+	networkPassphrase: string,
+): Promise<string> {
+	const kit = await getKit(networkPassphrase)
+	const { address } = await kit.fetchAddress()
+	return address
+}
+
+/**
+ * Disconnects the active wallet. Also resets our own restore memo so a
+ * subsequent `restoreAddress` call does a fresh check instead of replaying a
+ * stale promise — the kit itself already clears its persisted selection.
+ */
+export async function disconnectWallet(
+	networkPassphrase: string,
+): Promise<void> {
+	const kit = await getKit(networkPassphrase)
+	await kit.disconnect()
+	restoreAttempted = undefined
+}
+
 export async function signTransaction(
 	xdrString: string,
 	address: string,
 	networkPassphrase: string,
 ): Promise<string> {
 	const kit = await getKit(networkPassphrase)
-	const { signedTxXdr } = await kit.signTransaction(xdrString, {
+	const { signedTxXdr, signerAddress } = await kit.signTransaction(xdrString, {
 		address,
 		networkPassphrase,
 	})
+	// The kit forwards `address` to the wallet only as a hint — if the user
+	// switched accounts in the extension, it may come back signed by a
+	// different key than the one this transaction's auth was built for,
+	// which the network will reject as txBadAuth. Catch that here instead.
+	if (signerAddress && signerAddress !== address) {
+		throw new Error(
+			`Signed with a different account (${signerAddress}) than the one connected (${address}). Disconnect and reconnect your wallet, then try again.`,
+		)
+	}
 	return signedTxXdr
 }

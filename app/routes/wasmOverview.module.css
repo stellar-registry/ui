@@ -64,6 +64,13 @@
 	color: var(--color-muted-foreground);
 }
 
+.deployConnectedAs {
+	margin-right: auto;
+	align-self: center;
+	font-size: var(--text-xs);
+	color: var(--color-muted-foreground);
+}
+
 .deployError {
 	font-size: var(--text-sm);
 	color: var(--color-destructive);
