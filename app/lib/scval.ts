@@ -53,8 +53,9 @@ const INTEGER_TYPES = new Set([
 /**
  * Convert a raw form field string into the value `nativeToScVal` expects for
  * a given supported primitive type. Only ever called from client-side deploy
- * code (see app/lib/deploy.ts) — relies on the `Buffer` global the vite
- * node-polyfills plugin installs for the browser bundle.
+ * code (see the deploy dialog's mutationFn in app/routes/wasmOverview.tsx) —
+ * relies on the `Buffer` global the vite node-polyfills plugin installs for
+ * the browser bundle.
  */
 export function parseArgValue(type: SupportedSpecType, raw: string): unknown {
 	if (type === "bool") return raw === "true"

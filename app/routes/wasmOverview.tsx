@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { data, Outlet, isRouteErrorResponse } from "react-router"
+import { type Client as RegistryClient } from "registry-client"
 import { type Route } from "./+types/wasmOverview"
 import styles from "./wasmOverview.module.css"
 import { Badge } from "~/components/badge"
@@ -23,12 +24,12 @@ import { Input } from "~/components/input"
 import { MetadataSection } from "~/components/metadata-section"
 import { UsageSection } from "~/components/usage-section"
 import { getWasm } from "~/lib/api"
-import { type DeployResult, deployFromWasm } from "~/lib/deploy"
 import { networkPassphrase, registryContractId } from "~/lib/network"
 import { deploySpecQueryOptions, registriesQueryOptions } from "~/lib/queries"
 import {
 	type SupportedSpecType,
 	isSupportedSpecType,
+	parseArgValue,
 	specTypeLabel,
 } from "~/lib/scval"
 import { type FunctionInput } from "~/lib/types"
@@ -41,6 +42,8 @@ import {
 	signTransaction,
 } from "~/lib/wallet"
 import { useRootData } from "~/root"
+
+type DeployResult = { contractId: string }
 
 export async function loader({ params, context }: Route.LoaderArgs) {
 	const { name, version, channel } = params
@@ -210,6 +213,34 @@ function DeployWasmDialog({
 		})
 	}, [open, passphrase])
 
+	// Constructing a RegistryClient dynamically imports @stellar/stellar-sdk +
+	// registry-client (client-only, so neither is ever pulled into the SSR
+	// bundle) — cache the instance per (rpcUrl, passphrase, contractId)
+	// identity instead of rebuilding it on every deploy click. `publicKey` and
+	// `signTransaction` are the only things that actually change per click
+	// (which wallet/account is connected), so those are mutated on the
+	// cached client's `options` right before use rather than baked in at
+	// construction time.
+	const registryClientRef = useRef<
+		{ key: string; client: RegistryClient } | undefined
+	>(undefined)
+
+	async function getRegistryClient(contractId: string) {
+		const key = `${rpcUrl}|${passphrase}|${contractId}`
+		if (registryClientRef.current?.key === key) {
+			return registryClientRef.current.client
+		}
+		const { Client } = await import("registry-client")
+		const client = new Client({
+			contractId,
+			networkPassphrase: passphrase,
+			rpcUrl,
+			allowHttp: true,
+		})
+		registryClientRef.current = { key, client }
+		return client
+	}
+
 	useEffect(() => {
 		if (!copied) return
 		const id = setTimeout(() => setCopied(false), 2000)
@@ -242,22 +273,74 @@ function DeployWasmDialog({
 				)
 			}
 
-			return deployFromWasm({
-				rpcUrl,
-				networkPassphrase: passphrase,
-				registryContractId: targetContractId,
-				wasmName,
-				wasmVersion,
-				constructorArgs: hasArgs
-					? inputs.map((input) => ({
-							name: input.name,
-							type: input.type as SupportedSpecType,
-							rawValue: values[input.name] ?? "",
-						}))
-					: undefined,
-				deployerAddress: address,
-				signTransaction: (xdr) => signTransaction(xdr, address, passphrase),
+			const { nativeToScVal } = await import("@stellar/stellar-sdk")
+			const client = await getRegistryClient(targetContractId)
+			// registry-client's ClientOptions expects the Freighter-shaped signer
+			// (xdr, opts) => Promise<{ signedTxXdr }>; wallet.ts's signTransaction is
+			// the simpler (xdr) => Promise<string> shape used throughout the deploy
+			// dialog, so adapt it here rather than changing that call site.
+			client.options.publicKey = address
+			client.options.signTransaction = async (xdr) => ({
+				signedTxXdr: await signTransaction(xdr, address, passphrase),
 			})
+
+			// `init` is `Option<Array<any>>` on the generated client — an already
+			// -built ScVal per arg, not a native value. deploy_unnamed just
+			// forwards it as an opaque Vec<Val> to whatever wasm is being
+			// deployed, so (unlike a typed contract.Client.deploy call) the
+			// registry contract's own spec has no idea what types that wasm's
+			// constructor expects; only `spec.__constructor.inputs` (fetched
+			// above) knows that, so we still have to convert each arg by hand.
+			const init = hasArgs
+				? inputs.map((input) => {
+						const type = input.type as SupportedSpecType
+						const value = parseArgValue(type, values[input.name] ?? "")
+						// "bool" isn't a valid nativeToScVal type hint — a JS boolean
+						// converts to scvBool unambiguously without one.
+						return type === "bool"
+							? nativeToScVal(value)
+							: nativeToScVal(value, { type })
+					})
+				: undefined
+
+			const salt = crypto.getRandomValues(new Uint8Array(32))
+
+			let tx
+			try {
+				tx = await client.deploy_unnamed({
+					wasm_name: wasmName,
+					version: wasmVersion,
+					init,
+					salt: Buffer.from(salt),
+					deployer: address,
+				})
+			} catch (e) {
+				throw new Error(
+					`Failed to prepare the deploy transaction: ${e instanceof Error ? e.message : String(e)}`,
+				)
+			}
+
+			let sent
+			try {
+				sent = await tx.signAndSend()
+			} catch (e) {
+				const message = e instanceof Error ? e.message : String(e)
+				// txBadAuth almost always means the connected wallet's account
+				// changed (in the extension, out of band) between building and
+				// submitting the transaction — surface that instead of the raw
+				// RPC failure JSON.
+				if (message.includes("txBadAuth")) {
+					throw new Error(
+						"The network rejected the transaction's signature (txBadAuth) — this usually means the connected wallet account changed. Disconnect and reconnect your wallet, then try deploying again.",
+					)
+				}
+				throw new Error(`Failed to send the deploy transaction: ${message}`)
+			}
+			// `result` is a Rust-style Result<Address, Error> — unwrap() throws
+			// the contract's own error message (e.g. "NoSuchWasmPublished") on
+			// failure.
+			const { result } = sent
+			return { contractId: result.unwrap() } satisfies DeployResult
 		},
 		onSuccess: setResult,
 	})
