@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Lint, typecheck, and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # clients/registry-client is gitignored and generated from the live
+      # Registry contract (see environments.toml) — generate it here so
+      # lint/typecheck/build below actually exercise it, same as deploy.yml
+      # does before deploying. Catches a broken generation on the PR instead
+      # of at deploy time after merge.
+      - run:
+          curl -LO
+          https://github.com/stellar/stellar-cli/releases/download/v27.1.0/stellar-cli-27.1.0-x86_64-unknown-linux-gnu.tar.gz
+      - run:
+          tar xz -C /usr/local/bin -f
+          stellar-cli-27.1.0-x86_64-unknown-linux-gnu.tar.gz
+
+      - run: npm run generate:registry-client:testnet
+
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
