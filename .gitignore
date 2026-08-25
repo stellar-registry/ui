@@ -12,3 +12,9 @@
 .DS_Store
 /node_modules/
 .log
+
+# Generated Registry contract bindings — regenerate with
+# `npm run generate:registry-client:testnet` (or `:mainnet`). See
+# environments.toml and clients/registry-client/README.md.
+/clients/registry-client/src/
+/clients/registry-client/dist/

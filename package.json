@@ -13,8 +13,8 @@
     "lint": "eslint .",
     "format": "prettier . --write",
     "prepare": "husky",
-    "generate:registry-client:testnet": "stellar registry download registry -o /tmp/registry.wasm --network testnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite",
-    "generate:registry-client:mainnet": "stellar registry download registry -o /tmp/registry.wasm --network mainnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite"
+    "generate:registry-client:testnet": "node scripts/generate-registry-client.mjs testnet",
+    "generate:registry-client:mainnet": "node scripts/generate-registry-client.mjs mainnet"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.5.0",
@@ -39,6 +39,7 @@
     "@types/react-dom": "^19.2.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "smol-toml": "^1.8.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vite-plugin-node-polyfills": "^0.28.0",

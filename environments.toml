@@ -1,0 +1,50 @@
+# Single source of truth for this app's per-network Stellar config, following
+# stellar-scaffold conventions (https://github.com/stellar-scaffold/cli).
+#
+# This app does NOT run `stellar scaffold`'s build/watch/dev-server tooling —
+# it's a React Router v7 SSR app on Cloudflare Workers, not the Vite+React SPA
+# template Scaffold generates. Its `build --build-clients` command also isn't
+# a fit here: it only recognizes environment names from a fixed
+# development/testing/staging/production set, and for a contract referenced
+# by `id` (our case — we don't own the Registry contract's Rust source) it
+# additionally regenerates a flattened client index that imports
+# `@stellar-scaffold/app-lib`, a package that only exists in Scaffold's SPA
+# template. So instead this file is read directly:
+#
+#   1. By `scripts/generate-registry-client.mjs` (invoked via
+#      `npm run generate:registry-client:testnet` / `:mainnet`), which calls
+#      `stellar contract bindings typescript --contract-id` with the values
+#      below — the same underlying primitive `stellar scaffold` uses
+#      internally for `id`-referenced contracts, just without its SPA-only
+#      client-index step.
+#   2. By `app/lib/network.ts` at build time (via a Vite `?raw` import), so
+#      the app's runtime `networkPassphrase`/`registryContractId` helpers and
+#      the generation script share one source of truth with no duplication.
+#
+# wrangler.jsonc's `REGISTRY_RPC_URL` vars should match the `rpc-url` values
+# below — kept in sync by hand, since Wrangler has no native TOML import and
+# `REGISTRY_API_URL`/`REGISTRY_NETWORK` there have no equivalent here (they
+# configure the indexer backend, a different concern than network/contract
+# config).
+#
+# Regenerating clients/registry-client is a pure RPC read (fetches the
+# contract's stored spec) — no local identity/signer required.
+
+[testnet.network]
+rpc-url = "https://soroban-testnet.stellar.org"
+network-passphrase = "Test SDF Network ; September 2015"
+
+# The Registry contract's own address on testnet. Deployed deterministically
+# (fixed salt) by stellar-registry/contracts, so this is stable across
+# releases — see indexer/goldsky/networks/testnet.env `ROOT_REGISTRY`.
+[testnet.contracts.registry]
+id = "CAAXJETKPYAATU4HVVQUTE2FFBULNFGZNEOC3MS635U5K3GZLAY2HI4M"
+
+[mainnet.network]
+rpc-url = "https://mainnet.sorobanrpc.com"
+network-passphrase = "Public Global Stellar Network ; September 2015"
+
+# Same contract, deployed deterministically to mainnet — see
+# indexer/goldsky/networks/mainnet.env `ROOT_REGISTRY`.
+[mainnet.contracts.registry]
+id = "CDU4M3LDIOUJJ5F3YXKJ4EJEP5VPRPG6N2LJ5HOQIMN7MNGL3NS3EGUY"

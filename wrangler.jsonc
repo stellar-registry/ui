@@ -8,7 +8,11 @@
 		"enabled": true,
 	},
 
-	// Default vars for local development (wrangler dev reads .dev.vars)
+	// Default vars for local development (wrangler dev reads .dev.vars).
+	// REGISTRY_RPC_URL below should match environments.toml's corresponding
+	// [<network>.network].rpc-url — kept in sync by hand, since Wrangler has
+	// no native TOML import. REGISTRY_API_URL/REGISTRY_NETWORK configure the
+	// indexer backend and have no equivalent in environments.toml.
 	"vars": {
 		"REGISTRY_API_URL": "https://stellar-registry-testnet.fly.dev",
 		"REGISTRY_NETWORK": "testnet",

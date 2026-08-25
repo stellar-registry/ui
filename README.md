@@ -10,6 +10,7 @@ Copy the example env file and start the dev server:
 ```bash
 cp .dev.vars.example .dev.vars
 npm install
+npm run generate:registry-client:testnet
 npm run dev
 ```
 
@@ -18,15 +19,16 @@ runtime locally (via miniflare), so behaviour matches production.
 
 ## Commands
 
-| Command                            | Description                                                              |
-| ---------------------------------- | ------------------------------------------------------------------------ |
-| `npm run dev`                      | Start local dev server                                                   |
-| `npm run build`                    | Production build                                                         |
-| `npm run typecheck`                | Type-check (generates CF + RR types first)                               |
-| `npm run lint`                     | Run ESLint                                                               |
-| `npm run format`                   | Run Prettier                                                             |
-| `npm run cf-typegen`               | Regenerate Cloudflare types from `wrangler.jsonc`                        |
-| `npm run generate:registry-client` | Regenerate `clients/registry-client` from the deployed Registry contract |
+| Command                                    | Description                                                             |
+| ------------------------------------------ | ----------------------------------------------------------------------- |
+| `npm run dev`                              | Start local dev server                                                  |
+| `npm run build`                            | Production build                                                        |
+| `npm run typecheck`                        | Type-check (generates CF + RR types first)                              |
+| `npm run lint`                             | Run ESLint                                                              |
+| `npm run format`                           | Run Prettier                                                            |
+| `npm run cf-typegen`                       | Regenerate Cloudflare types from `wrangler.jsonc`                       |
+| `npm run generate:registry-client:testnet` | Regenerate `clients/registry-client` from the testnet Registry contract |
+| `npm run generate:registry-client:mainnet` | Regenerate `clients/registry-client` from the mainnet Registry contract |
 
 ## Stack
 
@@ -66,6 +68,9 @@ workers/
   app.ts                         # Cloudflare Worker entry
 clients/
   registry-client/               # Generated Registry contract bindings (see below)
+scripts/
+  generate-registry-client.mjs   # Reads environments.toml, regenerates clients/registry-client
+environments.toml               # Per-network Stellar config (see below)
 wrangler.jsonc                   # Cloudflare config (vars + env per network)
 ```
 
@@ -77,35 +82,38 @@ client-side requests are proxied through `/api/*` to avoid CORS issues.
 
 ## Registry contract client
 
-`app/lib/deploy.ts` (the "Deploy a contract using this Wasm" flow) talks to the
-Registry contract itself through generated TypeScript bindings at
-`clients/registry-client`, an npm workspace package (`registry-client`) — not
-hand-written. It's checked in, so you don't need to regenerate it just to work
-on the app.
-
-Regenerate it after a Registry contract release with:
+`app/lib/registry-client.ts` (used by the "Deploy a contract using this Wasm"
+flow in `app/routes/wasmOverview.tsx`) talks to the Registry contract itself
+through generated TypeScript bindings at `clients/registry-client`, an npm
+workspace package (`registry-client`) — not hand-written. **It's gitignored, not
+checked in** — you need to generate it once after cloning, before
+`npm run dev`/`typecheck`/`build` will work:
 
 ```bash
-npm run generate:registry-client
+npm run generate:registry-client:testnet
 ```
 
-This runs two steps under the hood:
+This reads the Registry contract's address and network config for `testnet` from
+[`environments.toml`](./environments.toml) — the single source of truth for
+this, also used at build time by `app/lib/network.ts` — and calls:
 
-1. `stellar registry download registry -o /tmp/registry.wasm --network testnet -s me`
-   — fetches the current `registry` Wasm (the Registry contract publishes itself
-   into the registry, channel `root`) via the
-   [`stellar-registry` CLI](https://github.com/stellar-registry/cli)
-2. `stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite`
-   — regenerates the client package from that binary via
-   [`stellar-cli`](https://github.com/stellar/stellar-cli)
+```
+stellar contract bindings typescript --contract-id <id> --rpc-url <rpc-url> \
+  --network-passphrase <passphrase> --output-dir clients/registry-client --overwrite
+```
 
-Requires both CLIs installed (`cargo install --locked stellar-registry-cli`,
-`cargo install --locked stellar-cli` or equivalent) and a configured identity
-for `-s`/`--source-account` (e.g.
-`stellar keys generate me --network testnet --fund`) — `download` simulates a
-read call, which still needs a source account. The contract's interface is the
-same on testnet and mainnet (deployed deterministically, see
-`app/lib/network.ts`), so generating from testnet is fine either way.
+via [`stellar-cli`](https://github.com/stellar/stellar-cli). This is a pure RPC
+read (fetches the contract's stored spec directly by address) — no local
+identity/signer needed, and only `stellar-cli` needs to be installed. The
+contract's interface is the same on testnet and mainnet (deployed
+deterministically, see `environments.toml`), so generating from testnet covers
+both; use `generate:registry-client:mainnet` if you need to confirm that
+explicitly.
+
+We don't run [`stellar-scaffold`](https://github.com/stellar-scaffold/cli)'s own
+build tooling here — see the comment at the top of `environments.toml` for why —
+but we do follow its `environments.toml` convention and use the same underlying
+primitive it relies on internally for pre-deployed contracts.
 
 ---
 

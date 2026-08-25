@@ -18,6 +18,18 @@ jobs:
 
       - run: npm ci
 
+      # clients/registry-client is gitignored and generated from the live
+      # Registry contract (see environments.toml) — a pure RPC read, so no
+      # local identity/signer is needed, just the stellar CLI itself.
+      - run:
+          curl -LO
+          https://github.com/stellar/stellar-cli/releases/download/v27.1.0/stellar-cli-27.1.0-x86_64-unknown-linux-gnu.tar.gz
+      - run:
+          tar xz -C /usr/local/bin -f
+          stellar-cli-27.1.0-x86_64-unknown-linux-gnu.tar.gz
+
+      - run: npm run generate:registry-client:testnet
+
       - run: CLOUDFLARE_ENV=testnet npm run build
 
       - run: npx wrangler deploy

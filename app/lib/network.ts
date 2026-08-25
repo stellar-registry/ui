@@ -1,25 +1,40 @@
 // Stellar network constants for the `network` label already threaded through
 // the app via `useRootData()` (see app/root.tsx). These are protocol/registry
 // constants, not operational config — unlike REGISTRY_API_URL/REGISTRY_RPC_URL
-// there's nothing to configure per-deploy, so they live in code.
+// there's nothing to configure per-deploy, so they're sourced from
+// environments.toml (the single source of truth, also read by
+// `scripts/generate-registry-client.mjs`) rather than duplicated here.
+//
+// Imported as raw text (a Vite feature, works in both the SSR/worker bundle
+// and the browser bundle) and parsed at module-init time — no build plugin
+// needed for a file that changes only when the Registry contract itself is
+// redeployed.
 
-const TESTNET_PASSPHRASE = "Test SDF Network ; September 2015"
-const MAINNET_PASSPHRASE = "Public Global Stellar Network ; September 2015"
+import { parse } from "smol-toml"
+import environmentsToml from "../../environments.toml?raw"
+
+interface Environment {
+	network: { "network-passphrase": string }
+	contracts: { registry: { id: string } }
+}
+
+const environments = parse(environmentsToml) as unknown as Record<
+	"testnet" | "mainnet",
+	Environment
+>
+
+function resolveEnvironment(network: string) {
+	return environments[network === "mainnet" ? "mainnet" : "testnet"]
+}
 
 export function networkPassphrase(network: string) {
-	return network === "mainnet" ? MAINNET_PASSPHRASE : TESTNET_PASSPHRASE
+	return resolveEnvironment(network).network["network-passphrase"]
 }
 
 // The Stellar Registry contract's own address on each network. Deployed
 // deterministically (fixed salt) by stellar-registry/contracts, so these are
-// stable — see indexer/goldsky/networks/{testnet,mainnet}.env `ROOT_REGISTRY`.
-const TESTNET_REGISTRY_CONTRACT_ID =
-	"CAAXJETKPYAATU4HVVQUTE2FFBULNFGZNEOC3MS635U5K3GZLAY2HI4M"
-const MAINNET_REGISTRY_CONTRACT_ID =
-	"CDU4M3LDIOUJJ5F3YXKJ4EJEP5VPRPG6N2LJ5HOQIMN7MNGL3NS3EGUY"
-
+// stable — see environments.toml and
+// indexer/goldsky/networks/{testnet,mainnet}.env `ROOT_REGISTRY`.
 export function registryContractId(network: string) {
-	return network === "mainnet"
-		? MAINNET_REGISTRY_CONTRACT_ID
-		: TESTNET_REGISTRY_CONTRACT_ID
+	return resolveEnvironment(network).contracts.registry.id
 }
