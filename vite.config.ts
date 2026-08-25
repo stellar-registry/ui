@@ -10,6 +10,6 @@ export default defineConfig({
 		tsconfigPaths(),
 	],
 	optimizeDeps: {
-		exclude: ["cloudflare:workers"],
+		exclude: ["cloudflare:workers", "@stellar/stellar-xdr-json"],
 	},
 })
