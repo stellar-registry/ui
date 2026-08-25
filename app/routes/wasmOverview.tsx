@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { data, Outlet, isRouteErrorResponse } from "react-router"
-import { type Client as RegistryClient } from "registry-client"
 import { type Route } from "./+types/wasmOverview"
 import styles from "./wasmOverview.module.css"
 import { Badge } from "~/components/badge"
@@ -26,6 +25,7 @@ import { UsageSection } from "~/components/usage-section"
 import { getWasm } from "~/lib/api"
 import { networkPassphrase, registryContractId } from "~/lib/network"
 import { deploySpecQueryOptions, registriesQueryOptions } from "~/lib/queries"
+import { getRegistryClient } from "~/lib/registry-client"
 import {
 	type SupportedSpecType,
 	isSupportedSpecType,
@@ -213,34 +213,6 @@ function DeployWasmDialog({
 		})
 	}, [open, passphrase])
 
-	// Constructing a RegistryClient dynamically imports @stellar/stellar-sdk +
-	// registry-client (client-only, so neither is ever pulled into the SSR
-	// bundle) — cache the instance per (rpcUrl, passphrase, contractId)
-	// identity instead of rebuilding it on every deploy click. `publicKey` and
-	// `signTransaction` are the only things that actually change per click
-	// (which wallet/account is connected), so those are mutated on the
-	// cached client's `options` right before use rather than baked in at
-	// construction time.
-	const registryClientRef = useRef<
-		{ key: string; client: RegistryClient } | undefined
-	>(undefined)
-
-	async function getRegistryClient(contractId: string) {
-		const key = `${rpcUrl}|${passphrase}|${contractId}`
-		if (registryClientRef.current?.key === key) {
-			return registryClientRef.current.client
-		}
-		const { Client } = await import("registry-client")
-		const client = new Client({
-			contractId,
-			networkPassphrase: passphrase,
-			rpcUrl,
-			allowHttp: true,
-		})
-		registryClientRef.current = { key, client }
-		return client
-	}
-
 	useEffect(() => {
 		if (!copied) return
 		const id = setTimeout(() => setCopied(false), 2000)
@@ -274,7 +246,11 @@ function DeployWasmDialog({
 			}
 
 			const { nativeToScVal } = await import("@stellar/stellar-sdk")
-			const client = await getRegistryClient(targetContractId)
+			const client = await getRegistryClient({
+				rpcUrl,
+				networkPassphrase: passphrase,
+				contractId: targetContractId,
+			})
 			// registry-client's ClientOptions expects the Freighter-shaped signer
 			// (xdr, opts) => Promise<{ signedTxXdr }>; wallet.ts's signTransaction is
 			// the simpler (xdr) => Promise<string> shape used throughout the deploy

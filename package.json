@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "format": "prettier . --write",
     "prepare": "husky",
-    "generate:registry-client": "stellar registry download registry -o /tmp/registry.wasm --network testnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite"
+    "generate:registry-client:testnet": "stellar registry download registry -o /tmp/registry.wasm --network testnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite",
+    "generate:registry-client:mainnet": "stellar registry download registry -o /tmp/registry.wasm --network mainnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.5.0",
