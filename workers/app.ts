@@ -3,6 +3,7 @@ import { createRequestHandler } from "react-router"
 interface Env {
 	REGISTRY_API_URL: string
 	REGISTRY_NETWORK: string
+	REGISTRY_RPC_URL: string
 }
 
 declare module "react-router" {
@@ -11,6 +12,7 @@ declare module "react-router" {
 			env: {
 				REGISTRY_API_URL: string
 				REGISTRY_NETWORK: string
+				REGISTRY_RPC_URL: string
 			}
 			ctx: ExecutionContext
 		}

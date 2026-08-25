@@ -2,6 +2,9 @@
   "name": "registry-ui",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "clients/*"
+  ],
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
@@ -9,9 +12,13 @@
     "typecheck": "npm run cf-typegen && react-router typegen && tsc",
     "lint": "eslint .",
     "format": "prettier . --write",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate:registry-client:testnet": "stellar registry download registry -o /tmp/registry.wasm --network testnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite",
+    "generate:registry-client:mainnet": "stellar registry download registry -o /tmp/registry.wasm --network mainnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite"
   },
   "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "^2.5.0",
+    "@stellar/stellar-sdk": "^16.2.0",
     "@tanstack/react-query": "^5.90.21",
     "isbot": "^5.1.31",
     "lucide-react": "^0.577.0",
@@ -20,6 +27,7 @@
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
     "react-router": "^7.18.2",
+    "registry-client": "*",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
@@ -33,6 +41,7 @@
     "lint-staged": "^16.2.7",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
+    "vite-plugin-node-polyfills": "^0.28.0",
     "vite-tsconfig-paths": "^5.1.4",
     "wrangler": "^4.70.0"
   },
@@ -42,5 +51,8 @@
       "prettier --write --ignore-unknown"
     ]
   },
-  "prettier": "@theahaco/ts-config/prettier"
+  "prettier": "@theahaco/ts-config/prettier",
+  "overrides": {
+    "protobufjs": "7.5.5"
+  }
 }

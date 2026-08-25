@@ -18,14 +18,15 @@ runtime locally (via miniflare), so behaviour matches production.
 
 ## Commands
 
-| Command              | Description                                       |
-| -------------------- | ------------------------------------------------- |
-| `npm run dev`        | Start local dev server                            |
-| `npm run build`      | Production build                                  |
-| `npm run typecheck`  | Type-check (generates CF + RR types first)        |
-| `npm run lint`       | Run ESLint                                        |
-| `npm run format`     | Run Prettier                                      |
-| `npm run cf-typegen` | Regenerate Cloudflare types from `wrangler.jsonc` |
+| Command                            | Description                                                              |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| `npm run dev`                      | Start local dev server                                                   |
+| `npm run build`                    | Production build                                                         |
+| `npm run typecheck`                | Type-check (generates CF + RR types first)                               |
+| `npm run lint`                     | Run ESLint                                                               |
+| `npm run format`                   | Run Prettier                                                             |
+| `npm run cf-typegen`               | Regenerate Cloudflare types from `wrangler.jsonc`                        |
+| `npm run generate:registry-client` | Regenerate `clients/registry-client` from the deployed Registry contract |
 
 ## Stack
 
@@ -63,6 +64,8 @@ app/
   app.css                        # Global styles and design tokens
 workers/
   app.ts                         # Cloudflare Worker entry
+clients/
+  registry-client/               # Generated Registry contract bindings (see below)
 wrangler.jsonc                   # Cloudflare config (vars + env per network)
 ```
 
@@ -71,6 +74,38 @@ wrangler.jsonc                   # Cloudflare config (vars + env per network)
 Data is fetched from the Stellar Registry Indexer API. The base URL is set per
 environment via the `REGISTRY_API_URL` variable in `wrangler.jsonc`. All
 client-side requests are proxied through `/api/*` to avoid CORS issues.
+
+## Registry contract client
+
+`app/lib/deploy.ts` (the "Deploy a contract using this Wasm" flow) talks to the
+Registry contract itself through generated TypeScript bindings at
+`clients/registry-client`, an npm workspace package (`registry-client`) — not
+hand-written. It's checked in, so you don't need to regenerate it just to work
+on the app.
+
+Regenerate it after a Registry contract release with:
+
+```bash
+npm run generate:registry-client
+```
+
+This runs two steps under the hood:
+
+1. `stellar registry download registry -o /tmp/registry.wasm --network testnet -s me`
+   — fetches the current `registry` Wasm (the Registry contract publishes itself
+   into the registry, channel `root`) via the
+   [`stellar-registry` CLI](https://github.com/stellar-registry/cli)
+2. `stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite`
+   — regenerates the client package from that binary via
+   [`stellar-cli`](https://github.com/stellar/stellar-cli)
+
+Requires both CLIs installed (`cargo install --locked stellar-registry-cli`,
+`cargo install --locked stellar-cli` or equivalent) and a configured identity
+for `-s`/`--source-account` (e.g.
+`stellar keys generate me --network testnet --fund`) — `download` simulates a
+read call, which still needs a source account. The contract's interface is the
+same on testnet and mainnet (deployed deterministically, see
+`app/lib/network.ts`), so generating from testnet is fine either way.
 
 ---
 

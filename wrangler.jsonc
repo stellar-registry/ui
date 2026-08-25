@@ -12,6 +12,7 @@
 	"vars": {
 		"REGISTRY_API_URL": "https://stellar-registry-testnet.fly.dev",
 		"REGISTRY_NETWORK": "testnet",
+		"REGISTRY_RPC_URL": "https://soroban-testnet.stellar.org",
 	},
 
 	"env": {
@@ -22,6 +23,7 @@
 			"vars": {
 				"REGISTRY_API_URL": "https://stellar-registry-mainnet.fly.dev",
 				"REGISTRY_NETWORK": "mainnet",
+				"REGISTRY_RPC_URL": "https://mainnet.sorobanrpc.com",
 			},
 		},
 
@@ -32,6 +34,7 @@
 			"vars": {
 				"REGISTRY_API_URL": "https://stellar-registry-testnet.fly.dev",
 				"REGISTRY_NETWORK": "testnet",
+				"REGISTRY_RPC_URL": "https://soroban-testnet.stellar.org",
 			},
 		},
 	},
