@@ -33,10 +33,11 @@ export type WasmVersion = Omit<Wasm, "channel">
 export interface WasmMeta {
 	rsver: string
 	rssdkver: string
-	rssdk_spec_shaking: string
+	// Both observed `null` in production (not every build sets these).
+	rssdk_spec_shaking: string | null
 	cliver: string
 	source_repo: string
-	binver: string
+	binver: string | null
 }
 
 export interface WasmDetail extends Wasm {
