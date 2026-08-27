@@ -41,6 +41,40 @@ export default function WasmDetail() {
 					{wasm.transaction_hash}
 				</FieldLink>
 			</DetailField>
+
+			{wasm.meta && (
+				<>
+					{wasm.meta.rsver && (
+						<DetailField label="Rust Version">
+							<FieldValue>{wasm.meta.rsver}</FieldValue>
+						</DetailField>
+					)}
+
+					{wasm.meta.rssdkver && (
+						<DetailField label="Soroban SDK Version">
+							<FieldValue>{wasm.meta.rssdkver}</FieldValue>
+						</DetailField>
+					)}
+
+					{wasm.meta.cliver && (
+						<DetailField label="Stellar CLI Version">
+							<FieldValue>{wasm.meta.cliver}</FieldValue>
+						</DetailField>
+					)}
+
+					{wasm.meta.rssdk_spec_shaking && (
+						<DetailField label="Spec Shaking">
+							<FieldValue>{wasm.meta.rssdk_spec_shaking}</FieldValue>
+						</DetailField>
+					)}
+
+					{wasm.meta.binver && (
+						<DetailField label="Binary Version">
+							<FieldValue>{wasm.meta.binver}</FieldValue>
+						</DetailField>
+					)}
+				</>
+			)}
 		</DetailFields>
 	)
 }

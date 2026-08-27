@@ -3,6 +3,6 @@ import { globalIgnores } from "eslint/config"
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
-	globalIgnores(["build", "node_modules", ".react-router"]),
+	globalIgnores(["build", "node_modules", ".react-router", "clients"]),
 	...config,
 ]

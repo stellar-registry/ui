@@ -4,7 +4,9 @@ import {
 	type SearchParams,
 	type Contract,
 	type ContractDetail,
+	type DeploySpec,
 	type ListResponse,
+	type Registry,
 	type Wasm,
 	type WasmDetail,
 } from "./types"
@@ -93,6 +95,18 @@ export async function getWasm(
 		? `/wasms/${prefixName(name, channel)}/v/${version}`
 		: `/wasms/${prefixName(name, channel)}`
 	return apiFetch<WasmDetail>(path, apiUrl)
+}
+
+export async function getRegistries(apiUrl?: string): Promise<Registry[]> {
+	const data = await apiFetch<ListResponse<Registry>>("/registries", apiUrl)
+	return data.result
+}
+
+export async function getDeploySpec(
+	wasmHash: string,
+	apiUrl?: string,
+): Promise<DeploySpec> {
+	return apiFetch<DeploySpec>(`/wasms/${wasmHash}/deploy-spec`, apiUrl)
 }
 
 export async function checkHealth(): Promise<boolean> {
