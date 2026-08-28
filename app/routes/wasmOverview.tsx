@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { data, Outlet, isRouteErrorResponse } from "react-router"
 import { type Route } from "./+types/wasmOverview"
+import "~/lib/buffer-polyfill"
 import styles from "./wasmOverview.module.css"
 import { Badge } from "~/components/badge"
 import { Button } from "~/components/button"
@@ -23,7 +24,7 @@ import { Input } from "~/components/input"
 import { MetadataSection } from "~/components/metadata-section"
 import { UsageSection } from "~/components/usage-section"
 import { getWasm } from "~/lib/api"
-import { networkPassphrase, registryContractId } from "~/lib/network"
+import { getNetwork, registryContractId } from "~/lib/network"
 import { deploySpecQueryOptions, registriesQueryOptions } from "~/lib/queries"
 import { getRegistryClient } from "~/lib/registry-client"
 import {
@@ -174,7 +175,8 @@ function DeployWasmDialog({
 	wasmHash: string
 }) {
 	const { network, rpcUrl, stellarExpertUrl } = useRootData()
-	const passphrase = networkPassphrase(network)
+	const stellarNetwork = getNetwork(network)
+	const passphrase = stellarNetwork.passphrase
 
 	const [open, setOpen] = useState(false)
 	const [address, setAddress] = useState<string>()
@@ -208,10 +210,10 @@ function DeployWasmDialog({
 
 	useEffect(() => {
 		if (!open) return
-		void restoreAddress(passphrase).then((restored) => {
+		void restoreAddress(stellarNetwork).then((restored) => {
 			if (restored) setAddress(restored)
 		})
-	}, [open, passphrase])
+	}, [open, stellarNetwork])
 
 	useEffect(() => {
 		if (!copied) return
@@ -237,7 +239,7 @@ function DeployWasmDialog({
 			// UI knowing — re-verify against its live state right before we build
 			// a transaction whose auth is pinned to `address`, rather than risk a
 			// mismatched signature reaching the network as a bare txBadAuth.
-			const liveAddress = await fetchLiveAddress(passphrase)
+			const liveAddress = await fetchLiveAddress(stellarNetwork)
 			if (liveAddress !== address) {
 				setAddress(liveAddress)
 				throw new Error(
@@ -257,7 +259,7 @@ function DeployWasmDialog({
 			// dialog, so adapt it here rather than changing that call site.
 			client.options.publicKey = address
 			client.options.signTransaction = async (xdr) => ({
-				signedTxXdr: await signTransaction(xdr, address, passphrase),
+				signedTxXdr: await signTransaction(xdr, address, stellarNetwork),
 			})
 
 			// `init` is `Option<Array<any>>` on the generated client — an already
@@ -325,7 +327,7 @@ function DeployWasmDialog({
 		setConnecting(true)
 		setConnectError(undefined)
 		try {
-			setAddress(await connectWallet(passphrase))
+			setAddress(await connectWallet(stellarNetwork))
 		} catch (e) {
 			const message = e instanceof Error ? e.message : String(e)
 			// The user closing the wallet picker isn't a real error.
@@ -338,7 +340,7 @@ function DeployWasmDialog({
 	async function handleDisconnect() {
 		setDisconnecting(true)
 		try {
-			await disconnectWallet(passphrase)
+			await disconnectWallet(stellarNetwork)
 		} finally {
 			setAddress(undefined)
 			setConnectError(undefined)

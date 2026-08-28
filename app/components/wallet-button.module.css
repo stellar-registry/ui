@@ -1,0 +1,47 @@
+.bar {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+	margin-bottom: 1rem;
+}
+
+.status {
+	color: var(--color-muted-foreground);
+	font-size: var(--text-sm);
+}
+
+.button {
+	background: var(--color-card);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	color: var(--color-foreground);
+	cursor: pointer;
+	font-family: inherit;
+	font-size: var(--text-sm);
+	padding: 0.5rem 1rem;
+}
+
+.button:hover:not(:disabled) {
+	border-color: var(--color-muted-foreground);
+}
+
+.button:disabled {
+	cursor: default;
+	opacity: 0.6;
+}
+
+.address {
+	font-family: monospace;
+}
+
+/* Wrong-network warning — simulation still works, so this warns rather than blocks. */
+.warning {
+	background: var(--color-card);
+	border: 1px solid var(--color-destructive);
+	border-radius: var(--radius-md);
+	color: var(--color-foreground);
+	font-size: var(--text-sm);
+	margin-bottom: 1rem;
+	padding: 0.75rem 1rem;
+}
