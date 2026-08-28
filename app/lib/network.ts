@@ -1,6 +1,21 @@
 import { type Network } from "@theahaco/contract-explorer"
 
-const NETWORKS: Record<"testnet" | "mainnet", Network> = {
+// Stellar network constants for the `network` label already threaded through
+// the app via `useRootData()` (see app/root.tsx). These are protocol/registry
+// constants, not operational config — unlike REGISTRY_API_URL/REGISTRY_RPC_URL
+// there's nothing to configure per-deploy, so they live in code.
+
+type NetworkId = "testnet" | "mainnet"
+
+// The Stellar Registry contract's own address on each network. Deployed
+// deterministically (fixed salt) by stellar-registry/contracts, so these are
+// stable — see indexer/goldsky/networks/{testnet,mainnet}.env `ROOT_REGISTRY`.
+const REGISTRY_CONTRACT_IDS: Record<NetworkId, string> = {
+	testnet: "CAAXJETKPYAATU4HVVQUTE2FFBULNFGZNEOC3MS635U5K3GZLAY2HI4M",
+	mainnet: "CDU4M3LDIOUJJ5F3YXKJ4EJEP5VPRPG6N2LJ5HOQIMN7MNGL3NS3EGUY",
+}
+
+const NETWORKS: Record<NetworkId, Network> = {
 	testnet: {
 		id: "testnet",
 		label: "Testnet",
@@ -17,6 +32,18 @@ const NETWORKS: Record<"testnet" | "mainnet", Network> = {
 	},
 }
 
+function toNetworkId(networkId: string): NetworkId {
+	return networkId === "mainnet" ? "mainnet" : "testnet"
+}
+
 export function getNetwork(networkId: string): Network {
-	return NETWORKS[networkId as "testnet" | "mainnet"] ?? NETWORKS.testnet
+	return NETWORKS[toNetworkId(networkId)]
+}
+
+export function networkPassphrase(networkId: string): string {
+	return getNetwork(networkId).passphrase
+}
+
+export function registryContractId(networkId: string): string {
+	return REGISTRY_CONTRACT_IDS[toNetworkId(networkId)]
 }

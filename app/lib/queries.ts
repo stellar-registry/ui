@@ -3,6 +3,8 @@ import { type Network } from "@theahaco/contract-explorer"
 import {
 	getContract,
 	getContracts,
+	getDeploySpec,
+	getRegistries,
 	getWasm,
 	getWasmMeta,
 	getWasms,
@@ -94,4 +96,18 @@ export const walletQueryOptions = (network: Network) =>
 		staleTime: Infinity,
 		gcTime: Infinity,
 		retry: false,
+	})
+
+export const deploySpecQueryOptions = (wasmHash: string) =>
+	queryOptions({
+		queryKey: ["deploy-spec", wasmHash],
+		staleTime: STALE_TIME,
+		queryFn: () => getDeploySpec(wasmHash),
+	})
+
+export const registriesQueryOptions = () =>
+	queryOptions({
+		queryKey: ["registries"],
+		staleTime: STALE_TIME,
+		queryFn: () => getRegistries(),
 	})

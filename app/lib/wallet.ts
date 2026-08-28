@@ -1,6 +1,7 @@
 // NOTE: this utility **NEEDS** to load these imports dynamically, these imports
 // are type-only so they're erased at build. See `loadKit` for more info.
 import {
+	closeEvent,
 	type Networks,
 	type StellarWalletsKit,
 } from "@creit.tech/stellar-wallets-kit"
@@ -22,6 +23,7 @@ export const DISCONNECTED: WalletState = {
 
 type Kit = typeof StellarWalletsKit
 let kitPromise: Promise<Kit> | null = null
+let initializedFor: string | undefined
 
 /**
  * Load and initialize the wallet kit.
@@ -30,9 +32,16 @@ let kitPromise: Promise<Kit> | null = null
  * at init so a static import would break SSR, and it is heavy enough that
  * pulling it into the root chunk would defeat the contract explorer's code
  * split. Callers are all browser-only paths (effects and click handlers).
+ *
+ * Reinitializes when the passphrase changes (e.g. navigating between a
+ * testnet and mainnet deployment in the same session) rather than trusting
+ * whatever network the kit was first loaded with.
  */
 export function loadKit(network: Network): Promise<Kit> {
-	kitPromise ??= (async () => {
+	if (kitPromise && initializedFor === network.passphrase) return kitPromise
+
+	initializedFor = network.passphrase
+	kitPromise = (async () => {
 		const [{ StellarWalletsKit }, { defaultModules }] = await Promise.all([
 			import("@creit.tech/stellar-wallets-kit"),
 			import("@creit.tech/stellar-wallets-kit/modules/utils"),
@@ -80,6 +89,31 @@ export async function getWalletState(network: Network): Promise<WalletState> {
 	const networkPassphrase = await safeGetNetwork(kit)
 
 	return { address, networkPassphrase }
+}
+
+/**
+ * Best-effort silent restore of a previously connected wallet's address.
+ * Thin wrapper around `getWalletState` for callers (like the one-shot deploy
+ * dialog) that only care about the address, not the full wallet state.
+ */
+export async function restoreAddress(
+	network: Network,
+): Promise<string | undefined> {
+	return (await getWalletState(network)).address
+}
+
+/**
+ * Live read of the address currently active in the wallet extension itself
+ * (not the kit's cached copy — see `getWalletState`). The user can switch
+ * accounts inside their wallet extension at any time without our UI knowing,
+ * so call this right before an operation whose correctness depends on "who
+ * is connected right now" — e.g. immediately before building/signing a
+ * transaction — rather than trusting previously-cached state.
+ */
+export async function fetchLiveAddress(network: Network): Promise<string> {
+	const kit = await loadKit(network)
+	const { address } = await kit.fetchAddress()
+	return address
 }
 
 const listeners = new Set<(state: WalletState) => void>()
@@ -140,14 +174,65 @@ export function subscribeToWallet(
 	}
 }
 
+/**
+ * Render the kit's modal (wallet picker or profile) into a container we own
+ * that stays interactive regardless of an ancestor modal's state.
+ *
+ * The connect button is sometimes rendered inside a Radix Dialog (e.g. the
+ * wasm deploy dialog), which locks `body` to `pointer-events: none` while
+ * open and grants `auto` back only to the DOM nodes it tracks itself (see
+ * DialogContentModal in @radix-ui/react-dialog). Stellar Wallets Kit's modal
+ * is appended straight to <body>, outside Radix's tree, so by default it
+ * inherits that "none" and every click on it falls through to whatever's
+ * rendered underneath (e.g. an <input> in the deploy form) instead of
+ * registering.
+ *
+ * Rather than relax the lock for the whole page, give the kit a container we
+ * own that stays interactive. Passing `container` switches the kit out of
+ * its own full-screen "FIXED" mode (see its `SwkApp` component), so we
+ * reproduce that positioning and backdrop here, including wiring the
+ * backdrop click to the kit's own `closeEvent` so "click outside to cancel"
+ * still works. Harmless when there's no enclosing Dialog.
+ */
+async function withOwnedContainer<T>(
+	open: (container: HTMLElement) => Promise<T>,
+): Promise<T> {
+	const container = document.createElement("div")
+	Object.assign(container.style, {
+		position: "fixed",
+		inset: "0",
+		zIndex: "999",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		pointerEvents: "auto",
+		backgroundColor: "rgb(0 0 0 / 0.5)",
+	})
+	container.addEventListener("click", (e) => {
+		if (e.target === container) closeEvent.next()
+	})
+	document.body.appendChild(container)
+
+	try {
+		return await open(container)
+	} finally {
+		container.remove()
+	}
+}
+
 /** Open the wallet-selection modal. Resolves once a wallet is connected. */
-export async function connectWallet(network: Network) {
-	return (await loadKit(network)).authModal()
+export async function connectWallet(network: Network): Promise<string> {
+	const kit = await loadKit(network)
+	const { address } = await withOwnedContainer((container) =>
+		kit.authModal({ container }),
+	)
+	return address
 }
 
 /** Open the profile modal, which shows the account and disconnect button. */
 export async function openProfileModal(network: Network) {
-	return (await loadKit(network)).profileModal()
+	const kit = await loadKit(network)
+	return withOwnedContainer((container) => kit.profileModal({ container }))
 }
 
 /** Disconnect the active wallet. The kit clears its own persisted state. */
@@ -169,6 +254,32 @@ export function checkNetwork(
 	if (!state.address) return "disconnected"
 	if (!state.networkPassphrase) return "unverified"
 	return state.networkPassphrase === network.passphrase ? "ok" : "mismatch"
+}
+
+/**
+ * Sign a transaction with the currently connected wallet.
+ *
+ * The kit forwards `address` to the wallet only as a hint — if the user
+ * switched accounts in the extension, it may come back signed by a
+ * different key than the one this transaction's auth was built for, which
+ * the network will reject as txBadAuth. Catch that here instead.
+ */
+export async function signTransaction(
+	xdr: string,
+	address: string,
+	network: Network,
+): Promise<string> {
+	const kit = await loadKit(network)
+	const { signedTxXdr, signerAddress } = await kit.signTransaction(xdr, {
+		address,
+		networkPassphrase: network.passphrase,
+	})
+	if (signerAddress && signerAddress !== address) {
+		throw new Error(
+			`Signed with a different account (${signerAddress}) than the one connected (${address}). Disconnect and reconnect your wallet, then try again.`,
+		)
+	}
+	return signedTxXdr
 }
 
 /**
