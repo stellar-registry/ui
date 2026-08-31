@@ -2,10 +2,7 @@ import { stellarExpertNetworkSegment } from "./network"
 
 // Stellar Expert attests wasm builds via a GitHub Actions workflow that
 // compiles a contract's source and publishes the resulting hash/repo/commit
-// to their explorer — see https://github.com/stellar-experimental/contract-verifications.
-// `status` is "verified" when that attestation matches this contract's
-// deployed wasm; there's no distinct "unverified" status to check for, the
-// `validation` key is simply absent from the response otherwise.
+// to their explorer; This utility fetches that information.
 export interface ContractValidation {
 	status: string
 	repository: string
@@ -33,8 +30,6 @@ function isContractValidation(value: unknown): value is ContractValidation {
 	)
 }
 
-// api.stellar.expert sends no CORS headers, so this can only be called
-// server-side (a route loader), never from the browser.
 export async function getContractValidation(
 	contractId: string,
 	network: string,
