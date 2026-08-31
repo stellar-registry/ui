@@ -3,6 +3,7 @@ import { type Route } from "./+types/home"
 import styles from "./home.module.css"
 import { CodeBlock } from "~/components/code-block"
 import { Input } from "~/components/input"
+import { Logo } from "~/components/logo"
 import { useRootData } from "~/root"
 
 export function meta({}: Route.MetaArgs) {
@@ -19,7 +20,7 @@ export default function Index() {
 		<>
 			<section className={styles.hero}>
 				<div className={styles.heroInner}>
-					<div className={styles.heroMark}>✦</div>
+					<Logo />
 					<div className={styles.heroHeadingWrapper}>
 						<h1 className={styles.heroHeading}>Stellar Registry</h1>
 						{network === "testnet" && (

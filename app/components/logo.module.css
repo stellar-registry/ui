@@ -1,0 +1,8 @@
+.logoSvg {
+	height: 2.25rem;
+	margin: 0 auto 1.25rem;
+}
+
+.logoPath {
+	fill: var(--color-primary-foreground);
+}
