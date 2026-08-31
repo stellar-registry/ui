@@ -15,6 +15,7 @@ import {
 	SidebarLink,
 	SidebarPanel,
 } from "~/components/detail-sidebar"
+import { IconContract } from "~/components/icon-contract"
 import { UsageSection } from "~/components/usage-section"
 import { getContract } from "~/lib/api"
 import { getNetwork } from "~/lib/network"
@@ -62,7 +63,10 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 	return (
 		<main className={styles.main}>
 			<div className={styles.titleRow}>
-				<h1 className={styles.title}>{fullName}</h1>
+				<h1 className={styles.title}>
+					<IconContract />
+					{fullName}
+				</h1>
 
 				{hasWasm && <Badge variant="secondary">{wasmAndVersion}</Badge>}
 			</div>
