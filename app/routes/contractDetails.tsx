@@ -18,6 +18,7 @@ import {
 import { UsageSection } from "~/components/usage-section"
 import { getContract } from "~/lib/api"
 import { getNetwork } from "~/lib/network"
+import { getContractValidation } from "~/lib/stellar-expert"
 import { getFullName, prefixName } from "~/lib/util"
 import { useRootData } from "~/root"
 
@@ -29,7 +30,19 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 			channel,
 			context.cloudflare.env.REGISTRY_API_URL,
 		)
-		return { contract, name, channel, fullName: getFullName(contract) }
+		// Keyed by contract_id (not wasm hash or name), so this can't start
+		// until getContract resolves.
+		const validation = await getContractValidation(
+			contract.contract_id,
+			context.cloudflare.env.REGISTRY_NETWORK,
+		)
+		return {
+			contract,
+			name,
+			channel,
+			fullName: getFullName(contract),
+			validation,
+		}
 	} catch (e) {
 		console.error(e)
 		if (isRouteErrorResponse(e) && e.status === 500) {
@@ -45,7 +58,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function ContractDetail({ loaderData }: Route.ComponentProps) {
-	const { contract, fullName } = loaderData
+	const { contract, fullName, validation } = loaderData
 	const { network, stellarExpertUrl } = useRootData()
 
 	const createdAt = new Date(contract.created_at).toLocaleString()
@@ -65,6 +78,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 				<h1 className={styles.title}>{fullName}</h1>
 
 				{hasWasm && <Badge variant="secondary">{wasmAndVersion}</Badge>}
+				{validation && <Badge variant="secondary">Verified Build</Badge>}
 			</div>
 
 			<div className={styles.layout}>
@@ -158,6 +172,14 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 						>
 							View on Stellar Expert
 						</SidebarLink>
+						{validation && (
+							<SidebarLink
+								href={`${validation.repository}/tree/${validation.commit}/${validation.path}`}
+								external
+							>
+								View Verified Source
+							</SidebarLink>
+						)}
 						{hasWasm && (
 							<SidebarLink href={`/wasms/${fullWasmName}`}>
 								View WASM
