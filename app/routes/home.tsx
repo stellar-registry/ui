@@ -20,7 +20,7 @@ export default function Index() {
 		<>
 			<section className={styles.hero}>
 				<div className={styles.heroInner}>
-					<Logo />
+					<Logo style={{ height: "2.25rem", margin: "0 auto 1em" }} />
 					<div className={styles.heroHeadingWrapper}>
 						<h1 className={styles.heroHeading}>Stellar Registry</h1>
 						{network === "testnet" && (

@@ -18,6 +18,7 @@ import {
 } from "react-router"
 
 import { type Route } from "./+types/root"
+import { Logo } from "~/components/logo"
 import "./app.css"
 import styles from "./root.module.css"
 import { checkHealth } from "~/lib/api"
@@ -39,7 +40,7 @@ function Header({
 			<div className={styles.headerInner}>
 				<div className={styles.headerLogoWrapper}>
 					<Link to="/" className={styles.headerLogo}>
-						<span className={styles.headerLogoMark}>✦</span>
+						<Logo />
 						Stellar Registry
 					</Link>
 					{network === "testnet" && (
