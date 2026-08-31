@@ -42,7 +42,15 @@ export default function Index() {
 			<main className={styles.main}>
 				<div className={styles.features}>
 					<Link to="/wasms" className={styles.featureCard}>
-						<h2 className={styles.featureTitle}>WASMs</h2>
+						<h2 className={styles.featureTitle}>
+							<svg viewBox="0 0 91.6 100">
+								<path d="M0,57.7v10.1L91.6,21.1v-10.1L0,57.7Z" />
+								<path d="M91.6,32.2L0,78.9v10.1l91.6-46.7v-10Z" />
+								<polygon points="7.5 37 0 37 0 0 45.8 0 45.8 7.5 7.5 7.5 7.5 37" />
+								<polygon points="91.6 100 46.7 100 46.7 92.5 84.1 92.5 84.1 63 91.6 63 91.6 100" />
+							</svg>
+							WASMs
+						</h2>
 						<p className={styles.featureDesc}>
 							Explore published WebAssembly modules. WASMs define the logic
 							shared across contract deployments and are identified by their
@@ -52,7 +60,14 @@ export default function Index() {
 					</Link>
 
 					<Link to="/contracts" className={styles.featureCard}>
-						<h2 className={styles.featureTitle}>Contracts</h2>
+						<h2 className={styles.featureTitle}>
+							<svg viewBox="0 0 91.6 100">
+								<polygon points="0 77.8 91.6 31.2 91.6 22.1 0 68.8 0 77.8" />
+								<polygon points="0 100 91.6 100 91.6 42.6 0 89.2 0 100" />
+								<polygon points="0 0 0 57.4 91.6 10.7 91.6 0 0 0" />
+							</svg>
+							Contracts
+						</h2>
 						<p className={styles.featureDesc}>
 							Browse deployed contract instances. Each contract is a live
 							on-chain deployment with a unique address, linked to a published

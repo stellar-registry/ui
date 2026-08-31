@@ -124,6 +124,14 @@
 	color: var(--color-foreground);
 }
 
+.featureTitle svg {
+	fill: var(--color-foreground);
+	height: 1em;
+	display: inline;
+	margin-right: 0.5em;
+	vertical-align: sub;
+}
+
 .featureDesc {
 	font-size: 0.9375rem;
 	line-height: 1.6;
