@@ -10,7 +10,9 @@ export interface ContractValidation {
 	status: string
 	repository: string
 	commit: string
-	path: string
+	// Only present when the verified build is a subdirectory of the
+	// repository (a monorepo)
+	path?: string
 	package: string
 	ts: number
 }
@@ -26,7 +28,6 @@ function isContractValidation(value: unknown): value is ContractValidation {
 		typeof entry.status === "string" &&
 		typeof entry.repository === "string" &&
 		typeof entry.commit === "string" &&
-		typeof entry.path === "string" &&
 		typeof entry.package === "string" &&
 		typeof entry.ts === "number"
 	)

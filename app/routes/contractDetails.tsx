@@ -71,6 +71,11 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 		? `${fullWasmName}@v${contract.wasm_version}`
 		: ""
 	const contractVersions = contract.versions.slice().reverse()
+	const verifiedSourceUrl = validation
+		? [validation.repository, "tree", validation.commit, validation.path]
+				.filter(Boolean)
+				.join("/")
+		: undefined
 
 	return (
 		<main className={styles.main}>
@@ -172,11 +177,8 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 						>
 							View on Stellar Expert
 						</SidebarLink>
-						{validation && (
-							<SidebarLink
-								href={`${validation.repository}/tree/${validation.commit}/${validation.path}`}
-								external
-							>
+						{verifiedSourceUrl && (
+							<SidebarLink href={verifiedSourceUrl} external>
 								View Verified Source
 							</SidebarLink>
 						)}

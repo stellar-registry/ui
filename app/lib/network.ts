@@ -48,9 +48,8 @@ export function registryContractId(networkId: string): string {
 	return REGISTRY_CONTRACT_IDS[toNetworkId(networkId)]
 }
 
-// Stellar Expert's own network segment naming — "public" for mainnet,
-// "testnet" otherwise. Shared by the stellarExpertUrl web links (root.tsx)
-// and the api.stellar.expert calls (lib/stellar-expert.ts).
+// Stellar Expert's network segment naming: "public" for mainnet,
+// "testnet" otherwise
 export function stellarExpertNetworkSegment(networkId: string): string {
 	return networkId === "mainnet" ? "public" : "testnet"
 }
