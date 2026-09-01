@@ -11,7 +11,7 @@ export function meta({ matches }: Route.MetaArgs) {
 	const parentData = isWasmOutletContext(parent?.loaderData)
 		? parent.loaderData
 		: undefined
-	if (!parentData) return [{ title: "WASM Versions — Stellar Registry" }]
+	if (!parentData) return [{ title: "Wasm Versions — Stellar Registry" }]
 	return [{ title: `${parentData.wasm.wasm_name} versions — Stellar Registry` }]
 }
 

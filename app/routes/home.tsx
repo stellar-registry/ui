@@ -35,7 +35,7 @@ export default function Index() {
 					<Form action="/contracts" method="get" className={styles.heroSearch}>
 						<Input
 							name="query"
-							placeholder="Search contracts by name or WASM…"
+							placeholder="Search contracts by name or Wasm…"
 						/>
 					</Form>
 				</div>
@@ -46,14 +46,14 @@ export default function Index() {
 					<Link to="/wasms" className={styles.featureCard}>
 						<h2 className={styles.featureTitle}>
 							<IconWasm />
-							WASMs
+							Wasms
 						</h2>
 						<p className={styles.featureDesc}>
-							Explore published WebAssembly modules. WASMs define the logic
+							Explore published WebAssembly modules. Wasms define the logic
 							shared across contract deployments and are identified by their
 							content hash.
 						</p>
-						<span className={styles.featureLink}>Explore WASMs →</span>
+						<span className={styles.featureLink}>Explore Wasms →</span>
 					</Link>
 
 					<Link to="/contracts" className={styles.featureCard}>
@@ -64,7 +64,7 @@ export default function Index() {
 						<p className={styles.featureDesc}>
 							Browse deployed contract instances. Each contract is a live
 							on-chain deployment with a unique address, linked to a published
-							WASM module.
+							Wasm module.
 						</p>
 						<span className={styles.featureLink}>Browse contracts →</span>
 					</Link>
@@ -81,7 +81,7 @@ export default function Index() {
 						deployed and referenced.
 					</p>
 					<p className={styles.aboutBody}>
-						The registry separates two distinct concepts: <strong>WASMs</strong>
+						The registry separates two distinct concepts: <strong>Wasms</strong>
 						, the compiled WebAssembly modules that define contract logic and
 						are identified by their content hash, and <strong>Contracts</strong>
 						, which are live deployed instances of those modules.

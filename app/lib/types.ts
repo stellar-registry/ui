@@ -3,7 +3,7 @@ export interface ListResponse<T> {
 	next: string | null
 }
 
-// ── WASMs ─────────────────────────────────────────────
+// ── Wasms ─────────────────────────────────────────────
 
 export interface Wasm {
 	channel: string

@@ -14,10 +14,10 @@ import { getFullName } from "~/lib/util"
 
 export function meta({}: Route.MetaArgs) {
 	return [
-		{ title: "WASMs — Stellar Registry" },
+		{ title: "Wasms — Stellar Registry" },
 		{
 			name: "description",
-			content: "Browse published WASM modules on Stellar",
+			content: "Browse published Wasm modules on Stellar",
 		},
 	]
 }
@@ -61,7 +61,7 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 				<div className={styles.pageHeaderInner}>
 					<h1 className={styles.pageTitle}>
 						<IconWasm />
-						WASMs
+						Wasms
 					</h1>
 					<p className={styles.pageSub}>
 						Published WebAssembly modules available on the Stellar network.
@@ -71,11 +71,11 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 
 			<main className={styles.main}>
 				<div className={styles.toolbar}>
-					<QuerySearchInput placeholder="Search WASMs by name…" />
+					<QuerySearchInput placeholder="Search Wasms by name…" />
 				</div>
 
 				{wasms.length === 0 ? (
-					<p className={styles.emptyState}>No WASMs found.</p>
+					<p className={styles.emptyState}>No Wasms found.</p>
 				) : (
 					<div className={styles.list}>
 						{wasms.map((wasm) => (

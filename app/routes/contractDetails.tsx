@@ -94,7 +94,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					)}
 
 					{hasWasm && (
-						<DetailField label="WASM">
+						<DetailField label="Wasm">
 							<FieldLink
 								href={`/wasms/${fullWasmName}/v/${contract.wasm_version}`}
 							>
@@ -164,7 +164,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 						</SidebarLink>
 						{hasWasm && (
 							<SidebarLink href={`/wasms/${fullWasmName}`}>
-								View WASM
+								View Wasm
 							</SidebarLink>
 						)}
 						{contract.deployer && (
