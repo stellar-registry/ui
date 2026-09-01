@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router"
 import { type Route } from "./+types/contracts"
 import styles from "./contracts.module.css"
 import { Badge } from "~/components/badge"
+import { IconContract } from "~/components/icon-contract"
 import { QuerySearchInput } from "~/components/query-search-input"
 import { getContracts } from "~/lib/api"
 import { contractsQueryOptions } from "~/lib/queries"
@@ -63,7 +64,10 @@ export default function ContractsIndex({ loaderData }: Route.ComponentProps) {
 		<>
 			<section className={styles.pageHeader}>
 				<div className={styles.pageHeaderInner}>
-					<h1 className={styles.pageTitle}>Contracts</h1>
+					<h1 className={styles.pageTitle}>
+						<IconContract />
+						Contracts
+					</h1>
 					<p className={styles.pageSub}>
 						Deployed contract instances on the Stellar network.
 					</p>

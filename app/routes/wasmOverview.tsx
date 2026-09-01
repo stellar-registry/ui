@@ -20,6 +20,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "~/components/dialog"
+import { IconWasm } from "~/components/icon-wasm"
 import { Input } from "~/components/input"
 import { MetadataSection } from "~/components/metadata-section"
 import { UsageSection } from "~/components/usage-section"
@@ -513,7 +514,10 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 	return (
 		<main className={styles.main}>
 			<div className={styles.titleRow}>
-				<h1 className={styles.title}>{fullName}</h1>
+				<h1 className={styles.title}>
+					<IconWasm />
+					{fullName}
+				</h1>
 				<Badge variant="secondary">{displayVersion}</Badge>
 			</div>
 

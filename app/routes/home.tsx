@@ -2,7 +2,10 @@ import { Form, Link } from "react-router"
 import { type Route } from "./+types/home"
 import styles from "./home.module.css"
 import { CodeBlock } from "~/components/code-block"
+import { IconContract } from "~/components/icon-contract"
+import { IconWasm } from "~/components/icon-wasm"
 import { Input } from "~/components/input"
+import { Logo } from "~/components/logo"
 import { useRootData } from "~/root"
 
 export function meta({}: Route.MetaArgs) {
@@ -19,7 +22,7 @@ export default function Index() {
 		<>
 			<section className={styles.hero}>
 				<div className={styles.heroInner}>
-					<div className={styles.heroMark}>✦</div>
+					<Logo style={{ height: "2.25rem", margin: "0 auto 1em" }} />
 					<div className={styles.heroHeadingWrapper}>
 						<h1 className={styles.heroHeading}>Stellar Registry</h1>
 						{network === "testnet" && (
@@ -41,7 +44,10 @@ export default function Index() {
 			<main className={styles.main}>
 				<div className={styles.features}>
 					<Link to="/wasms" className={styles.featureCard}>
-						<h2 className={styles.featureTitle}>WASMs</h2>
+						<h2 className={styles.featureTitle}>
+							<IconWasm />
+							WASMs
+						</h2>
 						<p className={styles.featureDesc}>
 							Explore published WebAssembly modules. WASMs define the logic
 							shared across contract deployments and are identified by their
@@ -51,7 +57,10 @@ export default function Index() {
 					</Link>
 
 					<Link to="/contracts" className={styles.featureCard}>
-						<h2 className={styles.featureTitle}>Contracts</h2>
+						<h2 className={styles.featureTitle}>
+							<IconContract />
+							Contracts
+						</h2>
 						<p className={styles.featureDesc}>
 							Browse deployed contract instances. Each contract is a live
 							on-chain deployment with a unique address, linked to a published

@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router"
 import { type Route } from "./+types/wasms"
 import styles from "./wasms.module.css"
 import { Badge } from "~/components/badge"
+import { IconWasm } from "~/components/icon-wasm"
 import { QuerySearchInput } from "~/components/query-search-input"
 import { getWasms } from "~/lib/api"
 import { wasmsQueryOptions } from "~/lib/queries"
@@ -58,7 +59,10 @@ export default function WasmsIndex({ loaderData }: Route.ComponentProps) {
 		<>
 			<section className={styles.pageHeader}>
 				<div className={styles.pageHeaderInner}>
-					<h1 className={styles.pageTitle}>WASMs</h1>
+					<h1 className={styles.pageTitle}>
+						<IconWasm />
+						WASMs
+					</h1>
 					<p className={styles.pageSub}>
 						Published WebAssembly modules available on the Stellar network.
 					</p>
