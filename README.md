@@ -51,8 +51,8 @@ app/
     _index.tsx                   # / — hero + search + about
     contracts._index.tsx         # /contracts — contract list with search
     contracts.$contract_name.tsx # /contracts/:contract_name — contract detail
-    wasms._index.tsx             # /wasms — WASM list with search
-    wasms.$wasm_name.tsx         # /wasms/:wasm_name — WASM detail
+    wasms._index.tsx             # /wasms — Wasm list with search
+    wasms.$wasm_name.tsx         # /wasms/:wasm_name — Wasm detail
     api.$.tsx                    # /api/* — server-side proxy to backend API
   components/                    # Shared UI components
   lib/

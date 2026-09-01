@@ -62,12 +62,12 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 		if (isRouteErrorResponse(e) && e.status === 500) {
 			throw e
 		}
-		throw data("WASM not found", { status: 404 })
+		throw data("Wasm not found", { status: 404 })
 	}
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
-	if (!loaderData) return [{ title: "WASM Not Found" }]
+	if (!loaderData) return [{ title: "Wasm Not Found" }]
 	return [{ title: `${loaderData.fullName} — Stellar Registry` }]
 }
 
@@ -530,7 +530,7 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 							href="https://stellar.rgstry.xyz"
 							linkText="Switch to Mainnet →"
 						>
-							Testnet data — this WASM may not exist on mainnet.
+							Testnet data — this Wasm may not exist on mainnet.
 						</SidebarAlert>
 					)}
 					<SidebarPanel>

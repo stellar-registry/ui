@@ -54,7 +54,7 @@ function Header({
 							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
 						}
 					>
-						WASMs
+						Wasms
 					</NavLink>
 					<NavLink
 						to="/contracts"
@@ -138,7 +138,7 @@ function Footer() {
 				<div className={styles.footerCol}>
 					<p className={styles.footerColTitle}>Registry</p>
 					<NavLink to="/wasms" className={styles.footerLink}>
-						WASMs
+						Wasms
 					</NavLink>
 					<NavLink to="/contracts" className={styles.footerLink}>
 						Contracts
