@@ -18,30 +18,25 @@ import {
 import { UsageSection } from "~/components/usage-section"
 import { getContract } from "~/lib/api"
 import { getNetwork } from "~/lib/network"
-import { getContractValidation } from "~/lib/stellar-expert"
 import { getFullName, prefixName } from "~/lib/util"
 import { useRootData } from "~/root"
 
 export async function loader({ params, context }: Route.LoaderArgs) {
 	const { name, channel } = params
 	try {
+		// Verified-build status (contract.verified) is fetched and cached by
+		// the indexer once per contract_id, not per request — see
+		// stellar-registry/ui#57.
 		const contract = await getContract(
 			name,
 			channel,
 			context.cloudflare.env.REGISTRY_API_URL,
-		)
-		// Keyed by contract_id (not wasm hash or name), so this can't start
-		// until getContract resolves.
-		const validation = await getContractValidation(
-			contract.contract_id,
-			context.cloudflare.env.REGISTRY_NETWORK,
 		)
 		return {
 			contract,
 			name,
 			channel,
 			fullName: getFullName(contract),
-			validation,
 		}
 	} catch (e) {
 		console.error(e)
@@ -58,8 +53,9 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function ContractDetail({ loaderData }: Route.ComponentProps) {
-	const { contract, fullName, validation } = loaderData
+	const { contract, fullName } = loaderData
 	const { network, stellarExpertUrl } = useRootData()
+	const validation = contract.verified
 
 	const createdAt = new Date(contract.created_at).toLocaleString()
 
