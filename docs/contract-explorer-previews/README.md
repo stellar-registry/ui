@@ -4,6 +4,13 @@ These are the three complete interaction directions proposed in PR #60. The
 screens use deterministic fixtures: they never request a real signature or
 submit a transaction.
 
+## Hosted previews
+
+After the [Cloudflare setup](../hosted-previews.md) is complete, open the branch
+preview URL in Cloudflare's PR comment and append `/explorer-preview`. The same
+host serves all three direct routes below. Adding the repository configuration
+does not itself create the Cloudflare GitHub connection or publish a preview.
+
 ## Preview locally
 
 From the repository root:

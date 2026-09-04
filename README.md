@@ -38,10 +38,16 @@ runtime locally (via miniflare), so behaviour matches production.
 
 ## Deployment
 
-Merges to `main` automatically deploy via GitHub Actions. A single worker serves
-all environments — the network config (API URL, network label) is derived from
-the request hostname at runtime. Custom domains are configured once in the
-Cloudflare dashboard.
+Merges to `main` automatically deploy via GitHub Actions to `rgstry-testnet` and
+`rgstry-stellar`. Each build selects its named environment with
+`CLOUDFLARE_ENV`; the generated Worker config contains that network's variables
+and custom domain.
+
+Hosted PR previews use a separate `registry-ui` Worker and Testnet-only config.
+Run `npm run build:preview` to build and validate that target. The production
+configuration and deployment workflow are unchanged. See
+[Hosted previews](docs/hosted-previews.md) for the one-time Cloudflare GitHub
+connection, build settings, and where reviewers will find the preview URLs.
 
 ## Project structure
 
