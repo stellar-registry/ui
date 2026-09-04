@@ -66,7 +66,7 @@ function Header({
 					</NavLink>
 					<NavLink
 						className={styles.navLink}
-						to="https://scaffoldstellar.org/docs/registry"
+						to="https://stellarscaffold.org/docs/registry"
 					>
 						Guide
 					</NavLink>
