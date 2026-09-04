@@ -21,7 +21,6 @@ import { type Route } from "./+types/root"
 import "./app.css"
 import styles from "./root.module.css"
 import { checkHealth } from "~/lib/api"
-import { stellarExpertNetworkSegment } from "~/lib/network"
 
 // Runs before hydration to avoid flash of wrong theme. Defaults to dark.
 const themeScript = `(function(){try{if(localStorage.getItem('theme')!=='light')document.documentElement.classList.add('dark')}catch(e){}})();`
@@ -340,7 +339,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 function getNetworkContext(network = "testnet", rpcUrl?: string) {
 	return {
 		network,
-		stellarExpertUrl: `https://stellar.expert/explorer/${stellarExpertNetworkSegment(network)}`,
+		stellarExpertUrl: `https://stellar.expert/explorer/${network === "mainnet" ? "public" : "testnet"}`,
 		// Falls back to the public testnet default so local dev works even
 		// without REGISTRY_RPC_URL configured.
 		rpcUrl: rpcUrl ?? "https://soroban-testnet.stellar.org",

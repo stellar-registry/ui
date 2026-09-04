@@ -47,9 +47,3 @@ export function networkPassphrase(networkId: string): string {
 export function registryContractId(networkId: string): string {
 	return REGISTRY_CONTRACT_IDS[toNetworkId(networkId)]
 }
-
-// Stellar Expert's network segment naming: "public" for mainnet,
-// "testnet" otherwise
-export function stellarExpertNetworkSegment(networkId: string): string {
-	return networkId === "mainnet" ? "public" : "testnet"
-}

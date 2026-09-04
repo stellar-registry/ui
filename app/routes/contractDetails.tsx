@@ -24,9 +24,6 @@ import { useRootData } from "~/root"
 export async function loader({ params, context }: Route.LoaderArgs) {
 	const { name, channel } = params
 	try {
-		// Verified-build status (contract.verified) is fetched and cached by
-		// the indexer once per contract_id, not per request — see
-		// stellar-registry/ui#57.
 		const contract = await getContract(
 			name,
 			channel,
