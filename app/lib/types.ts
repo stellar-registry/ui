@@ -108,12 +108,27 @@ interface ContractVersion {
 	kind: string
 }
 
+// Stellar Expert's per-contract "verified build" attestation, fetched and
+// cached once per contract_id by the indexer (see stellar-registry/indexer's
+// verify-build webhook) rather than on every request — see
+// stellar-registry/ui#57 for why this moved server-side.
+export interface ContractValidation {
+	status: string
+	repository: string
+	commit: string
+	// Only present when the verified build is a subdirectory of the
+	// repository (a monorepo)
+	path?: string
+	package: string
+}
+
 export interface ContractDetail extends Contract {
 	id: string
 	transaction_hash: string
 	ledger_sequence: number
 	created_at: string
 	versions: ContractVersion[]
+	verified: ContractValidation | null
 }
 
 export interface SearchParams {

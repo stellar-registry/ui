@@ -30,7 +30,12 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 			channel,
 			context.cloudflare.env.REGISTRY_API_URL,
 		)
-		return { contract, name, channel, fullName: getFullName(contract) }
+		return {
+			contract,
+			name,
+			channel,
+			fullName: getFullName(contract),
+		}
 	} catch (e) {
 		console.error(e)
 		if (isRouteErrorResponse(e) && e.status === 500) {
@@ -48,6 +53,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 	const { contract, fullName } = loaderData
 	const { network, stellarExpertUrl } = useRootData()
+	const validation = contract.verified
 
 	const createdAt = new Date(contract.created_at).toLocaleString()
 
@@ -59,6 +65,11 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 		? `${fullWasmName}@v${contract.wasm_version}`
 		: ""
 	const contractVersions = contract.versions.slice().reverse()
+	const verifiedSourceUrl = validation
+		? [validation.repository, "tree", validation.commit, validation.path]
+				.filter(Boolean)
+				.join("/")
+		: undefined
 
 	return (
 		<main className={styles.main}>
@@ -69,6 +80,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 				</h1>
 
 				{hasWasm && <Badge variant="secondary">{wasmAndVersion}</Badge>}
+				{validation && <Badge variant="secondary">Verified Build</Badge>}
 			</div>
 
 			<div className={styles.layout}>
@@ -162,6 +174,11 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 						>
 							View on Stellar Expert
 						</SidebarLink>
+						{verifiedSourceUrl && (
+							<SidebarLink href={verifiedSourceUrl} external>
+								View Verified Source
+							</SidebarLink>
+						)}
 						{hasWasm && (
 							<SidebarLink href={`/wasms/${fullWasmName}`}>
 								View Wasm
