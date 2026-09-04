@@ -23,6 +23,7 @@ export default [
 			}),
 		]),
 	]),
+	route("explorer-preview/:direction?", "routes/explorerPreview.tsx"),
 	route("api/*", "routes/api.tsx"),
 	route("*", "routes/404.tsx"),
 ] satisfies RouteConfig

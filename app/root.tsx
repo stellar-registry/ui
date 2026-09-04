@@ -15,12 +15,13 @@ import {
 	Scripts,
 	ScrollRestoration,
 	useRouteLoaderData,
+	useLocation,
 } from "react-router"
 
 import { type Route } from "./+types/root"
-import { Logo } from "~/components/logo"
 import "./app.css"
 import styles from "./root.module.css"
+import { Logo } from "~/components/logo"
 import { checkHealth } from "~/lib/api"
 
 // Runs before hydration to avoid flash of wrong theme. Defaults to dark.
@@ -361,8 +362,10 @@ export function useRootData() {
 
 export default function App({ loaderData }: Route.ComponentProps) {
 	const { network } = loaderData
+	const { pathname } = useLocation()
 	const [isDark, setIsDark] = useState(true)
 	const [queryClient] = useState(() => new QueryClient())
+	const isExplorerPreview = pathname.startsWith("/explorer-preview")
 
 	useEffect(() => {
 		setIsDark(document.documentElement.classList.contains("dark"))
@@ -377,12 +380,16 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<Header isDark={isDark} network={network} onToggle={toggleTheme} />
-			<div className={styles.content}>
+			{!isExplorerPreview && (
+				<Header isDark={isDark} network={network} onToggle={toggleTheme} />
+			)}
+			<div
+				className={`${styles.content} ${isExplorerPreview ? styles.previewContent : ""}`}
+			>
 				<Outlet />
 			</div>
-			<ScaffoldBanner />
-			<Footer />
+			{!isExplorerPreview && <ScaffoldBanner />}
+			{!isExplorerPreview && <Footer />}
 		</QueryClientProvider>
 	)
 }
