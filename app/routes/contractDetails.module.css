@@ -36,6 +36,14 @@
 	}
 }
 
+/* ── Contract History list ──────────────────────────── */
+
+.historyItem {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 /* ── Sidebar (right column) ─────────────────────────── */
 
 .sidebar {

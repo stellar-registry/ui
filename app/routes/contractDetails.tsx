@@ -147,7 +147,11 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 										: (version.wasm_hash ?? "non-wasm executable")
 
 									return (
-										<li key={version.version_index}>
+										<li
+											key={version.version_index}
+											className={styles.historyItem}
+											title={`${version.version_index}: ${versionLabel} ${version.kind}`}
+										>
 											{version.version_index}:&nbsp;
 											{isPublished ? (
 												<Link
