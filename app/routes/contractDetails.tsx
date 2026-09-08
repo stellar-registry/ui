@@ -135,20 +135,29 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 						<DetailField label="Contract History">
 							<ol reversed>
 								{contractVersions.map((version) => {
-									const versionWasmName = prefixName(
-										version.wasm_name!,
-										version.wasm_channel,
-									)
-									const versionLabel = `${versionWasmName}@v${version.wasm_version}`
+									const isPublished = !!version.wasm_name
+									const versionWasmName = isPublished
+										? prefixName(
+												version.wasm_name!,
+												version.wasm_channel ?? undefined,
+											)
+										: undefined
+									const versionLabel = isPublished
+										? `${versionWasmName}@v${version.wasm_version}`
+										: (version.wasm_hash ?? "non-wasm executable")
 
 									return (
-										<li key={`${versionWasmName}-${version.wasm_version}`}>
+										<li key={version.version_index}>
 											{version.version_index}:&nbsp;
-											<Link
-												to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
-											>
-												{versionLabel}
-											</Link>{" "}
+											{isPublished ? (
+												<Link
+													to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
+												>
+													{versionLabel}
+												</Link>
+											) : (
+												versionLabel
+											)}{" "}
 											{version.kind}
 										</li>
 									)

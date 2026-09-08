@@ -100,10 +100,17 @@ export interface Contract {
 	is_stellar_asset_contract: boolean
 }
 
+// wasm_name/wasm_version/wasm_channel are null when this on-chain wasm
+// transition never resolved to a published wasm (uploaded but not
+// published, or predates the registry). wasm_hash can ALSO be null — not
+// every transition's executable is backed by a wasm hash at all (e.g. an
+// upgrade to an `ExternalRef` executable, seen in production); the UI
+// needs a fallback below the "hash, unlinked" case too.
 interface ContractVersion {
-	wasm_name: string
-	wasm_version: string
-	wasm_channel?: string
+	wasm_hash: string | null
+	wasm_name: string | null
+	wasm_version: string | null
+	wasm_channel: string | null
 	version_index: number
 	kind: string
 }
