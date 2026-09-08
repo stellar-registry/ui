@@ -1,3 +1,11 @@
+.fields {
+	/* Grid items default to min-width: auto, sizing to their content's
+	   min-content width. Long nowrap text (e.g. contractDetails' history
+	   rows) would otherwise force the parent grid track — and the page —
+	   wider than the viewport instead of actually truncating. */
+	min-width: 0;
+}
+
 .fields > .field:first-child {
 	border-top: 1px solid var(--color-border);
 }
