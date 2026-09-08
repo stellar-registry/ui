@@ -47,6 +47,8 @@ export interface WasmDetail extends Wasm {
 	created_at: string
 	versions: WasmVersion[]
 	meta?: WasmMeta
+	// Same attestation as ContractDetail.verified — see ui#38.
+	verified: ContractValidation | null
 }
 
 export function isWasmDetail(data: unknown): data is WasmDetail {
