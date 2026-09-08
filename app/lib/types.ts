@@ -101,9 +101,10 @@ export interface Contract {
 }
 
 interface ContractVersion {
-	wasm_name: string
-	wasm_version: string
-	wasm_channel?: string
+	wasm_hash: string | null
+	wasm_name: string | null
+	wasm_version: string | null
+	wasm_channel: string | null
 	version_index: number
 	kind: string
 }

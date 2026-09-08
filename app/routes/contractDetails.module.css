@@ -36,6 +36,30 @@
 	}
 }
 
+/* ── Contract History list ──────────────────────────── */
+
+.historyRow {
+	display: flex;
+	align-items: baseline;
+	gap: 0.35rem;
+}
+
+.historyLabel {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	min-width: 0;
+}
+
+.historyKind,
+.historyLatest {
+	flex-shrink: 0;
+}
+
+.historyLatest {
+	color: var(--color-muted-foreground);
+}
+
 /* ── Sidebar (right column) ─────────────────────────── */
 
 .sidebar {

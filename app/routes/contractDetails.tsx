@@ -134,22 +134,44 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					{contractVersions.length > 0 && (
 						<DetailField label="Contract History">
 							<ol reversed>
-								{contractVersions.map((version) => {
-									const versionWasmName = prefixName(
-										version.wasm_name!,
-										version.wasm_channel,
-									)
-									const versionLabel = `${versionWasmName}@v${version.wasm_version}`
+								{contractVersions.map((version, i) => {
+									const isPublished = !!version.wasm_name
+									const versionWasmName = isPublished
+										? prefixName(
+												version.wasm_name!,
+												version.wasm_channel ?? undefined,
+											)
+										: undefined
+									const versionLabel = isPublished
+										? `${versionWasmName}@v${version.wasm_version}`
+										: (version.wasm_hash ?? "non-wasm executable")
+									const isLatest = i === 0
 
 									return (
-										<li key={`${versionWasmName}-${version.wasm_version}`}>
-											{version.version_index}:&nbsp;
-											<Link
-												to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
-											>
-												{versionLabel}
-											</Link>{" "}
-											{version.kind}
+										<li
+											key={version.version_index}
+											title={`${version.version_index}: ${versionLabel} ${version.kind}${isLatest ? " (latest)" : ""}`}
+										>
+											<div className={styles.historyRow}>
+												<span className={styles.historyLabel}>
+													{version.version_index}:&nbsp;
+													{isPublished ? (
+														<Link
+															to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
+														>
+															{versionLabel}
+														</Link>
+													) : (
+														versionLabel
+													)}
+												</span>
+												<span className={styles.historyKind}>
+													{version.kind}
+												</span>
+												{isLatest && (
+													<span className={styles.historyLatest}>(latest)</span>
+												)}
+											</div>
 										</li>
 									)
 								})}

@@ -1,3 +1,7 @@
+.fields {
+	min-width: 0;
+}
+
 .fields > .field:first-child {
 	border-top: 1px solid var(--color-border);
 }
@@ -41,7 +45,4 @@
 
 .field ol {
 	list-style-type: circle;
-	> li:first-child::after {
-		content: " (latest)";
-	}
 }
