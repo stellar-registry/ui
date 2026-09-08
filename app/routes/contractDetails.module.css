@@ -55,10 +55,19 @@
 	min-width: 0;
 }
 
-/* kind ("initial"/"upgrade") is short and always worth showing in
-   full — never truncated, never squeezed by the label above. */
-.historyKind {
+/* kind ("initial"/"upgrade") and the "(latest)" marker are both short
+   and always worth showing in full — never truncated, never squeezed
+   by the label above. (Previously "(latest)" was a ::after on
+   li:first-child; that broke once the row's content became a block-
+   level flex div — the generated text had nowhere to go but its own
+   line. Rendering it as a normal flex child keeps it on the row.) */
+.historyKind,
+.historyLatest {
 	flex-shrink: 0;
+}
+
+.historyLatest {
+	color: var(--color-muted-foreground);
 }
 
 /* ── Sidebar (right column) ─────────────────────────── */
