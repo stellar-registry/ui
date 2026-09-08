@@ -44,10 +44,6 @@
 	gap: 0.35rem;
 }
 
-/* The variable-length part (hash or wasm name/version) truncates —
-   min-width: 0 lets it shrink below its nowrap content's intrinsic
-   width instead of blowing out the flex row (see detail-field.module.css
-   for the same fix one level up, on the grid). */
 .historyLabel {
 	overflow: hidden;
 	white-space: nowrap;
@@ -55,12 +51,6 @@
 	min-width: 0;
 }
 
-/* kind ("initial"/"upgrade") and the "(latest)" marker are both short
-   and always worth showing in full — never truncated, never squeezed
-   by the label above. (Previously "(latest)" was a ::after on
-   li:first-child; that broke once the row's content became a block-
-   level flex div — the generated text had nowhere to go but its own
-   line. Rendering it as a normal flex child keeps it on the row.) */
 .historyKind,
 .historyLatest {
 	flex-shrink: 0;
