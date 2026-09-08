@@ -38,10 +38,27 @@
 
 /* ── Contract History list ──────────────────────────── */
 
-.historyItem {
+.historyRow {
+	display: flex;
+	align-items: baseline;
+	gap: 0.35rem;
+}
+
+/* The variable-length part (hash or wasm name/version) truncates —
+   min-width: 0 lets it shrink below its nowrap content's intrinsic
+   width instead of blowing out the flex row (see detail-field.module.css
+   for the same fix one level up, on the grid). */
+.historyLabel {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	min-width: 0;
+}
+
+/* kind ("initial"/"upgrade") is short and always worth showing in
+   full — never truncated, never squeezed by the label above. */
+.historyKind {
+	flex-shrink: 0;
 }
 
 /* ── Sidebar (right column) ─────────────────────────── */

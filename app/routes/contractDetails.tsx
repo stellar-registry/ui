@@ -149,20 +149,25 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 									return (
 										<li
 											key={version.version_index}
-											className={styles.historyItem}
 											title={`${version.version_index}: ${versionLabel} ${version.kind}`}
 										>
-											{version.version_index}:&nbsp;
-											{isPublished ? (
-												<Link
-													to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
-												>
-													{versionLabel}
-												</Link>
-											) : (
-												versionLabel
-											)}{" "}
-											{version.kind}
+											<div className={styles.historyRow}>
+												<span className={styles.historyLabel}>
+													{version.version_index}:&nbsp;
+													{isPublished ? (
+														<Link
+															to={`/wasms/${versionWasmName}/v/${version.wasm_version}`}
+														>
+															{versionLabel}
+														</Link>
+													) : (
+														versionLabel
+													)}
+												</span>
+												<span className={styles.historyKind}>
+													{version.kind}
+												</span>
+											</div>
 										</li>
 									)
 								})}
