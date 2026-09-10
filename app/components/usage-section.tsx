@@ -15,7 +15,7 @@ interface UsageSectionProps {
 }
 
 const STORAGE_KEY = "registry-usage-expanded"
-const docsHref = "https://scaffoldstellar.org/docs/registry"
+const docsHref = "https://stellarscaffold.org/docs/registry"
 
 export function UsageSection({
 	items,
@@ -49,19 +49,7 @@ export function UsageSection({
 			</div>
 			{expanded && (
 				<div className={styles.body}>
-					{description && (
-						<p className={styles.description}>
-							{description}{" "}
-							<a
-								href={docsHref}
-								target="_blank"
-								rel="noopener noreferrer"
-								className={styles.descriptionLink}
-							>
-								Read the docs →
-							</a>
-						</p>
-					)}
+					{description && <p className={styles.description}>{description}</p>}
 					{items.map(({ label, lang, code, description = null }, i) => (
 						<div key={i} className={styles.item}>
 							{label && <p className={styles.itemLabel}>{label}</p>}
@@ -70,6 +58,16 @@ export function UsageSection({
 						</div>
 					))}
 					{footer && <div className={styles.footer}>{footer}</div>}
+					<p className={styles.footer}>
+						<a
+							href={docsHref}
+							target="_blank"
+							rel="noopener noreferrer"
+							className={styles.descriptionLink}
+						>
+							Read the docs →
+						</a>
+					</p>
 				</div>
 			)}
 		</section>

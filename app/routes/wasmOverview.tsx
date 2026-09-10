@@ -71,18 +71,14 @@ export function meta({ loaderData }: Route.MetaArgs) {
 	return [{ title: `${loaderData.fullName} — Stellar Registry` }]
 }
 
-export function buildWasmUsageItems(
-	wasmName: string,
-	wasmVersion?: string,
-	contractId?: string,
-) {
+export function buildWasmUsageItems(wasmName: string, wasmVersion?: string) {
 	const fullName = wasmName.replaceAll("-", "_")
 	const modName = fullName.split("/").at(-1)
 	const importCode = `stellar_registry::import_contract_client!("${fullName}${wasmVersion ? `@v${wasmVersion}` : ""}");`
 	const useClient = `
 let addr = soroban_sdk::Address::from_str(
     &env,
-    "${contractId || "[YOUR CONTRACT ID]"}",
+    "[YOUR CONTRACT ID]",
 );
 let client = ${modName}::Client::new(&env, &addr);
 
@@ -560,11 +556,22 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 				items={buildWasmUsageItems(fullName, wasm.wasm_version)}
 				description="Use the registered name of this Wasm to create a module for it and start calling its methods."
 				footer={
-					<p>
-						The macro downloads this Wasm at build time and generates a
-						type-safe Rust client. Your editor's autocomplete should show all
-						available methods as well as their argument and return types.
-					</p>
+					<>
+						<p style={{ marginBottom: "1em" }}>
+							The macro downloads this Wasm at build time and generates a
+							type-safe Rust client. Your editor's autocomplete should show all
+							available methods as well as their argument and return types.
+						</p>
+						<p className="videoWrapper">
+							<iframe
+								src="https://www.youtube-nocookie.com/embed/xAlWmJOdMSQ?si=n2yYDkKbyqTAhiNP&start=345"
+								title="Stellar Registry Full Walk-Through"
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+								referrerPolicy="strict-origin-when-cross-origin"
+								allowFullScreen
+							></iframe>
+						</p>
+					</>
 				}
 			/>
 			<DeployWasmDialog

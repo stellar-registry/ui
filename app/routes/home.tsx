@@ -86,8 +86,17 @@ export default function Index() {
 						are identified by their content hash, and <strong>Contracts</strong>
 						, which are live deployed instances of those modules.
 					</p>
+					<p className={`videoWrapper ${styles.aboutBody}`}>
+						<iframe
+							src="https://www.youtube-nocookie.com/embed/xAlWmJOdMSQ?si=n2yYDkKbyqTAhiNP"
+							title="Stellar Registry Full Walk-Through"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							referrerPolicy="strict-origin-when-cross-origin"
+							allowFullScreen
+						></iframe>
+					</p>
 					<a
-						href="https://scaffoldstellar.org/docs/registry"
+						href="https://stellarscaffold.org/docs/registry"
 						target="_blank"
 						rel="noopener noreferrer"
 						className={styles.aboutLink}
@@ -112,7 +121,7 @@ export default function Index() {
 					</p>
 					<CodeBlock lang="shell">cargo add stellar-registry</CodeBlock>
 					<a
-						href="https://scaffoldstellar.org/docs/registry"
+						href="https://stellarscaffold.org/docs/registry"
 						target="_blank"
 						rel="noopener noreferrer"
 						className={styles.aboutLink}
