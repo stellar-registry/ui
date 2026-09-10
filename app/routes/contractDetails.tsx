@@ -3,12 +3,7 @@ import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
 import { Badge } from "~/components/badge"
 import { ContractExplorerSection } from "~/components/contract-explorer-section"
-import {
-	DetailField,
-	DetailFields,
-	FieldLink,
-	FieldValue,
-} from "~/components/detail-field"
+import { DetailField, DetailFields } from "~/components/detail-field"
 import {
 	SidebarAlert,
 	SidebarLink,
@@ -84,51 +79,45 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 
 			<div className={styles.layout}>
 				<DetailFields>
-					<DetailField label="Contract ID">
-						<FieldLink
-							href={`${stellarExpertUrl}/contract/${contract.contract_id}`}
-							external
-						>
-							{contract.contract_id}
-						</FieldLink>
+					<DetailField
+						label="Contract ID"
+						href={`${stellarExpertUrl}/contract/${contract.contract_id}`}
+						external
+					>
+						{contract.contract_id}
 					</DetailField>
 
 					{contract.deployer && (
-						<DetailField label="Deployer">
-							<FieldLink
-								href={`${stellarExpertUrl}/account/${contract.deployer}`}
-								external
-							>
-								{contract.deployer}
-							</FieldLink>
+						<DetailField
+							label="Deployer"
+							href={`${stellarExpertUrl}/account/${contract.deployer}`}
+							external
+						>
+							{contract.deployer}
 						</DetailField>
 					)}
 
 					{hasWasm && (
-						<DetailField label="Wasm">
-							<FieldLink
-								href={`/wasms/${fullWasmName}/v/${contract.wasm_version}`}
-							>
-								{wasmAndVersion}
-							</FieldLink>
+						<DetailField
+							label="Wasm"
+							href={`/wasms/${fullWasmName}/v/${contract.wasm_version}`}
+						>
+							{wasmAndVersion}
 						</DetailField>
 					)}
 
-					<DetailField label="Deployed">
-						<FieldValue>{createdAt}</FieldValue>
-					</DetailField>
+					<DetailField label="Deployed">{createdAt}</DetailField>
 
 					<DetailField label="Ledger">
-						<FieldValue>{contract.ledger_sequence.toLocaleString()}</FieldValue>
+						{contract.ledger_sequence.toLocaleString()}
 					</DetailField>
 
-					<DetailField label="Transaction">
-						<FieldLink
-							href={`${stellarExpertUrl}/tx/${contract.transaction_hash}`}
-							external
-						>
-							{contract.transaction_hash}
-						</FieldLink>
+					<DetailField
+						label="Transaction"
+						href={`${stellarExpertUrl}/tx/${contract.transaction_hash}`}
+						external
+					>
+						{contract.transaction_hash}
 					</DetailField>
 					{contractVersions.length > 0 && (
 						<DetailField label="Contract History">

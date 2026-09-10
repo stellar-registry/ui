@@ -46,4 +46,20 @@ function SidebarLink({
 	)
 }
 
-export { SidebarAlert, SidebarPanel, SidebarLink }
+function SidebarItem({
+	children,
+	icon,
+	...props
+}: {
+	children: React.ReactNode
+	icon?: string
+}) {
+	return (
+		<div className={styles.sidebarLink} {...props}>
+			{children}
+			<span className={styles.sidebarLinkArrow}>{icon ?? "•"}</span>
+		</div>
+	)
+}
+
+export { SidebarAlert, SidebarPanel, SidebarLink, SidebarItem }
