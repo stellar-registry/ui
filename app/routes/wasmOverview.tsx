@@ -510,6 +510,12 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 	const { wasm, fullName, version } = loaderData
 	const { network, stellarExpertUrl } = useRootData()
 	const displayVersion = version ?? wasm.wasm_version
+	const validation = wasm.verified
+	const verifiedSourceUrl = validation
+		? [validation.repository, "tree", validation.commit, validation.path]
+				.filter(Boolean)
+				.join("/")
+		: undefined
 
 	return (
 		<main className={styles.main}>
@@ -519,6 +525,7 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 					{fullName}
 				</h1>
 				<Badge variant="secondary">{displayVersion}</Badge>
+				{validation && <Badge variant="secondary">Verified Build</Badge>}
 			</div>
 
 			<div className={styles.layout}>
@@ -545,6 +552,11 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 						{wasm.meta?.source_repo && (
 							<SidebarLink href={wasm.meta.source_repo} external>
 								Source Repository
+							</SidebarLink>
+						)}
+						{verifiedSourceUrl && (
+							<SidebarLink href={verifiedSourceUrl} external>
+								View Verified Source
 							</SidebarLink>
 						)}
 						<SidebarLink
