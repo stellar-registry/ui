@@ -112,7 +112,7 @@ function ScaffoldBanner() {
 					</p>
 				</div>
 				<a
-					href="https://scaffoldstellar.org/"
+					href="https://stellarscaffold.org/"
 					target="_blank"
 					rel="noopener noreferrer"
 					className={styles.scaffoldBannerCta}

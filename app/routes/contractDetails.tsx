@@ -1,7 +1,6 @@
 import { data, isRouteErrorResponse, Link } from "react-router"
 import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
-import { buildWasmUsageItems } from "./wasmOverview"
 import { Badge } from "~/components/badge"
 import { ContractExplorerSection } from "~/components/contract-explorer-section"
 import {
@@ -218,7 +217,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 				</aside>
 			</div>
 
-			{!hasWasm ? null : (
+			{hasWasm && (
 				<>
 					<h2 className={styles.sectionHeading}>Interact with this contract</h2>
 					<ContractExplorerSection
@@ -226,38 +225,46 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 						contractName={fullName}
 						network={getNetwork(network)}
 					/>
-
-					<UsageSection
-						items={buildWasmUsageItems(
-							fullWasmName,
-							contract.wasm_version,
-							contract.contract_id,
-						)}
-						description="Use the registered name of this Contract's Wasm to create a module for it and start calling its methods."
-						footer={
-							<>
-								<p style={{ margin: "0 0 1rem" }}>
-									The macro downloads this Wasm at build time and generates a
-									type-safe Rust client. Your editor's autocomplete should show
-									all available methods as well as their argument and return
-									types.
-								</p>
-								<p>
-									Importing a Contract directly by name with the{" "}
-									<code>import_contract!</code> macro is in development.{" "}
-									<a
-										href="https://github.com/theahaco/scaffold-stellar/issues/419"
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										Follow progress on GitHub →
-									</a>
-								</p>
-							</>
-						}
-					/>
 				</>
 			)}
+
+			<UsageSection
+				description="Cross-contract calls as easy as"
+				items={buildContractUsageItems(fullName)}
+				footer={
+					<>
+						<p style={{ marginBottom: "1em" }}>
+							The macro downloads the Wasm associated with this Contract at
+							build time, generates a type-safe Rust client for it, and
+							instantiates it with this Contract's ID at the call point. Your
+							editor's autocomplete should show all available methods as well as
+							their argument and return types.
+						</p>
+						<p className="videoWrapper">
+							<iframe
+								src="https://www.youtube-nocookie.com/embed/xAlWmJOdMSQ?si=n2yYDkKbyqTAhiNP&start=86"
+								title="Stellar Registry Full Walk-Through"
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+								referrerPolicy="strict-origin-when-cross-origin"
+								allowFullScreen
+							></iframe>
+						</p>
+					</>
+				}
+			/>
 		</main>
 	)
+}
+
+function buildContractUsageItems(contractName: string) {
+	const varName = contractName.split("/").at(-1)?.replace("-", "_")
+	const xcc = `let ${varName} = stellar_registry::import_contract!(env, "${contractName}");
+${varName}.your_method(/* ... */);`
+	return [
+		{
+			label: "In Your Method",
+			lang: "rust",
+			code: xcc,
+		},
+	]
 }
