@@ -35,23 +35,26 @@
 .sidebarLink {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	padding: 0.625rem 0.875rem;
 	font-size: 0.875rem;
 	color: var(--color-link);
 	text-decoration: none;
 	border-bottom: 1px solid var(--color-border);
 	transition: background-color var(--default-transition-duration)
 		var(--default-transition-timing-function);
-}
-
-.sidebarLink:last-child {
-	border-bottom: none;
-}
-
-.sidebarLink:hover {
-	background-color: var(--color-accent);
-	color: var(--color-foreground);
+	:first-child {
+		flex: 1;
+		padding: 0.625rem 0 0.625rem 0.875rem;
+	}
+	:last-child {
+		padding: 0.625rem 0.875rem 0.625rem 0;
+	}
+	&:last-child {
+		border-bottom: none;
+	}
+	&:hover {
+		background-color: var(--color-accent);
+		color: var(--color-foreground);
+	}
 }
 
 .sidebarLinkArrow {

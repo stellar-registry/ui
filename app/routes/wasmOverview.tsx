@@ -7,6 +7,7 @@ import { DeployWasmDialog } from "~/components/deployWasmDialog"
 import {
 	SidebarAlert,
 	SidebarLink,
+	SidebarItem,
 	SidebarPanel,
 } from "~/components/detail-sidebar"
 import { IconWasm } from "~/components/icon-wasm"
@@ -127,6 +128,15 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 						>
 							View Author
 						</SidebarLink>
+						<SidebarItem icon="…">
+							<DeployWasmDialog
+								fullName={fullName}
+								wasmName={wasm.wasm_name}
+								channel={wasm.channel}
+								wasmVersion={wasm.wasm_version}
+								wasmHash={wasm.wasm_hash}
+							/>
+						</SidebarItem>
 					</SidebarPanel>
 				</aside>
 			</div>
@@ -151,13 +161,6 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 						</p>
 					</>
 				}
-			/>
-			<DeployWasmDialog
-				fullName={fullName}
-				wasmName={wasm.wasm_name}
-				channel={wasm.channel}
-				wasmVersion={wasm.wasm_version}
-				wasmHash={wasm.wasm_hash}
 			/>
 			{wasm.meta?.source_repo && (
 				<MetadataSection sourceRepoUrl={wasm.meta.source_repo} />

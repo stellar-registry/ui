@@ -310,7 +310,7 @@ export function DeployWasmDialog({
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild>
-				<Button variant="outline">Deploy a contract using this Wasm</Button>
+				<Button variant="ghost">Deploy</Button>
 			</DialogTrigger>
 			<DialogContent
 				// Stellar Wallets Kit renders its wallet picker as its own overlay
