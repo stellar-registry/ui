@@ -7,14 +7,24 @@ function DetailFields({ children }: { children: React.ReactNode }) {
 function DetailField({
 	label,
 	children,
+	href,
+	external,
 }: {
 	label: string
 	children: React.ReactNode
+	href?: string
+	external?: boolean
 }) {
 	return (
 		<div className={styles.field}>
 			<p className={styles.fieldLabel}>{label}</p>
-			{children}
+			{href ? (
+				<FieldLink href={href} external={external}>
+					{children}
+				</FieldLink>
+			) : (
+				<FieldValue>{children}</FieldValue>
+			)}
 		</div>
 	)
 }
@@ -43,4 +53,4 @@ function FieldValue({ children }: { children: React.ReactNode }) {
 	return <p className={styles.fieldValue}>{children}</p>
 }
 
-export { DetailFields, DetailField, FieldLink, FieldValue }
+export { DetailFields, DetailField }
