@@ -23,6 +23,10 @@ export default [
 			}),
 		]),
 	]),
+	...prefix("governance", [
+		index("routes/governance.tsx"),
+		route("add-contract", "routes/governanceAddContract.tsx"),
+	]),
 	route("api/*", "routes/api.tsx"),
 	route("*", "routes/404.tsx"),
 ] satisfies RouteConfig
