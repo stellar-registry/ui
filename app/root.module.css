@@ -177,6 +177,10 @@
 	flex-direction: column;
 }
 
+.previewContent {
+	min-width: 0;
+}
+
 /* ── Scaffold Stellar banner ─────────────────────────── */
 
 .scaffoldBanner {
