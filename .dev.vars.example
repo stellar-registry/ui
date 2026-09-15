@@ -18,8 +18,8 @@ REGISTRY_NETWORK=testnet
 REGISTRY_RPC_URL=https://soroban-testnet.stellar.org
 
 # Public (not secret) URL of the governance IPFS pinning worker — see
-# app/lib/ipfs.ts. Testnet-only; not yet deployed (milestone 6 plan, Phase 0),
-# so leave unset until one exists. Submitting a governance proposal on
+# app/lib/ipfs.ts. Testnet-only; not yet deployed, so leave unset until one
+# exists. Submitting a governance proposal on
 # testnet without this set will fail with a clear error rather than silently
 # skipping the IPFS upload.
 # GOVERNANCE_IPFS_WORKER_URL=

@@ -85,9 +85,9 @@ load context (`context.cloudflare.env`).
 
 ## Governance (`/governance`)
 
-Proposal forms for root-registry changes (milestone 6). Testnet and mainnet use
-different mechanisms, branched on `useRootData().network` in each
-`routes/governance*.tsx` route:
+Proposal forms for root-registry changes. Testnet and mainnet use different
+mechanisms, branched on `useRootData().network` in each `routes/governance*.tsx`
+route:
 
 - **Testnet**: the root registry's `manager` is the live
   `registry-tansu-manager` contract, gating writes behind a Tansu DAO vote. The

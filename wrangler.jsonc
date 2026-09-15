@@ -36,7 +36,7 @@
 				"REGISTRY_NETWORK": "testnet",
 				"REGISTRY_RPC_URL": "https://soroban-testnet.stellar.org",
 				// GOVERNANCE_IPFS_WORKER_URL: add once the governance IPFS pinning
-				// worker exists (milestone 6 plan, Phase 0) — see app/lib/ipfs.ts.
+				// worker exists — see app/lib/ipfs.ts.
 			},
 		},
 	},

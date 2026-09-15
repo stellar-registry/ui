@@ -1,13 +1,13 @@
 // Governance proposal forms — field definitions and validation shared by
 // every governance operation's form.
 //
-// Only "add contract to root registry" is wired up so far (issue #52/#53,
-// milestone 6 phase 1). "Add wasm to root registry" (#52) and "create a new
-// subregistry" (#54) are separate, later stacked PRs — see the milestone 6
-// plan. `change-wasm-owner`/`change-contract-owner` are deliberately not
-// here: those were closed as unnecessary (ui#55, ui#56) once wasm authorship
-// gained a self-service transfer (`preauthorize_author_transfer`,
-// contracts#34) — a governance form for it would be pure UI clutter.
+// Only "add contract to root registry" is wired up so far (issue #52/#53).
+// "Add wasm to root registry" (#52) and "create a new subregistry" (#54) are
+// separate, later stacked PRs. `change-wasm-owner`/`change-contract-owner`
+// are deliberately not here: those were closed as unnecessary (ui#55, ui#56)
+// once wasm authorship gained a self-service transfer
+// (`preauthorize_author_transfer`, contracts#34) — a governance form for it
+// would be pure UI clutter.
 
 export type GovernanceFieldType = "text" | "textarea"
 

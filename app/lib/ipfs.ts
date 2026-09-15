@@ -4,12 +4,12 @@
 // so the resulting directory CID is exactly what Tansu's own dapp expects
 // when it later reads `proposal.md`/`outcomes.json` back off IPFS.
 //
-// The worker itself (`GOVERNANCE_IPFS_WORKER_URL`) is not yet deployed — see
-// the milestone 6 plan's Phase 0. Tansu runs an equivalent worker
-// (`dapp/workers/ipfs-delegation`) that verifies a signed Stellar transaction
-// before uploading a CAR to Filebase; the plan is to ask whether Registry can
-// call that directly before standing up a clone. Until a URL is configured,
-// `uploadProposalDirectory` throws rather than silently no-op'ing.
+// The worker itself (`GOVERNANCE_IPFS_WORKER_URL`) is not yet deployed. Tansu
+// runs an equivalent worker (`dapp/workers/ipfs-delegation`) that verifies a
+// signed Stellar transaction before uploading a CAR to Filebase; the plan is
+// to ask whether Registry can call that directly before standing up a clone.
+// Until a URL is configured, `uploadProposalDirectory` throws rather than
+// silently no-op'ing.
 
 export interface PackedDirectory {
 	cid: string
@@ -95,7 +95,7 @@ export async function uploadProposalDirectory({
 }): Promise<string> {
 	if (!workerUrl) {
 		throw new Error(
-			"Governance IPFS pinning isn't configured yet (GOVERNANCE_IPFS_WORKER_URL) — see the milestone 6 plan's Phase 0.",
+			"Governance IPFS pinning isn't configured yet (GOVERNANCE_IPFS_WORKER_URL).",
 		)
 	}
 
