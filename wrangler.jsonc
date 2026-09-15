@@ -35,9 +35,10 @@
 				"REGISTRY_API_URL": "https://stellar-registry-testnet.fly.dev",
 				"REGISTRY_NETWORK": "testnet",
 				"REGISTRY_RPC_URL": "https://soroban-testnet.stellar.org",
-				// GOVERNANCE_IPFS_WORKER_URL: add once the governance IPFS pinning
-				// worker exists — see app/lib/ipfs.ts.
 			},
+			// GOVERNANCE_FILEBASE_TOKEN is a secret, not a var — set with
+			// `npx wrangler secret put GOVERNANCE_FILEBASE_TOKEN --env testnet`.
+			// See routes/apiGovernancePin.tsx and CLAUDE.md.
 		},
 	},
 }

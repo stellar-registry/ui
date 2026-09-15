@@ -4,10 +4,10 @@ interface Env {
 	REGISTRY_API_URL: string
 	REGISTRY_NETWORK: string
 	REGISTRY_RPC_URL: string
-	// Public (not secret) endpoint for the governance IPFS pinning worker —
-	// see app/lib/ipfs.ts. Testnet-only; not yet deployed, so unset in every
-	// environment until that infra decision lands.
-	GOVERNANCE_IPFS_WORKER_URL?: string
+	// Secret (via `wrangler secret put`), not a var — read only server-side by
+	// routes/apiGovernancePin.tsx. Testnet-only; unset in mainnet since there's
+	// no Tansu gating there. See CLAUDE.md's Governance section.
+	GOVERNANCE_FILEBASE_TOKEN?: string
 }
 
 declare module "react-router" {
@@ -17,7 +17,7 @@ declare module "react-router" {
 				REGISTRY_API_URL: string
 				REGISTRY_NETWORK: string
 				REGISTRY_RPC_URL: string
-				GOVERNANCE_IPFS_WORKER_URL?: string
+				GOVERNANCE_FILEBASE_TOKEN?: string
 			}
 			ctx: ExecutionContext
 		}

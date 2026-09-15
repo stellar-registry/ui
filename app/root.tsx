@@ -348,18 +348,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 // Default to testnet at runtime, just in case...
-function getNetworkContext(
-	network = "testnet",
-	rpcUrl?: string,
-	governanceIpfsWorkerUrl?: string,
-) {
+function getNetworkContext(network = "testnet", rpcUrl?: string) {
 	return {
 		network,
 		stellarExpertUrl: `https://stellar.expert/explorer/${network === "mainnet" ? "public" : "testnet"}`,
 		// Falls back to the public testnet default so local dev works even
 		// without REGISTRY_RPC_URL configured.
 		rpcUrl: rpcUrl ?? "https://soroban-testnet.stellar.org",
-		governanceIpfsWorkerUrl,
 	}
 }
 
@@ -367,7 +362,6 @@ export async function loader({ context }: Route.LoaderArgs) {
 	return getNetworkContext(
 		context.cloudflare.env.REGISTRY_NETWORK,
 		context.cloudflare.env.REGISTRY_RPC_URL,
-		context.cloudflare.env.GOVERNANCE_IPFS_WORKER_URL,
 	)
 }
 

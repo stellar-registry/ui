@@ -73,15 +73,20 @@ file, not extracted to `components/`.
 Configured in `wrangler.jsonc` under `vars` (default) and `env.testnet` /
 `env.mainnet`. For local dev, copy `.dev.vars.example` → `.dev.vars`.
 
-| Variable                     | Purpose                                                                                       |
-| ---------------------------- | --------------------------------------------------------------------------------------------- |
-| `REGISTRY_API_URL`           | Backend base URL for the proxy route                                                          |
-| `REGISTRY_NETWORK`           | Network label displayed in the UI                                                             |
-| `REGISTRY_RPC_URL`           | Soroban RPC used client-side for wallet-signed contract calls                                 |
-| `GOVERNANCE_IPFS_WORKER_URL` | Testnet-only, optional; governance IPFS pinning worker (`app/lib/ipfs.ts`) — not yet deployed |
+| Variable           | Purpose                                                       |
+| ------------------ | ------------------------------------------------------------- |
+| `REGISTRY_API_URL` | Backend base URL for the proxy route                          |
+| `REGISTRY_NETWORK` | Network label displayed in the UI                             |
+| `REGISTRY_RPC_URL` | Soroban RPC used client-side for wallet-signed contract calls |
 
 The `Env` interface is defined in `workers/app.ts` and exposed to loaders via
 load context (`context.cloudflare.env`).
+
+`GOVERNANCE_FILEBASE_TOKEN` is a separate case: a **secret**, not a var, read
+only by `routes/apiGovernancePin.tsx`. It's never in `wrangler.jsonc` or git —
+set it with `npx wrangler secret put GOVERNANCE_FILEBASE_TOKEN --env testnet`,
+using your own Cloudflare login. Testnet-only; mainnet has no governance pinning
+to do yet.
 
 ## Governance (`/governance`)
 
@@ -95,7 +100,8 @@ route:
   (`app/lib/governance-proposal.ts`), packs them to an IPFS CAR
   (`app/lib/ipfs.ts`, via `ipfs-car` — same approach as Consulting-Manao/tansu's
   own dapp), signs `create_proposal` with the connected wallet, uploads the
-  CAR + signed tx to a pinning worker, then sends it. `app/lib/tansu.ts` has the
+  CAR + signed tx to `/api/governance/pin` (same-origin, not a separate worker —
+  see `routes/apiGovernancePin.tsx`), then sends it. `app/lib/tansu.ts` has the
   relevant contract ids/constants.
 - **Mainnet**: no on-chain gating exists yet — the form builds a prefilled
   `stellar-registry/gov` "new issue" link (`app/lib/github-issue.ts`) and the
