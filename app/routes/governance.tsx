@@ -1,23 +1,44 @@
 import { Link } from "react-router"
 import styles from "./governance.module.css"
+import { tansuGovernanceUrl } from "~/lib/tansu"
+import { useRootData } from "~/root"
+
+function GovernanceIntro() {
+	const { network } = useRootData()
+
+	if (network === "mainnet") {
+		return (
+			<p className={styles.intro}>
+				Propose a change to the Stellar Registry root registry. This opens a{" "}
+				<a
+					href="https://github.com/stellar-registry/gov"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					stellar-registry/gov
+				</a>{" "}
+				issue for a maintainer to review.
+			</p>
+		)
+	}
+
+	return (
+		<p className={styles.intro}>
+			Propose a change to the Stellar Registry root registry. This creates a{" "}
+			<a href={tansuGovernanceUrl()} target="_blank" rel="noopener noreferrer">
+				Tansu DAO proposal
+			</a>{" "}
+			for the community to vote on.
+		</p>
+	)
+}
 
 export default function GovernanceIndex() {
 	return (
 		<main className={styles.page}>
 			<div>
 				<h1>Governance</h1>
-				<p className={styles.intro}>
-					Propose a change to the Stellar Registry root registry. On testnet
-					this creates a Tansu DAO proposal; on mainnet it opens a{" "}
-					<a
-						href="https://github.com/stellar-registry/gov"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						stellar-registry/gov
-					</a>{" "}
-					issue for review.
-				</p>
+				<GovernanceIntro />
 			</div>
 			<div className={styles.list}>
 				<Link to="/governance/add-contract" className={styles.item}>

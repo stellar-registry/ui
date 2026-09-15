@@ -41,6 +41,11 @@
 		cursor: not-allowed;
 	}
 
+	&[readonly] {
+		background-color: var(--color-secondary);
+		cursor: default;
+	}
+
 	&:focus {
 		&:not([aria-invalid="true"]) {
 			border-color: var(--color-ring);

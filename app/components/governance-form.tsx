@@ -16,12 +16,15 @@ function GovernanceForm({
 	values,
 	errors,
 	disabled,
+	readOnlyFields,
 	onChange,
 }: {
 	operation: GovernanceOperation
 	values: Record<string, string>
 	errors: Record<string, string>
 	disabled?: boolean
+	/** Fields whose value is set programmatically (e.g. from a connected wallet) rather than typed. */
+	readOnlyFields?: string[]
 	onChange: (name: string, value: string) => void
 }) {
 	return (
@@ -29,6 +32,7 @@ function GovernanceForm({
 			{operation.fields.map((field) => {
 				const errorMessage = errors[field.name]
 				const fieldId = `${operation.id}-${field.name}`
+				const readOnly = readOnlyFields?.includes(field.name)
 				return (
 					<div className={styles.field} key={field.name}>
 						<Label htmlFor={fieldId}>
@@ -44,6 +48,7 @@ function GovernanceForm({
 								placeholder={field.placeholder}
 								aria-invalid={Boolean(errorMessage)}
 								disabled={disabled}
+								readOnly={readOnly}
 								rows={4}
 							/>
 						) : (
@@ -55,7 +60,11 @@ function GovernanceForm({
 								placeholder={field.placeholder}
 								aria-invalid={Boolean(errorMessage)}
 								disabled={disabled}
+								readOnly={readOnly}
 							/>
+						)}
+						{readOnly && (
+							<p className={styles.hint}>Set from your connected wallet.</p>
 						)}
 						{errorMessage && <p className={styles.error}>{errorMessage}</p>}
 					</div>

@@ -81,6 +81,13 @@ function TestnetAddContractForm() {
 		})
 	}, [stellarNetwork])
 
+	// The proposer is always the connected wallet — keep the field in sync
+	// rather than letting it be typed, so it can't drift from who actually
+	// signs the transaction.
+	useEffect(() => {
+		setValues((prev) => ({ ...prev, requester_address: address ?? "" }))
+	}, [address])
+
 	async function handleConnect() {
 		setConnecting(true)
 		setConnectError(undefined)
@@ -268,6 +275,7 @@ function TestnetAddContractForm() {
 					values={values}
 					errors={fieldErrors}
 					disabled={submitMutation.isPending}
+					readOnlyFields={["requester_address"]}
 					onChange={handleChange}
 				/>
 				{submitMutation.isError && (
