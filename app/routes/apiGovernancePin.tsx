@@ -1,12 +1,12 @@
-// Same-origin replacement for a separate IPFS-pinning worker. Verifies a
-// signed Stellar transaction (proof the caller went to the trouble of
-// signing something real — an anti-spam gate, not a semantic check: it
-// doesn't confirm the tx is a `create_proposal` call, or that the source
-// account exists on-chain), independently recomputes the uploaded CAR's
-// root CID, and forwards it to Filebase. Mirrors
-// `Consulting-Manao/tansu`'s `dapp/workers/ipfs-delegation` worker, minus
-// CORS (unnecessary — this runs on the same origin as the page that calls
-// it) and Pinata secondary pinning (not needed yet; easy to add later).
+// Pins governance proposal content to IPFS. Verifies a signed Stellar
+// transaction (proof the caller went to the trouble of signing something
+// real — an anti-spam gate, not a semantic check: it doesn't confirm the tx
+// is a `create_proposal` call, or that the source account exists on-chain),
+// independently recomputes the uploaded CAR's root CID, and forwards it to
+// Filebase. Mirrors `Consulting-Manao/tansu`'s `dapp/workers/ipfs-delegation`
+// worker, minus CORS (unnecessary — this runs on the same origin as the page
+// that calls it) and Pinata secondary pinning (not needed yet; easy to add
+// later).
 //
 // Requires the `GOVERNANCE_FILEBASE_TOKEN` secret, set with:
 //   npx wrangler secret put GOVERNANCE_FILEBASE_TOKEN --env testnet

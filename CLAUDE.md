@@ -100,9 +100,8 @@ route:
   (`app/lib/governance-proposal.ts`), packs them to an IPFS CAR
   (`app/lib/ipfs.ts`, via `ipfs-car` — same approach as Consulting-Manao/tansu's
   own dapp), signs `create_proposal` with the connected wallet, uploads the
-  CAR + signed tx to `/api/governance/pin` (same-origin, not a separate worker —
-  see `routes/apiGovernancePin.tsx`), then sends it. `app/lib/tansu.ts` has the
-  relevant contract ids/constants.
+  CAR + signed tx to `/api/governance/pin` (`routes/apiGovernancePin.tsx`), then
+  sends it. `app/lib/tansu.ts` has the relevant contract ids/constants.
 - **Mainnet**: no on-chain gating exists yet — the form builds a prefilled
   `stellar-registry/gov` "new issue" link (`app/lib/github-issue.ts`) and the
   requester submits it themselves under their own GitHub identity.

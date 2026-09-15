@@ -1,11 +1,9 @@
 // Packs governance proposal content into an IPFS CAR and hands it to
-// `/api/governance/pin`, mirroring Consulting-Manao/tansu's own
-// `dapp/src/utils/ipfsFunctions.ts` (`packFilesToCar` / `uploadToIpfsProxy`)
-// so the resulting directory CID is exactly what Tansu's own dapp expects
-// when it later reads `proposal.md`/`outcomes.json` back off IPFS.
-//
-// The pinning itself happens same-origin (`routes/apiGovernancePin.tsx`),
-// not via a separate worker — see that file for why.
+// `/api/governance/pin` (see `routes/apiGovernancePin.tsx`), mirroring
+// Consulting-Manao/tansu's own `dapp/src/utils/ipfsFunctions.ts`
+// (`packFilesToCar` / `uploadToIpfsProxy`) so the resulting directory CID is
+// exactly what Tansu's own dapp expects when it later reads
+// `proposal.md`/`outcomes.json` back off IPFS.
 
 export interface PackedDirectory {
 	cid: string
