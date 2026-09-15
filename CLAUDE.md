@@ -111,6 +111,15 @@ GitHub Actions (`.github/workflows/deploy.yml`) builds once on push to `main`,
 then deploys to both `testnet` and `mainnet` Cloudflare Workers environments via
 `npx wrangler deploy --env <name>`.
 
+## npm version
+
+CI runs `npm ci` on npm 10.x (bundled with `actions/setup-node`'s node 22).
+`engines.npm` in `package.json` pins `^10.9.0`, and `.npmrc` sets
+`engine-strict=true` to enforce it — installing on a newer npm (11.x) can write
+a `package-lock.json` that npm 10's `npm ci` then rejects as out-of-sync. If
+`npm install` refuses to run, switch npm first (e.g. `npx npm@10.9.8 install`)
+rather than bypassing the check.
+
 ## Key config files
 
 - `wrangler.jsonc` — Cloudflare Worker config; defines vars and named
