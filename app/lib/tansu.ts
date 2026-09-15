@@ -28,10 +28,21 @@ export const REGISTRY_MANAGER_CONTRACT_ID =
 
 /** Tansu project key for the "stellarregistry" project, as hex. */
 export const PROJECT_KEY_HEX =
-	"7b5c4d66469990e3a33ad17af41a49cca33a930e2d63e67f3c3331923294e39"
+	"7b5c4d66469990e3a33ad17af41a49cca33a930e2d63e67f3c3331923294e39e"
 
 export function projectKeyBytes(): Buffer {
-	return Buffer.from(PROJECT_KEY_HEX, "hex")
+	// Tansu's project_key is a BytesN<32> — `Buffer.from` silently truncates an
+	// odd-length hex string instead of throwing (this constant lost a trailing
+	// character once already, producing a well-formed-looking 31-byte key that
+	// matched no project and failed on-chain with InvalidKey), so check the
+	// length explicitly rather than trust the literal.
+	const bytes = Buffer.from(PROJECT_KEY_HEX, "hex")
+	if (bytes.length !== 32) {
+		throw new Error(
+			`PROJECT_KEY_HEX must decode to 32 bytes, got ${bytes.length}`,
+		)
+	}
+	return bytes
 }
 
 /**

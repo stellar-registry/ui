@@ -27,10 +27,10 @@ import { getNetwork, registryContractId } from "~/lib/network"
 import { getRegistryManagerClient } from "~/lib/registry-manager-client"
 import {
 	MIN_VOTING_PERIOD_HOURS,
-	PROJECT_KEY_HEX,
 	PROPOSAL_COLLATERAL_XLM,
 	REGISTRY_MANAGER_CONTRACT_ID,
 	TANSU_CONTRACT_ID,
+	projectKeyBytes,
 	tansuGovernanceUrl,
 } from "~/lib/tansu"
 import { getTansuClient } from "~/lib/tansu-client"
@@ -182,7 +182,7 @@ function TestnetAddContractForm() {
 			try {
 				tx = await tansuClient.create_proposal({
 					proposer: address,
-					project_key: Buffer.from(PROJECT_KEY_HEX, "hex"),
+					project_key: projectKeyBytes(),
 					title,
 					ipfs: packed.cid,
 					voting_ends_at: votingEndsAt,
@@ -348,7 +348,7 @@ function ProposalFinalizePanel({
 				contractId: TANSU_CONTRACT_ID,
 			})
 			const { result: proposal } = await tansuClient.get_proposal({
-				project_key: Buffer.from(PROJECT_KEY_HEX, "hex"),
+				project_key: projectKeyBytes(),
 				proposal_id: id,
 			})
 			return proposal.status.tag
