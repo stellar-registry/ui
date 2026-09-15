@@ -58,12 +58,12 @@ function summaryFor(values: Record<string, string>, ownerAddress: string) {
 /**
  * The Tansu testnet flow: build the on-chain outcome + off-chain proposal
  * content, sign the create_proposal transaction, upload it (and the CAR it
- * gates) to the IPFS pinning worker, then send it. See
+ * gates) to `/api/governance/pin`, then send it. See
  * `app/lib/governance-proposal.ts` and `app/lib/ipfs.ts` for why the pieces
  * are ordered this way.
  */
 function TestnetAddContractForm() {
-	const { network, rpcUrl, governanceIpfsWorkerUrl } = useRootData()
+	const { network, rpcUrl } = useRootData()
 	const stellarNetwork = getNetwork(network)
 	const passphrase = stellarNetwork.passphrase
 
@@ -205,11 +205,7 @@ function TestnetAddContractForm() {
 			}
 			const signedTxXdr = tx.signed.toEnvelope().toXDR("base64")
 
-			await uploadProposalDirectory({
-				workerUrl: governanceIpfsWorkerUrl,
-				packed,
-				signedTxXdr,
-			})
+			await uploadProposalDirectory({ packed, signedTxXdr })
 
 			let sent
 			try {

@@ -1,15 +1,11 @@
-// Packs governance proposal content into an IPFS CAR and hands it to a
-// pinning worker, mirroring Consulting-Manao/tansu's own
+// Packs governance proposal content into an IPFS CAR and hands it to
+// `/api/governance/pin`, mirroring Consulting-Manao/tansu's own
 // `dapp/src/utils/ipfsFunctions.ts` (`packFilesToCar` / `uploadToIpfsProxy`)
 // so the resulting directory CID is exactly what Tansu's own dapp expects
 // when it later reads `proposal.md`/`outcomes.json` back off IPFS.
 //
-// The worker itself (`GOVERNANCE_IPFS_WORKER_URL`) is not yet deployed. Tansu
-// runs an equivalent worker (`dapp/workers/ipfs-delegation`) that verifies a
-// signed Stellar transaction before uploading a CAR to Filebase; the plan is
-// to ask whether Registry can call that directly before standing up a clone.
-// Until a URL is configured, `uploadProposalDirectory` throws rather than
-// silently no-op'ing.
+// The pinning itself happens same-origin (`routes/apiGovernancePin.tsx`),
+// not via a separate worker — see that file for why.
 
 export interface PackedDirectory {
 	cid: string
@@ -80,26 +76,18 @@ export async function packDirectory(
 }
 
 /**
- * Upload a packed CAR to the pinning worker, gated by a signed transaction
- * (see the module doc above). Returns once the worker confirms the CID it
+ * Upload a packed CAR to `/api/governance/pin`, gated by a signed transaction
+ * (see the module doc above). Returns once the endpoint confirms the CID it
  * pinned matches the one computed locally.
  */
 export async function uploadProposalDirectory({
-	workerUrl,
 	packed,
 	signedTxXdr,
 }: {
-	workerUrl: string | undefined
 	packed: PackedDirectory
 	signedTxXdr: string
 }): Promise<string> {
-	if (!workerUrl) {
-		throw new Error(
-			"Governance IPFS pinning isn't configured yet (GOVERNANCE_IPFS_WORKER_URL).",
-		)
-	}
-
-	const response = await fetch(workerUrl, {
+	const response = await fetch("/api/governance/pin", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
