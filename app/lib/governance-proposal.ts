@@ -1,22 +1,14 @@
 // Builds the on-chain outcome call and off-chain (IPFS) content for a
-// governance proposal, for operations that go through Tansu on testnet (see
-// `app/lib/tansu.ts` for why only testnet).
+// governance proposal (testnet-only, see `app/lib/tansu.ts`).
 //
-// The on-chain shape (`OutcomeContract { address, execute_fn, args }`) is
-// read by `registry-tansu-manager::trigger` once a proposal is Approved (see
-// `contracts/registry-tansu-manager/src/lib.rs`) — it authorizes exactly that
-// one `(address, execute_fn, args)` call and forwards to Tansu's `execute`.
-// `args` there must be the *exact* raw `xdr.ScVal[]` the target function
-// expects, so it's built from the registry contract's own spec
-// (`registryClient.spec.funcArgsToScVals`) rather than hand-encoded — the
-// same conversion `stellar contract invoke` itself would do, so a `--dry-run`
-// of the equivalent CLI call is the way to sanity-check this against a real
-// simulation before trusting it in a live proposal.
+// `OutcomeContract.args` must be the exact raw `xdr.ScVal[]` the target
+// function expects — built from the registry contract's own spec
+// (`funcArgsToScVals`) rather than hand-encoded, since that's what
+// `registry-tansu-manager::trigger` authorizes and forwards verbatim.
 //
-// `outcomes.json`/`proposal.md` (uploaded to IPFS, see `app/lib/ipfs.ts`) are
-// purely descriptive — Tansu's own dapp reads them to render the proposal
-// page — the manager never looks at IPFS content, only the on-chain
-// `outcome_contracts`.
+// `outcomes.json`/`proposal.md` are purely descriptive (Tansu's dapp reads
+// them to render the proposal page) — the manager only ever looks at the
+// on-chain `outcome_contracts`, never IPFS content.
 
 import { getRegistryClient } from "./registry-client"
 

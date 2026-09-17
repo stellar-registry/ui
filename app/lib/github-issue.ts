@@ -1,16 +1,9 @@
-// Mainnet governance path: no on-chain proposal, no backend — the mainnet
-// root registry's `manager` is a plain admin key (verified live via
-// `stellar contract invoke`, 2026-09-14), not a Tansu-gated contract, so
-// governance there is a human process against the `stellar-registry/gov`
-// issue tracker (see gov#1 for the one real precedent so far). This builds a
-// prefilled "New issue" link against a GitHub Issue Form there — the
-// requester submits it themselves under their own GitHub identity, so there's
-// nothing to host or hold credentials for.
+// Mainnet has no Tansu gating (plain admin key), so governance there is a
+// prefilled `stellar-registry/gov` issue instead of an on-chain proposal.
 //
-// Field ids below (`contract_name`, `contract_address`, ...) must match the
-// `id:` of each `input`/`textarea` in
+// Field ids below must match the `id:` of each input/textarea in
 // `stellar-registry/gov/.github/ISSUE_TEMPLATE/add-contract-to-root-registry.yml`
-// — see that template for the corresponding side of this contract.
+// — nothing enforces that across repos, so keep them in sync by hand.
 
 const GOV_REPO = "stellar-registry/gov"
 
