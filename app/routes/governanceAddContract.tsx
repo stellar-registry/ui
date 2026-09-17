@@ -62,57 +62,26 @@ function summaryFor(values: Record<string, string>, ownerAddress: string) {
  * `app/lib/governance-proposal.ts` and `app/lib/ipfs.ts` for why the pieces
  * are ordered this way.
  */
-function TestnetAddContractForm() {
-	const { network, rpcUrl } = useRootData()
-	const stellarNetwork = getNetwork(network)
+function useSubmitProposalMutation({
+	network,
+	rpcUrl,
+	stellarNetwork,
+	address,
+	setAddress,
+	values,
+	setFieldErrors,
+}: {
+	network: string
+	rpcUrl: string
+	stellarNetwork: ReturnType<typeof getNetwork>
+	address: string | undefined
+	setAddress: (address: string) => void
+	values: Record<string, string>
+	setFieldErrors: (errors: Record<string, string>) => void
+}) {
 	const passphrase = stellarNetwork.passphrase
 
-	const [address, setAddress] = useState<string>()
-	const [connecting, setConnecting] = useState(false)
-	const [disconnecting, setDisconnecting] = useState(false)
-	const [connectError, setConnectError] = useState<string>()
-	const [values, setValues] = useState<Record<string, string>>({})
-	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
-	const [result, setResult] = useState<SubmitResult>()
-
-	useEffect(() => {
-		void restoreAddress(stellarNetwork).then((restored) => {
-			if (restored) setAddress(restored)
-		})
-	}, [stellarNetwork])
-
-	// The proposer is always the connected wallet — keep the field in sync
-	// rather than letting it be typed, so it can't drift from who actually
-	// signs the transaction.
-	useEffect(() => {
-		setValues((prev) => ({ ...prev, requester_address: address ?? "" }))
-	}, [address])
-
-	async function handleConnect() {
-		setConnecting(true)
-		setConnectError(undefined)
-		try {
-			setAddress(await connectWallet(stellarNetwork))
-		} catch (e) {
-			const message = e instanceof Error ? e.message : String(e)
-			if (!message.includes("closed the modal")) setConnectError(message)
-		} finally {
-			setConnecting(false)
-		}
-	}
-
-	async function handleDisconnect() {
-		setDisconnecting(true)
-		try {
-			await disconnectWallet(stellarNetwork)
-		} finally {
-			setAddress(undefined)
-			submitMutation.reset()
-			setDisconnecting(false)
-		}
-	}
-
-	const submitMutation = useMutation({
+	return useMutation({
 		mutationFn: async (): Promise<SubmitResult> => {
 			const errors = validateGovernanceFields(operation, values)
 			if (Object.keys(errors).length > 0) {
@@ -222,14 +191,73 @@ function TestnetAddContractForm() {
 
 			return { proposalId: sent.result }
 		},
-		onSuccess: setResult,
+	})
+}
+
+function TestnetAddContractForm() {
+	const { network, rpcUrl } = useRootData()
+	const stellarNetwork = getNetwork(network)
+
+	const [address, setAddress] = useState<string>()
+	const [connecting, setConnecting] = useState(false)
+	const [disconnecting, setDisconnecting] = useState(false)
+	const [connectError, setConnectError] = useState<string>()
+	const [values, setValues] = useState<Record<string, string>>({})
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+	useEffect(() => {
+		void restoreAddress(stellarNetwork).then((restored) => {
+			if (restored) setAddress(restored)
+		})
+	}, [stellarNetwork])
+
+	// The proposer is always the connected wallet — keep the field in sync
+	// rather than letting it be typed, so it can't drift from who actually
+	// signs the transaction.
+	useEffect(() => {
+		setValues((prev) => ({ ...prev, requester_address: address ?? "" }))
+	}, [address])
+
+	async function handleConnect() {
+		setConnecting(true)
+		setConnectError(undefined)
+		try {
+			setAddress(await connectWallet(stellarNetwork))
+		} catch (e) {
+			const message = e instanceof Error ? e.message : String(e)
+			if (!message.includes("closed the modal")) setConnectError(message)
+		} finally {
+			setConnecting(false)
+		}
+	}
+
+	async function handleDisconnect() {
+		setDisconnecting(true)
+		try {
+			await disconnectWallet(stellarNetwork)
+		} finally {
+			setAddress(undefined)
+			submitMutation.reset()
+			setDisconnecting(false)
+		}
+	}
+
+	const submitMutation = useSubmitProposalMutation({
+		network,
+		rpcUrl,
+		stellarNetwork,
+		address,
+		setAddress,
+		values,
+		setFieldErrors,
 	})
 
 	function handleChange(name: string, value: string) {
 		setValues((prev) => ({ ...prev, [name]: value }))
 	}
 
-	if (result) {
+	if (submitMutation.isSuccess) {
+		const result = submitMutation.data
 		return (
 			<Card>
 				<CardHeader>
@@ -314,32 +342,15 @@ function TestnetAddContractForm() {
 	)
 }
 
-/**
- * Closes the acceptance-criteria loop: `trigger` is permissionless (anyone
- * can call it once a proposal is Approved — see
- * contracts/registry-tansu-manager), so once voting ends, whoever's here can
- * finalize it and link the resulting transaction.
- */
-function ProposalFinalizePanel({
-	defaultProposalId,
+function useProposalStatusMutation({
+	rpcUrl,
+	passphrase,
 }: {
-	defaultProposalId: number
+	rpcUrl: string
+	passphrase: string
 }) {
-	const { network, rpcUrl } = useRootData()
-	const stellarNetwork = getNetwork(network)
-	const passphrase = stellarNetwork.passphrase
-
-	const [proposalId, setProposalId] = useState(String(defaultProposalId))
-	const [address, setAddress] = useState<string>()
-
-	useEffect(() => {
-		void restoreAddress(stellarNetwork).then((restored) => {
-			if (restored) setAddress(restored)
-		})
-	}, [stellarNetwork])
-
-	const statusMutation = useMutation({
-		mutationFn: async () => {
+	return useMutation({
+		mutationFn: async (proposalId: string) => {
 			const id = Number(proposalId)
 			if (!Number.isInteger(id)) throw new Error("Enter a valid proposal id.")
 			const tansuClient = await getTansuClient({
@@ -354,9 +365,21 @@ function ProposalFinalizePanel({
 			return proposal.status.tag
 		},
 	})
+}
 
-	const triggerMutation = useMutation({
-		mutationFn: async () => {
+function useTriggerProposalMutation({
+	rpcUrl,
+	stellarNetwork,
+	address,
+}: {
+	rpcUrl: string
+	stellarNetwork: ReturnType<typeof getNetwork>
+	address: string | undefined
+}) {
+	const passphrase = stellarNetwork.passphrase
+
+	return useMutation({
+		mutationFn: async (proposalId: string) => {
 			const id = Number(proposalId)
 			if (!Number.isInteger(id)) throw new Error("Enter a valid proposal id.")
 			if (!address) throw new Error("Connect a wallet first.")
@@ -385,6 +408,38 @@ function ProposalFinalizePanel({
 			return { txHash }
 		},
 	})
+}
+
+/**
+ * Closes the acceptance-criteria loop: `trigger` is permissionless (anyone
+ * can call it once a proposal is Approved — see
+ * contracts/registry-tansu-manager), so once voting ends, whoever's here can
+ * finalize it and link the resulting transaction.
+ */
+function ProposalFinalizePanel({
+	defaultProposalId,
+}: {
+	defaultProposalId: number
+}) {
+	const { network, rpcUrl } = useRootData()
+	const stellarNetwork = getNetwork(network)
+	const passphrase = stellarNetwork.passphrase
+
+	const [proposalId, setProposalId] = useState(String(defaultProposalId))
+	const [address, setAddress] = useState<string>()
+
+	useEffect(() => {
+		void restoreAddress(stellarNetwork).then((restored) => {
+			if (restored) setAddress(restored)
+		})
+	}, [stellarNetwork])
+
+	const statusMutation = useProposalStatusMutation({ rpcUrl, passphrase })
+	const triggerMutation = useTriggerProposalMutation({
+		rpcUrl,
+		stellarNetwork,
+		address,
+	})
 
 	async function handleConnect() {
 		try {
@@ -408,7 +463,7 @@ function ProposalFinalizePanel({
 				/>
 				<Button
 					variant="outline"
-					onClick={() => statusMutation.mutate()}
+					onClick={() => statusMutation.mutate(proposalId)}
 					disabled={statusMutation.isPending}
 				>
 					{statusMutation.isPending ? "Checking…" : "Check status"}
@@ -420,7 +475,7 @@ function ProposalFinalizePanel({
 			{statusMutation.data === "Approved" &&
 				(address ? (
 					<Button
-						onClick={() => triggerMutation.mutate()}
+						onClick={() => triggerMutation.mutate(proposalId)}
 						disabled={triggerMutation.isPending}
 					>
 						{triggerMutation.isPending ? "Finalizing…" : "Finalize (trigger)"}
