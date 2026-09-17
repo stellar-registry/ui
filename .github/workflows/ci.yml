@@ -16,6 +16,11 @@ jobs:
           node-version: 22
           cache: npm
 
+      # actions/setup-node's node 22 bundles npm 10.x; bump to match the
+      # engines.npm range (see package.json / CLAUDE.md) rather than pin
+      # everyone's local npm backward to whatever CI happens to ship with.
+      - run: npm install -g npm@11
+
       - run: npm ci
 
       - run: npm run typecheck
