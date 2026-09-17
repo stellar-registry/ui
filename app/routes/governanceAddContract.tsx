@@ -10,7 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/card"
-import { GovernanceForm } from "~/components/governance-form"
+import { GovernanceFields } from "~/components/governance-fields"
 import { Input } from "~/components/input"
 import { addContractToRootIssueUrl } from "~/lib/github-issue"
 import {
@@ -266,7 +266,7 @@ function TestnetAddContractForm() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<GovernanceForm
+				<GovernanceFields
 					operation={operation}
 					values={values}
 					errors={fieldErrors}
@@ -481,7 +481,7 @@ function MainnetAddContractForm() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<GovernanceForm
+				<GovernanceFields
 					operation={operation}
 					values={values}
 					errors={fieldErrors}

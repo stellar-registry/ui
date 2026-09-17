@@ -5,13 +5,13 @@
 // field rendering; the route owns values/errors/submission via a mutation,
 // the same pattern `DeployWasmDialog` uses for wallet-signed calls.
 
-import styles from "./governance-form.module.css"
+import styles from "./governance-fields.module.css"
 import { Input } from "~/components/input"
 import { Label } from "~/components/label"
 import { Textarea } from "~/components/textarea"
 import { type GovernanceOperation } from "~/lib/governance"
 
-function GovernanceForm({
+function GovernanceFields({
 	operation,
 	values,
 	errors,
@@ -74,4 +74,4 @@ function GovernanceForm({
 	)
 }
 
-export { GovernanceForm }
+export { GovernanceFields }
