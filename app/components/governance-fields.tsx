@@ -32,37 +32,25 @@ function GovernanceFields({
 			{operation.fields.map((field) => {
 				const errorMessage = errors[field.name]
 				const fieldId = `${operation.id}-${field.name}`
-				const readOnly = readOnlyFields?.includes(field.name)
+				const readOnly = !!readOnlyFields?.includes(field.name)
+				const Field = field.type === "textarea" ? Textarea : Input
 				return (
 					<div className={styles.field} key={field.name}>
 						<Label htmlFor={fieldId}>
 							{field.label}
 							{field.required && <span className={styles.required}>*</span>}
 						</Label>
-						{field.type === "textarea" ? (
-							<Textarea
-								id={fieldId}
-								name={field.name}
-								value={values[field.name] ?? ""}
-								onChange={(e) => onChange(field.name, e.target.value)}
-								placeholder={field.placeholder}
-								aria-invalid={Boolean(errorMessage)}
-								disabled={disabled}
-								readOnly={readOnly}
-								rows={4}
-							/>
-						) : (
-							<Input
-								id={fieldId}
-								name={field.name}
-								value={values[field.name] ?? ""}
-								onChange={(e) => onChange(field.name, e.target.value)}
-								placeholder={field.placeholder}
-								aria-invalid={Boolean(errorMessage)}
-								disabled={disabled}
-								readOnly={readOnly}
-							/>
-						)}
+						<Field
+							id={fieldId}
+							name={field.name}
+							value={values[field.name] ?? ""}
+							onChange={(e) => onChange(field.name, e.target.value)}
+							placeholder={field.placeholder}
+							aria-invalid={Boolean(errorMessage)}
+							disabled={disabled}
+							readOnly={readOnly}
+							{...(field.type === "textarea" ? { rows: 4 } : {})}
+						/>
 						{readOnly && (
 							<p className={styles.hint}>Set from your connected wallet.</p>
 						)}
