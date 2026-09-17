@@ -65,6 +65,14 @@ function Header({
 						Contracts
 					</NavLink>
 					<NavLink
+						to="/governance"
+						className={({ isActive }) =>
+							`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
+						}
+					>
+						Governance
+					</NavLink>
+					<NavLink
 						className={styles.navLink}
 						to="https://stellarscaffold.org/docs/registry"
 					>
@@ -142,6 +150,9 @@ function Footer() {
 					</NavLink>
 					<NavLink to="/contracts" className={styles.footerLink}>
 						Contracts
+					</NavLink>
+					<NavLink to="/governance" className={styles.footerLink}>
+						Governance
 					</NavLink>
 				</div>
 

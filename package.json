@@ -18,15 +18,19 @@
     "format": "prettier . --write",
     "prepare": "husky",
     "generate:registry-client:testnet": "stellar registry download registry -o /tmp/registry.wasm --network testnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite",
-    "generate:registry-client:mainnet": "stellar registry download registry -o /tmp/registry.wasm --network mainnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite"
+    "generate:registry-client:mainnet": "stellar registry download registry -o /tmp/registry.wasm --network mainnet -s me && stellar contract bindings typescript --wasm /tmp/registry.wasm --output-dir clients/registry-client --overwrite",
+    "generate:tansu-client": "stellar contract bindings typescript --contract-id CBXKUSLQPVF35FYURR5C42BPYA5UOVDXX2ELKIM2CAJMCI6HXG2BHGZA --network testnet --output-dir clients/tansu-client --overwrite",
+    "generate:registry-manager-client": "stellar contract bindings typescript --contract-id CB4CNQJVA4PUQDHGTHNLAICM2A6TBBJBMU5YG6E3XTMWUISHJTC5BJ5Q --network testnet --output-dir clients/registry-manager-client --overwrite"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.5.0",
+    "@ipld/car": "^5.4.7",
     "@stellar/design-system": "^3.2.8",
     "@stellar/stellar-sdk": "^16.2.0",
     "@tanstack/react-query": "^5.90.21",
     "@theahaco/contract-explorer": "^1.4.0",
     "buffer": "^6.0.3",
+    "ipfs-car": "^3.1.0",
     "isbot": "^5.1.31",
     "lucide-react": "^0.577.0",
     "radix-ui": "^1.4.3",
@@ -35,7 +39,9 @@
     "react-markdown": "^10.1.0",
     "react-router": "^7.18.2",
     "registry-client": "*",
-    "remark-gfm": "^4.0.1"
+    "registry-manager-client": "*",
+    "remark-gfm": "^4.0.1",
+    "tansu-client": "*"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.30.3",

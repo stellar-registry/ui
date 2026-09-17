@@ -1,0 +1,27 @@
+.fields {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.required {
+	color: var(--color-destructive);
+}
+
+.error {
+	font-size: 0.8125rem;
+	color: var(--color-destructive);
+	margin: 0;
+}
+
+.hint {
+	font-size: 0.8125rem;
+	color: var(--color-muted-foreground);
+	margin: 0;
+}

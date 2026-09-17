@@ -36,6 +36,9 @@
 				"REGISTRY_NETWORK": "testnet",
 				"REGISTRY_RPC_URL": "https://soroban-testnet.stellar.org",
 			},
+			// GOVERNANCE_FILEBASE_TOKEN is a secret, not a var — set with
+			// `npx wrangler secret put GOVERNANCE_FILEBASE_TOKEN --env testnet`.
+			// See routes/apiGovernancePin.tsx and CLAUDE.md.
 		},
 	},
 }

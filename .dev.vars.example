@@ -16,3 +16,11 @@ REGISTRY_NETWORK=testnet
 # Soroban RPC endpoint used client-side to simulate/submit the "Deploy a
 # contract using this Wasm" transaction.
 REGISTRY_RPC_URL=https://soroban-testnet.stellar.org
+
+# Filebase API token used by routes/apiGovernancePin.tsx to pin governance
+# proposal content to IPFS. Testnet-only. In deployed environments this is a
+# real Cloudflare secret (`wrangler secret put GOVERNANCE_FILEBASE_TOKEN
+# --env testnet`), never a var — it's only listed here for local dev.
+# Submitting a governance proposal on testnet without this set will fail with
+# a clear error rather than silently skipping the IPFS upload.
+# GOVERNANCE_FILEBASE_TOKEN=
