@@ -49,13 +49,12 @@ export default function GovernanceIndex() {
 						Register a deployed contract instance in the root registry.
 					</span>
 				</Link>
-				<div className={styles.itemDisabled}>
+				<Link to="/governance/add-wasm" className={styles.item}>
 					<span className={styles.itemTitle}>Add wasm to root registry</span>
 					<span className={styles.itemDescription}>
-						Promote an already-published Wasm into the root registry.
+						Publish a wasm hash under a new name in the root registry.
 					</span>
-					<span className={styles.comingSoon}>Coming soon</span>
-				</div>
+				</Link>
 				<div className={styles.itemDisabled}>
 					<span className={styles.itemTitle}>Create a new subregistry</span>
 					<span className={styles.itemDescription}>

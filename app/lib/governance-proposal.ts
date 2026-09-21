@@ -18,32 +18,81 @@ export interface OutcomeContract {
 	args: unknown[]
 }
 
-export async function buildRegisterContractOutcome({
+async function buildRegistryOutcome({
 	rpcUrl,
 	networkPassphrase,
 	registryContractId,
-	contractName,
-	contractAddress,
-	owner,
+	fn,
+	args,
 }: {
 	rpcUrl: string
 	networkPassphrase: string
 	registryContractId: string
-	contractName: string
-	contractAddress: string
-	owner: string
+	fn: string
+	args: Record<string, unknown>
 }): Promise<OutcomeContract> {
 	const registryClient = await getRegistryClient({
 		rpcUrl,
 		networkPassphrase,
 		contractId: registryContractId,
 	})
-	const args = registryClient.spec.funcArgsToScVals("register_contract", {
-		contract_name: contractName,
-		contract_address: contractAddress,
-		owner,
+	return {
+		address: registryContractId,
+		execute_fn: fn,
+		args: registryClient.spec.funcArgsToScVals(fn, args),
+	}
+}
+
+interface RegistryOutcomeContext {
+	rpcUrl: string
+	networkPassphrase: string
+	registryContractId: string
+}
+
+export function buildRegisterContractOutcome({
+	contractName,
+	contractAddress,
+	owner,
+	...context
+}: RegistryOutcomeContext & {
+	contractName: string
+	contractAddress: string
+	owner: string
+}): Promise<OutcomeContract> {
+	return buildRegistryOutcome({
+		...context,
+		fn: "register_contract",
+		args: {
+			contract_name: contractName,
+			contract_address: contractAddress,
+			owner,
+		},
 	})
-	return { address: registryContractId, execute_fn: "register_contract", args }
+}
+
+export function buildPublishHashOutcome({
+	wasmName,
+	author,
+	wasmHash,
+	version,
+	...context
+}: RegistryOutcomeContext & {
+	wasmName: string
+	author: string
+	/** 64-character hex. */
+	wasmHash: string
+	version: string
+}): Promise<OutcomeContract> {
+	return buildRegistryOutcome({
+		...context,
+		fn: "publish_hash",
+		args: {
+			wasm_name: wasmName,
+			author,
+			wasm_hash: Buffer.from(wasmHash, "hex"),
+			version,
+		},
+	})
 }
 
 export function buildProposalMarkdown({
