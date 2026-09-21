@@ -10,6 +10,7 @@
 // them to render the proposal page) — the manager only ever looks at the
 // on-chain `outcome_contracts`, never IPFS content.
 
+import { Buffer } from "buffer"
 import { getRegistryClient } from "./registry-client"
 
 export interface OutcomeContract {
