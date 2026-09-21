@@ -52,12 +52,14 @@ export function buildProposalMarkdown({
 	requesterGithub,
 	justification,
 	summary,
+	details,
 }: {
 	title: string
 	requesterAddress: string
 	requesterGithub?: string
 	justification: string
 	summary: string
+	details?: Array<[string, string]>
 }): string {
 	const lines = [
 		`# ${title}`,
@@ -69,6 +71,10 @@ export function buildProposalMarkdown({
 		`- Stellar address: \`${requesterAddress}\``,
 	]
 	if (requesterGithub) lines.push(`- GitHub: @${requesterGithub}`)
+	if (details?.length) {
+		lines.push("", "## Details", "")
+		for (const [label, value] of details) lines.push(`- ${label}: ${value}`)
+	}
 	lines.push("", "## Justification", "", justification, "")
 	return lines.join("\n")
 }
