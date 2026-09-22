@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.30.3",
-    "@react-router/dev": "^7.18.2",
+    "@react-router/dev": "^8.4.0",
     "@theahaco/ts-config": "^1.2.0",
     "@types/node": "^22",
     "@types/react": "^19.2.7",
