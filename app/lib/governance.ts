@@ -94,6 +94,9 @@ export interface GovernanceOperation {
 	id: GovernanceOperationId
 	path: string
 	title: string
+	/** Short blurb for the governance landing page's list of operations. */
+	summary: string
+	/** Longer, form-page-only context — may repeat/expand on `summary`. */
 	description: string
 	fields: GovernanceField[]
 	/** Registry contract function this operation's outcome calls. */
@@ -105,6 +108,7 @@ export const GOVERNANCE_OPERATIONS: GovernanceOperation[] = [
 		id: "add-contract",
 		path: "/governance/add-contract",
 		title: "Add contract to root registry",
+		summary: "Register a deployed contract instance in the root registry.",
 		description: "Register a deployed contract instance in the root registry.",
 		registryFn: "register_contract",
 		fields: [
@@ -141,6 +145,7 @@ export const GOVERNANCE_OPERATIONS: GovernanceOperation[] = [
 		id: "add-wasm",
 		path: "/governance/add-wasm",
 		title: "Add wasm to root registry",
+		summary: "Publish a wasm hash under a new name in the root registry.",
 		description:
 			"Publish a wasm hash under a new name in the root registry. Only first-time names go through governance — an existing name's author publishes new versions themselves.",
 		registryFn: "publish_hash",

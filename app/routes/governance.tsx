@@ -1,5 +1,6 @@
 import { Link } from "react-router"
 import styles from "./governance.module.css"
+import { GOVERNANCE_OPERATIONS } from "~/lib/governance"
 import { tansuGovernanceUrl } from "~/lib/tansu"
 import { useRootData } from "~/root"
 
@@ -41,20 +42,12 @@ export default function GovernanceIndex() {
 				<GovernanceIntro />
 			</div>
 			<div className={styles.list}>
-				<Link to="/governance/add-contract" className={styles.item}>
-					<span className={styles.itemTitle}>
-						Add contract to root registry
-					</span>
-					<span className={styles.itemDescription}>
-						Register a deployed contract instance in the root registry.
-					</span>
-				</Link>
-				<Link to="/governance/add-wasm" className={styles.item}>
-					<span className={styles.itemTitle}>Add wasm to root registry</span>
-					<span className={styles.itemDescription}>
-						Publish a wasm hash under a new name in the root registry.
-					</span>
-				</Link>
+				{GOVERNANCE_OPERATIONS.map((operation) => (
+					<Link key={operation.id} to={operation.path} className={styles.item}>
+						<span className={styles.itemTitle}>{operation.title}</span>
+						<span className={styles.itemDescription}>{operation.summary}</span>
+					</Link>
+				))}
 				<div className={styles.itemDisabled}>
 					<span className={styles.itemTitle}>Create a new subregistry</span>
 					<span className={styles.itemDescription}>
