@@ -11,15 +11,9 @@ import { registryContractId } from "~/lib/network"
 
 const operation = getGovernanceOperation("add-wasm")!
 
-/**
- * Nothing simulates the actual publish_hash call before a proposal goes to a
- * multi-day Tansu vote (see build*Outcome — they only encode args), so this
- * is the only thing standing between submitting and finding out at trigger()
- * time that the name's already published. Fails open: any indexer hiccup
- * means "couldn't confirm it's published," not "block the submission" — the
- * on-chain check at trigger() is still the real, authoritative one either
- * way.
- */
+// Test if a Wasm name already exists, and throw an error we can surface if so
+// Note: If the Wasm exists but hasn't been indexed, this won't work, but is helpful
+//       to catch obvious duplicates early.
 async function assertWasmNameAvailable(wasmName: string): Promise<void> {
 	try {
 		await getWasm(wasmName)

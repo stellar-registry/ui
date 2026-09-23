@@ -11,10 +11,9 @@ import { registryContractId } from "~/lib/network"
 
 const operation = getGovernanceOperation("add-contract")!
 
-/**
- * Nothing else checks this before a multi-day Tansu vote runs on it. Fails
- * open on any indexer error — the real check is still on-chain at trigger().
- */
+// Test if a contract name already exists, and throw an error we can surface if so
+// Note: If the contract exists but hasn't been indexed, this won't work, but is helpful
+//       to catch obvious duplicates early.
 async function assertContractNameAvailable(
 	contractName: string,
 ): Promise<void> {
