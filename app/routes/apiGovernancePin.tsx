@@ -36,7 +36,7 @@ function validateSignedTransaction(signedTxXdr: string): void {
 			const sourceKeypair = Keypair.fromPublicKey(tx.source)
 			const txHash = tx.hash()
 			const verified = tx.signatures.some((signature) =>
-				sourceKeypair.verify(txHash, signature.signature()),
+				sourceKeypair.verify(txHash, signature.signature),
 			)
 			if (verified && tx.operations?.length) return
 		} catch {
