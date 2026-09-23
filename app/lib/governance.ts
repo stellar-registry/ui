@@ -29,19 +29,103 @@ export function validateStellarAddress(allowedPrefixes: Array<"G" | "C">) {
 	}
 }
 
+const MAX_NAME_LENGTH = 64
+
+// Mirrors contracts/registry/src/name/normalized.rs's `is_keyword` list —
+// canonicalizing to any of these fails on-chain with InvalidName. ('static and
+// the redundant post-lowercasing "Self" entry are omitted: neither can ever
+// match a name our own shape check below already allows.)
+const RESERVED_NAMES = new Set([
+	"as",
+	"break",
+	"const",
+	"continue",
+	"crate",
+	"else",
+	"enum",
+	"extern",
+	"false",
+	"fn",
+	"for",
+	"if",
+	"impl",
+	"in",
+	"let",
+	"loop",
+	"match",
+	"mod",
+	"move",
+	"mut",
+	"pub",
+	"ref",
+	"return",
+	"self",
+	"static",
+	"struct",
+	"super",
+	"trait",
+	"true",
+	"type",
+	"unsafe",
+	"use",
+	"where",
+	"while",
+	"async",
+	"await",
+	"dyn",
+	"abstract",
+	"become",
+	"box",
+	"do",
+	"final",
+	"macro",
+	"override",
+	"priv",
+	"typeof",
+	"unsized",
+	"virtual",
+	"yield",
+	"try",
+	"gen",
+	"macro_rules",
+	"union",
+	"nul",
+])
+
+/**
+ * One `NormalizedName` segment — mirrors
+ * contracts/registry/src/name/normalized.rs's length/shape/keyword checks
+ * exactly, so a name that passes here can't fail on-chain with InvalidName
+ * after a multi-day Tansu vote.
+ */
+function validateNameSegment(value: string): string | undefined {
+	if (value.length > MAX_NAME_LENGTH) {
+		return `Must be ${MAX_NAME_LENGTH} characters or fewer`
+	}
+	if (!/^[a-z][a-z0-9-]*$/.test(value)) {
+		return "Use lowercase letters, numbers, and hyphens, starting with a letter"
+	}
+	if (RESERVED_NAMES.has(value)) {
+		return `"${value}" is a reserved name`
+	}
+	return undefined
+}
+
 export function validateName(value: string): string | undefined {
-	if (!/^[a-z0-9][a-z0-9-]*(\/[a-z0-9][a-z0-9-]*)?$/.test(value)) {
+	const segments = value.split("/")
+	if (segments.length > 2) {
 		return "Use lowercase letters, numbers, and hyphens (optionally channel/name)"
+	}
+	for (const segment of segments) {
+		const error = validateNameSegment(segment)
+		if (error) return error
 	}
 	return undefined
 }
 
 /** Root-registry names are bare: `publish_hash` only accepts a NormalizedName. */
 function validateBareName(value: string): string | undefined {
-	if (!/^[a-z0-9][a-z0-9-]*$/.test(value)) {
-		return "Use lowercase letters, numbers, and hyphens (no channel prefix)"
-	}
-	return undefined
+	return validateNameSegment(value)
 }
 
 function validateSemver(value: string): string | undefined {
