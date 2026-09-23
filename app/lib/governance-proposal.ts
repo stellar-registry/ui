@@ -71,6 +71,46 @@ export function buildRegisterContractOutcome({
 	})
 }
 
+/**
+ * A subregistry is just another `registry` instance, deployed by the current
+ * root via `deploy` with `root` set — its own `__constructor` args (`admin`,
+ * `manager`, `root`) are encoded against the same spec, then passed through
+ * as `deploy`'s opaque `init: Vec<Val>`.
+ */
+export async function buildNewSubregistryOutcome({
+	rpcUrl,
+	networkPassphrase,
+	registryContractId,
+	channelName,
+	admin,
+}: RegistryOutcomeContext & {
+	channelName: string
+	admin: string
+}): Promise<OutcomeContract> {
+	const registryClient = await getRegistryClient({
+		rpcUrl,
+		networkPassphrase,
+		contractId: registryContractId,
+	})
+	const init = registryClient.spec.funcArgsToScVals("__constructor", {
+		admin,
+		manager: admin,
+		root: registryContractId,
+	})
+	return {
+		address: registryContractId,
+		execute_fn: "deploy",
+		args: registryClient.spec.funcArgsToScVals("deploy", {
+			wasm_name: "registry",
+			version: undefined,
+			contract_name: channelName,
+			admin,
+			init,
+			deployer: undefined,
+		}),
+	}
+}
+
 export function buildPublishHashOutcome({
 	wasmName,
 	author,
