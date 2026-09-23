@@ -12,12 +12,8 @@ import { registryContractId } from "~/lib/network"
 const operation = getGovernanceOperation("add-contract")!
 
 /**
- * Nothing simulates the actual register_contract call before a proposal goes
- * to a multi-day Tansu vote (see build*Outcome — they only encode args), so
- * this is the only thing standing between submitting and finding out at
- * trigger() time that the name's taken. Fails open: any indexer hiccup means
- * "couldn't confirm it exists," not "block the submission" — the on-chain
- * check at trigger() is still the real, authoritative one either way.
+ * Nothing else checks this before a multi-day Tansu vote runs on it. Fails
+ * open on any indexer error — the real check is still on-chain at trigger().
  */
 async function assertContractNameAvailable(
 	contractName: string,
