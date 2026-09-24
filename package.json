@@ -23,7 +23,7 @@
     "generate:registry-manager-client": "stellar contract bindings typescript --contract-id CB4CNQJVA4PUQDHGTHNLAICM2A6TBBJBMU5YG6E3XTMWUISHJTC5BJ5Q --network testnet --output-dir clients/registry-manager-client --overwrite"
   },
   "dependencies": {
-    "@creit.tech/stellar-wallets-kit": "^2.6.0",
+    "@creit.tech/stellar-wallets-kit": "^2.7.0",
     "@ipld/car": "^5.4.7",
     "@stellar/design-system": "^3.2.8",
     "@stellar/stellar-sdk": "^17.1.0",
