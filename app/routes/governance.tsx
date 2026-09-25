@@ -1,7 +1,13 @@
 import { Link } from "react-router"
+import { type Route } from "./+types/governance"
 import styles from "./governance.module.css"
+import { GOVERNANCE_OPERATIONS } from "~/lib/governance"
 import { tansuGovernanceUrl } from "~/lib/tansu"
 import { useRootData } from "~/root"
+
+export function meta({}: Route.MetaArgs) {
+	return [{ title: "Governance — Stellar Registry" }]
+}
 
 function GovernanceIntro() {
 	const { network } = useRootData()
@@ -41,21 +47,12 @@ export default function GovernanceIndex() {
 				<GovernanceIntro />
 			</div>
 			<div className={styles.list}>
-				<Link to="/governance/add-contract" className={styles.item}>
-					<span className={styles.itemTitle}>
-						Add contract to root registry
-					</span>
-					<span className={styles.itemDescription}>
-						Register a deployed contract instance in the root registry.
-					</span>
-				</Link>
-				<div className={styles.itemDisabled}>
-					<span className={styles.itemTitle}>Add wasm to root registry</span>
-					<span className={styles.itemDescription}>
-						Promote an already-published Wasm into the root registry.
-					</span>
-					<span className={styles.comingSoon}>Coming soon</span>
-				</div>
+				{GOVERNANCE_OPERATIONS.map((operation) => (
+					<Link key={operation.id} to={operation.path} className={styles.item}>
+						<span className={styles.itemTitle}>{operation.title}</span>
+						<span className={styles.itemDescription}>{operation.summary}</span>
+					</Link>
+				))}
 				<div className={styles.itemDisabled}>
 					<span className={styles.itemTitle}>Create a new subregistry</span>
 					<span className={styles.itemDescription}>

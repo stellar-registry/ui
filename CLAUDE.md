@@ -106,9 +106,11 @@ route:
   `stellar-registry/gov` "new issue" link (`app/lib/github-issue.ts`) and the
   requester submits it themselves under their own GitHub identity.
 
-`app/lib/governance.ts` defines each operation's fields/validation. Only "add
-contract to root registry" is wired up so far; "add wasm" and "create a
-subregistry" are separate follow-up PRs.
+`app/lib/governance.ts` defines each operation's fields/validation. Each
+`routes/governance*.tsx` form is just config (operation + `buildProposal` for
+testnet + `buildIssueUrl` for mainnet) over the shared
+`components/governance-proposal-form.tsx`. "Add contract" and "add wasm" are
+wired up; "create a subregistry" is a follow-up PR.
 
 ## Deployment
 
