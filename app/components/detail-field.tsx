@@ -50,7 +50,6 @@ function FieldLink({
 }
 
 function FieldValue({ children }: { children: React.ReactNode }) {
-	// div, not p: values may contain block content like the history <ol>
 	return <div className={styles.fieldValue}>{children}</div>
 }
 
