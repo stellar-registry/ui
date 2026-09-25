@@ -1,3 +1,4 @@
+import { type Route } from "./+types/governanceAddWasm"
 import {
 	type BuildIssueUrl,
 	type BuildProposal,
@@ -10,6 +11,10 @@ import { buildPublishHashOutcome } from "~/lib/governance-proposal"
 import { registryContractId } from "~/lib/network"
 
 const operation = getGovernanceOperation("add-wasm")!
+
+export function meta({}: Route.MetaArgs) {
+	return [{ title: `${operation.title} — Stellar Registry` }]
+}
 
 // Test if a Wasm name already exists, and throw an error we can surface if so
 // Note: If the Wasm exists but hasn't been indexed, this won't work, but is helpful

@@ -1,8 +1,13 @@
 import { Link } from "react-router"
+import { type Route } from "./+types/governance"
 import styles from "./governance.module.css"
 import { GOVERNANCE_OPERATIONS } from "~/lib/governance"
 import { tansuGovernanceUrl } from "~/lib/tansu"
 import { useRootData } from "~/root"
+
+export function meta({}: Route.MetaArgs) {
+	return [{ title: "Governance — Stellar Registry" }]
+}
 
 function GovernanceIntro() {
 	const { network } = useRootData()

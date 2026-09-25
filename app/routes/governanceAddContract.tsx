@@ -1,3 +1,4 @@
+import { type Route } from "./+types/governanceAddContract"
 import {
 	type BuildIssueUrl,
 	type BuildProposal,
@@ -10,6 +11,10 @@ import { buildRegisterContractOutcome } from "~/lib/governance-proposal"
 import { registryContractId } from "~/lib/network"
 
 const operation = getGovernanceOperation("add-contract")!
+
+export function meta({}: Route.MetaArgs) {
+	return [{ title: `${operation.title} — Stellar Registry` }]
+}
 
 // Test if a contract name already exists, and throw an error we can surface if so
 // Note: If the contract exists but hasn't been indexed, this won't work, but is helpful
