@@ -53,13 +53,6 @@ export default function GovernanceIndex() {
 						<span className={styles.itemDescription}>{operation.summary}</span>
 					</Link>
 				))}
-				<div className={styles.itemDisabled}>
-					<span className={styles.itemTitle}>Create a new subregistry</span>
-					<span className={styles.itemDescription}>
-						Create a new named channel for grouping related Wasms and contracts.
-					</span>
-					<span className={styles.comingSoon}>Coming soon</span>
-				</div>
 			</div>
 		</main>
 	)
