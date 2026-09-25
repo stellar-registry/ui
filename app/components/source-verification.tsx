@@ -23,7 +23,7 @@ function BuildRecipe({ meta }: { meta: WasmMeta | undefined }) {
 		return (
 			<p className={styles.note}>
 				This Wasm doesn't embed <a href={SEP58_URL}>SEP-58</a> build metadata,
-				so it doesn't say how to reproduce it.
+				so there is not build information on how to reproduce it.
 			</p>
 		)
 	}
@@ -33,8 +33,8 @@ function BuildRecipe({ meta }: { meta: WasmMeta | undefined }) {
 	return (
 		<>
 			<p className={styles.note}>
-				Recorded in the Wasm by its publisher. Registry displays it but does not
-				rebuild it.
+				Recorded in the Wasm by its publisher. You can use this information to
+				reproduce the build.
 			</p>
 			<DetailFields>
 				<DetailField label="Build Image">
