@@ -10,10 +10,12 @@ import {
 	SidebarPanel,
 } from "~/components/detail-sidebar"
 import { IconContract } from "~/components/icon-contract"
+import { SourceVerification } from "~/components/source-verification"
 import { UsageSection } from "~/components/usage-section"
 import { getContract } from "~/lib/api"
 import { getNetwork } from "~/lib/network"
 import { getFullName, prefixName } from "~/lib/util"
+import { verifiedSourceUrl as getVerifiedSourceUrl } from "~/lib/verification"
 import { useRootData } from "~/root"
 
 export async function loader({ params, context }: Route.LoaderArgs) {
@@ -60,9 +62,7 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 		: ""
 	const contractVersions = contract.versions.slice().reverse()
 	const verifiedSourceUrl = validation
-		? [validation.repository, "tree", validation.commit, validation.path]
-				.filter(Boolean)
-				.join("/")
+		? getVerifiedSourceUrl(validation)
 		: undefined
 
 	return (
@@ -241,6 +241,17 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					</>
 				}
 			/>
+
+			{!contract.is_stellar_asset_contract && (
+				<SourceVerification
+					validation={validation}
+					wasmHref={
+						hasWasm
+							? `/wasms/${fullWasmName}/v/${contract.wasm_version}`
+							: undefined
+					}
+				/>
+			)}
 		</main>
 	)
 }
