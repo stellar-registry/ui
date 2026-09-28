@@ -6,6 +6,10 @@
 //
 // IDs below verified live via `stellar contract invoke` on 2026-09-14.
 
+// Imported explicitly: the browser has no global Buffer until a generated client
+// module loads and polyfills it.
+import { Buffer } from "buffer"
+
 /** The live Tansu DAO contract on testnet. */
 export const TANSU_CONTRACT_ID =
 	"CBXKUSLQPVF35FYURR5C42BPYA5UOVDXX2ELKIM2CAJMCI6HXG2BHGZA"

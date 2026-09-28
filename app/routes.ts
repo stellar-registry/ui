@@ -26,6 +26,7 @@ export default [
 	...prefix("governance", [
 		index("routes/governance.tsx"),
 		route("add-contract", "routes/governanceAddContract.tsx"),
+		route("add-wasm", "routes/governanceAddWasm.tsx"),
 	]),
 	route("api/governance/pin", "routes/apiGovernancePin.tsx"),
 	route("api/*", "routes/api.tsx"),
