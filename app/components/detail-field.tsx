@@ -50,7 +50,7 @@ function FieldLink({
 }
 
 function FieldValue({ children }: { children: React.ReactNode }) {
-	return <p className={styles.fieldValue}>{children}</p>
+	return <div className={styles.fieldValue}>{children}</div>
 }
 
 export { DetailFields, DetailField }
