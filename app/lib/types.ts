@@ -38,6 +38,12 @@ export interface WasmMeta {
 	cliver: string
 	source_repo: string
 	binver: string | null
+	// SEP-58 build reproducibility fields; absent from most Wasms so far.
+	bldimg?: string | null
+	bldopt?: string[] | null
+	bldarg?: string[] | null
+	source_sha256?: string | null
+	source_uri?: string | null
 }
 
 export interface WasmDetail extends Wasm {

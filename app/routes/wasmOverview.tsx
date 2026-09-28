@@ -12,9 +12,11 @@ import {
 } from "~/components/detail-sidebar"
 import { IconWasm } from "~/components/icon-wasm"
 import { MetadataSection } from "~/components/metadata-section"
+import { SourceVerification } from "~/components/source-verification"
 import { UsageSection } from "~/components/usage-section"
 import { getWasm } from "~/lib/api"
 import { getFullName, isLatestWasm } from "~/lib/util"
+import { verifiedSourceUrl as getVerifiedSourceUrl } from "~/lib/verification"
 import { useRootData } from "~/root"
 
 export async function loader({ params, context }: Route.LoaderArgs) {
@@ -75,9 +77,7 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 	const displayVersion = version ?? wasm.wasm_version
 	const validation = wasm.verified
 	const verifiedSourceUrl = validation
-		? [validation.repository, "tree", validation.commit, validation.path]
-				.filter(Boolean)
-				.join("/")
+		? getVerifiedSourceUrl(validation)
 		: undefined
 
 	return (
@@ -162,6 +162,7 @@ export default function WasmOverview({ loaderData }: Route.ComponentProps) {
 					</>
 				}
 			/>
+			<SourceVerification meta={wasm.meta} validation={validation} />
 			{wasm.meta?.source_repo && (
 				<MetadataSection sourceRepoUrl={wasm.meta.source_repo} />
 			)}
