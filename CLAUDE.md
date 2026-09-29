@@ -109,8 +109,7 @@ route:
 `app/lib/governance.ts` defines each operation's fields/validation. Each
 `routes/governance*.tsx` form is just config (operation + `buildProposal` for
 testnet + `buildIssueUrl` for mainnet) over the shared
-`components/governance-proposal-form.tsx`. All three operations (add contract,
-add wasm, new subregistry) are wired up.
+`components/governance-proposal-form.tsx`.
 
 ## Deployment
 
