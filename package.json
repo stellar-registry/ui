@@ -44,7 +44,7 @@
     "tansu-client": "*"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.30.3",
+    "@cloudflare/vite-plugin": "^1.57.3",
     "@react-router/dev": "^7.18.2",
     "@theahaco/ts-config": "^1.2.0",
     "@types/node": "^22",
