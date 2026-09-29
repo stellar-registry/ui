@@ -172,7 +172,8 @@ const justificationField: GovernanceField = {
 		"Who are you, and why should this be trusted in the root registry?",
 }
 
-export type GovernanceOperationId = "add-contract" | "add-wasm"
+export type GovernanceOperationId =
+	"add-contract" | "add-wasm" | "new-subregistry"
 
 export interface GovernanceOperation {
 	id: GovernanceOperationId
@@ -184,7 +185,7 @@ export interface GovernanceOperation {
 	description: string
 	fields: GovernanceField[]
 	/** Registry contract function this operation's outcome calls. */
-	registryFn: "register_contract" | "publish_hash"
+	registryFn: "register_contract" | "publish_hash" | "deploy"
 }
 
 export const GOVERNANCE_OPERATIONS: GovernanceOperation[] = [
@@ -273,6 +274,36 @@ export const GOVERNANCE_OPERATIONS: GovernanceOperation[] = [
 				required: false,
 				placeholder: "https://github.com/org/repo",
 				validate: validateUrl,
+			},
+			requesterAddressField,
+			requesterGithubField,
+			justificationField,
+		],
+	},
+	{
+		id: "new-subregistry",
+		path: "/governance/new-subregistry",
+		title: "Create a new subregistry",
+		summary: "Deploy a new named channel for grouping related Wasms and contracts.",
+		description:
+			"Deploy a new named channel for grouping related Wasms and contracts. The admin/manager address governs it going forward.",
+		registryFn: "deploy",
+		fields: [
+			{
+				name: "channel_name",
+				label: "Channel name",
+				type: "text",
+				required: true,
+				placeholder: "my-org",
+				validate: validateBareName,
+			},
+			{
+				name: "admin_address",
+				label: "Admin / manager address",
+				type: "text",
+				required: false,
+				placeholder: "Defaults to your Stellar address",
+				validate: validateStellarAddress(["G", "C"]),
 			},
 			requesterAddressField,
 			requesterGithubField,
