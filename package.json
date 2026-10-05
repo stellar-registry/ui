@@ -23,11 +23,11 @@
     "generate:registry-manager-client": "stellar contract bindings typescript --contract-id CB4CNQJVA4PUQDHGTHNLAICM2A6TBBJBMU5YG6E3XTMWUISHJTC5BJ5Q --network testnet --output-dir clients/registry-manager-client --overwrite"
   },
   "dependencies": {
-    "@creit.tech/stellar-wallets-kit": "^2.5.0",
+    "@creit.tech/stellar-wallets-kit": "^2.7.0",
     "@ipld/car": "^5.4.7",
     "@stellar/design-system": "^3.2.8",
     "@stellar/stellar-sdk": "^16.2.0",
-    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-query": "^5.104.0",
     "@theahaco/contract-explorer": "^1.4.0",
     "buffer": "^6.0.3",
     "ipfs-car": "^3.1.0",
@@ -44,7 +44,7 @@
     "tansu-client": "*"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.57.3",
+    "@cloudflare/vite-plugin": "^1.61.0",
     "@react-router/dev": "^7.18.2",
     "@theahaco/ts-config": "^1.2.0",
     "@types/node": "^22",
