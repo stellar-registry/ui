@@ -44,7 +44,7 @@
     "tansu-client": "*"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.61.0",
+    "@cloudflare/vite-plugin": "^1.62.5",
     "@react-router/dev": "^7.18.2",
     "@theahaco/ts-config": "^1.2.0",
     "@types/node": "^22",
@@ -55,7 +55,7 @@
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^6.1.1",
-    "wrangler": "^4.135.0"
+    "wrangler": "^4.147.0"
   },
   "overrides": {
     "axios": "1.19.0",
