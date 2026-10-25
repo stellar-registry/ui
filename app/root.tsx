@@ -326,6 +326,33 @@ function Footer() {
 	)
 }
 
+const siteTitle = "Stellar Registry"
+const siteDescription =
+	"Browse and discover deployed smart contracts on the Stellar network."
+
+// og:image must be absolute, so it follows the host serving the page.
+function SocialMeta() {
+	const data = useRouteLoaderData<typeof loader>("root")
+	if (!data) return null
+	const image = `${data.origin}/og-image${data.network === "testnet" ? "-testnet" : ""}.png`
+	return (
+		<>
+			<meta property="og:type" content="website" />
+			<meta property="og:site_name" content={siteTitle} />
+			<meta property="og:title" content={siteTitle} />
+			<meta property="og:description" content={siteDescription} />
+			<meta property="og:url" content={data.origin} />
+			<meta property="og:image" content={image} />
+			<meta property="og:image:width" content="1200" />
+			<meta property="og:image:height" content="630" />
+			<meta name="twitter:card" content="summary_large_image" />
+			<meta name="twitter:title" content={siteTitle} />
+			<meta name="twitter:description" content={siteDescription} />
+			<meta name="twitter:image" content={image} />
+		</>
+	)
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en" suppressHydrationWarning>
@@ -335,6 +362,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 				<link rel="icon" type="image/png" href="/favicon.png" />
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
+				<SocialMeta />
 				<Meta />
 				<Links />
 			</head>
@@ -358,11 +386,14 @@ function getNetworkContext(network = "testnet", rpcUrl?: string) {
 	}
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-	return getNetworkContext(
-		context.cloudflare.env.REGISTRY_NETWORK,
-		context.cloudflare.env.REGISTRY_RPC_URL,
-	)
+export async function loader({ context, request }: Route.LoaderArgs) {
+	return {
+		...getNetworkContext(
+			context.cloudflare.env.REGISTRY_NETWORK,
+			context.cloudflare.env.REGISTRY_RPC_URL,
+		),
+		origin: new URL(request.url).origin,
+	}
 }
 
 export function useRootData() {
