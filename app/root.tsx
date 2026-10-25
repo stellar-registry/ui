@@ -328,7 +328,7 @@ function Footer() {
 
 const siteTitle = "Stellar Registry"
 const siteDescription =
-	"Browse and discover deployed smart contracts on the Stellar network."
+	"Browse and discover deployed smart contracts and Wasms on the Stellar network."
 
 // og:image must be absolute, so it follows the host serving the page.
 function SocialMeta() {
