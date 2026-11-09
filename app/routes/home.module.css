@@ -1,4 +1,5 @@
 .main {
+	width: 100%;
 	max-width: 56rem;
 	margin: 0 auto;
 	padding: 3rem 1.5rem 4rem;
@@ -209,4 +210,12 @@
 
 .installLink:hover {
 	text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+	.testnetStamp {
+		right: -0.5rem;
+		top: -1.5rem;
+		font-size: 0.8rem;
+	}
 }
