@@ -52,3 +52,14 @@
 .field ol {
 	list-style-type: circle;
 }
+
+.accountName,
+.accountAddress {
+	display: block;
+}
+
+.accountAddress {
+	margin-top: 0.125rem;
+	font-size: 0.75rem;
+	color: var(--color-muted-foreground);
+}

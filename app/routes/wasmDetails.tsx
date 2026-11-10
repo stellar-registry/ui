@@ -1,6 +1,10 @@
 import { useOutletContext } from "react-router"
 
-import { DetailField, DetailFields } from "~/components/detail-field"
+import {
+	AccountField,
+	DetailField,
+	DetailFields,
+} from "~/components/detail-field"
 import { type WasmOutletContext } from "~/lib/types"
 import { useRootData } from "~/root"
 
@@ -14,13 +18,12 @@ export default function WasmDetail() {
 		<DetailFields>
 			<DetailField label="Wasm Hash">{wasm.wasm_hash}</DetailField>
 
-			<DetailField
+			<AccountField
 				label="Author"
+				address={wasm.author}
+				name={wasm.author_name}
 				href={`${stellarExpertUrl}/account/${wasm.author}`}
-				external
-			>
-				{wasm.author}
-			</DetailField>
+			/>
 
 			<DetailField label="Published">{createdAt}</DetailField>
 
