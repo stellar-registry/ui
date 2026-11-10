@@ -3,7 +3,11 @@ import { type Route } from "./+types/contractDetails"
 import styles from "./contractDetails.module.css"
 import { Badge } from "~/components/badge"
 import { ContractExplorerSection } from "~/components/contract-explorer-section"
-import { DetailField, DetailFields } from "~/components/detail-field"
+import {
+	AccountField,
+	DetailField,
+	DetailFields,
+} from "~/components/detail-field"
 import {
 	SidebarAlert,
 	SidebarLink,
@@ -88,13 +92,12 @@ export default function ContractDetail({ loaderData }: Route.ComponentProps) {
 					</DetailField>
 
 					{contract.deployer && (
-						<DetailField
+						<AccountField
 							label="Deployer"
+							address={contract.deployer}
+							name={contract.deployer_name}
 							href={`${stellarExpertUrl}/account/${contract.deployer}`}
-							external
-						>
-							{contract.deployer}
-						</DetailField>
+						/>
 					)}
 
 					{hasWasm && (
