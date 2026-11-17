@@ -26,6 +26,7 @@ export default [
 	...prefix("governance", [
 		index("routes/governance.tsx"),
 		route("add-contract", "routes/governanceAddContract.tsx"),
+		route("add-account", "routes/governanceAddAccount.tsx"),
 		route("add-wasm", "routes/governanceAddWasm.tsx"),
 		route("new-subregistry", "routes/governanceNewSubregistry.tsx"),
 	]),

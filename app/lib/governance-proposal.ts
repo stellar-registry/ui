@@ -71,6 +71,27 @@ export function buildRegisterContractOutcome({
 	})
 }
 
+export function buildRegisterAccountOutcome({
+	accountName,
+	accountAddress,
+	owner,
+	...context
+}: RegistryOutcomeContext & {
+	accountName: string
+	accountAddress: string
+	owner: string
+}): Promise<OutcomeContract> {
+	return buildRegistryOutcome({
+		...context,
+		fn: "register_account",
+		args: {
+			account_name: accountName,
+			account_address: accountAddress,
+			owner,
+		},
+	})
+}
+
 /**
  * A subregistry is just another `registry` instance, deployed by the current
  * root via `deploy` with `root` set — its own `__constructor` args (`admin`,

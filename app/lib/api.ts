@@ -1,6 +1,8 @@
 import { data } from "react-router"
 import { fetchGithubMetadata, parseGithubSourceRepo } from "./github"
 import {
+	type Account,
+	type AccountPreauth,
 	type SearchParams,
 	type Contract,
 	type ContractDetail,
@@ -75,6 +77,26 @@ export async function getContract(
 		`/contracts/${prefixName(name, channel)}`,
 		apiUrl,
 	)
+}
+
+export async function getAccount(
+	name: string,
+	channel?: string,
+	apiUrl?: string,
+): Promise<Account> {
+	return apiFetch<Account>(`/accounts/${prefixName(name, channel)}`, apiUrl)
+}
+
+export async function getAccountPreauths(
+	filters: { channel: string; name: string; address: string; owner: string },
+	apiUrl?: string,
+): Promise<AccountPreauth[]> {
+	const search = new URLSearchParams(filters).toString()
+	const data = await apiFetch<ListResponse<AccountPreauth>>(
+		`/accounts/preauths?${search}`,
+		apiUrl,
+	)
+	return data.result
 }
 
 export async function getWasms(
