@@ -11,6 +11,7 @@ import { registryContractId } from "~/lib/network"
 
 const GOV_REPO = "stellar-registry/gov"
 const ADD_CONTRACT_TEMPLATE = "add-contract-to-root-registry.yml"
+const ADD_ACCOUNT_TEMPLATE = "add-account-to-root-registry.yml"
 const ADD_WASM_TEMPLATE = "add-wasm-to-root-registry.yml"
 const NEW_SUBREGISTRY_TEMPLATE = "create-a-new-subregistry.yml"
 
@@ -79,6 +80,56 @@ export function addContractToRootIssueUrl({
 				["--contract-address", contractAddress],
 				["--owner", ownerAddress],
 			]),
+		},
+	)
+}
+
+/**
+ * Two steps: the named account preauthorizes (it must sign that itself), then
+ * a maintainer registers the name.
+ */
+export function addAccountToRootIssueUrl({
+	accountName,
+	accountAddress,
+	ownerAddress,
+	requesterAddress,
+	requesterGithub,
+	justification,
+}: {
+	accountName: string
+	accountAddress: string
+	ownerAddress: string
+	requesterAddress: string
+	requesterGithub?: string
+	justification: string
+}): string {
+	const preauthorize = shellCommand("stellar registry account preauthorize", [
+		["--account-name", accountName],
+		["--account-address", accountAddress],
+		["--owner", ownerAddress],
+	])
+	const register = shellCommand("stellar registry account register", [
+		["--account-name", accountName],
+		["--account-address", accountAddress],
+		["--owner", ownerAddress],
+	])
+	return issueUrl(
+		ADD_ACCOUNT_TEMPLATE,
+		`Add named account to root registry: ${accountName}`,
+		{
+			account_name: accountName,
+			account_address: accountAddress,
+			owner_address: ownerAddress,
+			requester_address: requesterAddress,
+			requester_github: requesterGithub,
+			justification,
+			command: [
+				"# 1. The named account consents (signed by that account):",
+				preauthorize,
+				"",
+				"# 2. A maintainer registers the name:",
+				register,
+			].join("\n"),
 		},
 	)
 }

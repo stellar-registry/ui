@@ -173,7 +173,7 @@ const justificationField: GovernanceField = {
 }
 
 export type GovernanceOperationId =
-	"add-contract" | "add-wasm" | "new-subregistry"
+	"add-contract" | "add-account" | "add-wasm" | "new-subregistry"
 
 export interface GovernanceOperation {
 	id: GovernanceOperationId
@@ -185,7 +185,8 @@ export interface GovernanceOperation {
 	description: string
 	fields: GovernanceField[]
 	/** Registry contract function this operation's outcome calls. */
-	registryFn: "register_contract" | "publish_hash" | "deploy"
+	registryFn:
+		"register_contract" | "register_account" | "publish_hash" | "deploy"
 }
 
 export const GOVERNANCE_OPERATIONS: GovernanceOperation[] = [
@@ -212,6 +213,44 @@ export const GOVERNANCE_OPERATIONS: GovernanceOperation[] = [
 				required: true,
 				placeholder: "CABCD…",
 				validate: validateStellarAddress(["C"]),
+			},
+			{
+				name: "owner_address",
+				label: "Owner address",
+				type: "text",
+				required: false,
+				placeholder: "Defaults to your Stellar address",
+				validate: validateStellarAddress(["G", "C"]),
+			},
+			requesterAddressField,
+			requesterGithubField,
+			justificationField,
+		],
+	},
+	{
+		id: "add-account",
+		path: "/governance/add-account",
+		title: "Add named account to root registry",
+		summary: "Give a G-address or smart account a name in the root registry.",
+		description:
+			"Give a G-address or smart account (C-address) a name in the root registry. The named account must consent: if it's your connected wallet, you'll sign a preauthorization first; otherwise it must preauthorize this name and owner itself before you submit.",
+		registryFn: "register_account",
+		fields: [
+			{
+				name: "account_name",
+				label: "Account name",
+				type: "text",
+				required: true,
+				placeholder: "my-org",
+				validate: validateBareName,
+			},
+			{
+				name: "account_address",
+				label: "Account address",
+				type: "text",
+				required: false,
+				placeholder: "Defaults to your Stellar address",
+				validate: validateStellarAddress(["G", "C"]),
 			},
 			{
 				name: "owner_address",
@@ -284,7 +323,8 @@ export const GOVERNANCE_OPERATIONS: GovernanceOperation[] = [
 		id: "new-subregistry",
 		path: "/governance/new-subregistry",
 		title: "Create a new subregistry",
-		summary: "Deploy a new named channel for grouping related Wasms and contracts.",
+		summary:
+			"Deploy a new named channel for grouping related Wasms and contracts.",
 		description:
 			"Deploy a new named channel for grouping related Wasms and contracts. The admin/manager address governs it going forward.",
 		registryFn: "deploy",
