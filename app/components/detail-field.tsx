@@ -29,6 +29,32 @@ function DetailField({
 	)
 }
 
+/** An account address, led by its registry name when it has one. */
+function AccountField({
+	label,
+	address,
+	name,
+	href,
+}: {
+	label: string
+	address: string
+	name?: string | null
+	href: string
+}) {
+	return (
+		<DetailField label={label} href={href} external>
+			{name ? (
+				<>
+					<span className={styles.accountName}>{name}</span>
+					<span className={styles.accountAddress}>{address}</span>
+				</>
+			) : (
+				address
+			)}
+		</DetailField>
+	)
+}
+
 function FieldLink({
 	href,
 	external,
@@ -53,4 +79,4 @@ function FieldValue({ children }: { children: React.ReactNode }) {
 	return <div className={styles.fieldValue}>{children}</div>
 }
 
-export { DetailFields, DetailField }
+export { DetailFields, DetailField, AccountField }

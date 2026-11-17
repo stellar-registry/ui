@@ -8,6 +8,8 @@ export interface ListResponse<T> {
 export interface Wasm {
 	channel: string
 	author: string
+	// Registry account name for `author`; absent where the indexer predates it.
+	author_name?: string | null
 	wasm_version: string
 	wasm_name: string
 	wasm_hash: string
@@ -101,6 +103,7 @@ export interface Contract {
 	contract_id: string
 	contract_name: string
 	deployer?: string
+	deployer_name?: string | null
 	wasm_version?: string
 	wasm_name?: string
 	wasm_channel?: string
