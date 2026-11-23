@@ -139,6 +139,29 @@ export interface ContractDetail extends Contract {
 	verified: ContractValidation | null
 }
 
+// ── Accounts ──────────────────────────────────────────
+
+export interface Account {
+	registration_id: string
+	channel: string
+	account_name: string
+	address: string
+	owner: string | null
+	flagged: boolean
+}
+
+/** A preauthorization not yet revoked or used (`/v1/accounts/preauths`). */
+export interface AccountPreauth {
+	channel: string
+	account_name: string
+	address: string
+	owner: string
+	ledger_sequence: number
+	live_until_ledger: number
+	/** Null until the indexer knows its own height. */
+	expired: boolean | null
+}
+
 export interface SearchParams {
 	query?: string
 }
