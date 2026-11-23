@@ -31,7 +31,7 @@
     "@theahaco/contract-explorer": "^1.4.0",
     "buffer": "^6.0.3",
     "ipfs-car": "^3.1.0",
-    "isbot": "^5.1.31",
+    "isbot": "^5.2.3",
     "lucide-react": "^0.577.0",
     "radix-ui": "^1.8.1",
     "react": "^19.3.1",
@@ -44,7 +44,7 @@
     "tansu-client": "*"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.67.0",
+    "@cloudflare/vite-plugin": "^1.69.1",
     "@react-router/dev": "^7.18.5",
     "@theahaco/ts-config": "^1.2.0",
     "@types/node": "^22",
@@ -53,7 +53,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "typescript": "^5.9.2",
-    "vite": "^7.3.7",
+    "vite": "^7.3.8",
     "vite-tsconfig-paths": "^6.1.1",
     "wrangler": "^4.158.0"
   },
